@@ -179,15 +179,15 @@
 							<ul class="list-item">
 								<li class="dropdown-holder">
 									<h4>Getting Started</h4>
-									<ul class="sub-menu ">
+									<ul class="sub-menu">
 										<li><a href="./doc-quickstart.html" >Quick start</a></li>
 										<li><a href="./doc-setup.html">Setup</a></li>
 									</ul>
 								</li>
 								<li class="dropdown-holder">
 									<h4>Polydomains</h4>
-									<ul class="sub-menu show">
-										<li><a href="./doc-polydomains-intro.html" class="active">Introduction</a></li>
+									<ul class="sub-menu">
+										<li><a href="./doc-polydomains-intro.html">Introduction</a></li>
 										<li><a href="./doc-polydomains-wrapper.html">Polywrapper</a></li>
 										<li><a href="./doc-polydomains-js.html">JS Integration</a></li>
 									</ul>
@@ -195,15 +195,15 @@
 								<li class="dropdown-holder">
 									<h4>Hicetnunc</h4>
 									<ul class="sub-menu">
-										<li><a href="./doc-hicetnunc-intro.html" >Introduction</a></li>
+										<li><a href="./doc-hicetnunc-intro.html">Introduction</a></li>
 										<li><a href="./doc-hicetnunc-wrapper.html">Polywrapper</a></li>
 										<li><a href="./doc-hicetnunc-js.html">JS Integration</a></li>
 									</ul>
 								</li>
 								<li class="dropdown-holder">
 									<h4>Harbinger</h4>
-									<ul class="sub-menu">
-										<li><a href="./doc-harbinger-intro.html">Introduction</a></li>
+									<ul class="sub-menu show">
+										<li><a href="./doc-harbinger-intro.html" class="active">Introduction</a></li>
 										<li><a href="./doc-harbinger-wrapper.html">Polywrapper</a></li>
 										<li><a href="./doc-harbinger-js.html">JS Integration</a></li>
 									</ul>
@@ -228,21 +228,24 @@
 					</div> <!-- /.doc-sidebar -->
 					<!-- ****************************** DOC MAIN BODY ********************************* -->
 					<main class="col-md-9 col-xl-8 doc-main-body">
-						<h2>Polydomains</h2>
+						<h2>Harbinger</h2>
 						<h3 id="installing">Introduction</h3>
-						<p>Polydomains is a Tezos domains Polywrap integration project that allows you to search for registered Tezos domain names across Tezos testnets and mainnet. The network to search on is detected from the TLD domain you add (.tez for mainnet and .gra or .han for one of the testnets).</p>
+						<p>Harbinger polywrap is a signed price feed for the Tezos blockchain which provides a trusted price oracle for digital assets thats built using polywrap.</p>
+						<p>
+						Harbinger's (https://github.com/tacoinfra/harbinger#harbinger)design was inspired by Compound's Open Price Feed. Separate entities provide signed price updates and post the signed price data on chain. This separation of responsibility leads to a decentralized solution where anyone can post signed prices on-chain, reducing dependencies on a single poster that might be offline. 
+					</p>
 
 						<div class="mark-blue">
 						
 								<ul class="list-item-one">
-									<li>Visit the demo app <a href="https://blockwatch-cc.github.io/polydomains/"><code>here.</code></a></li>
-									<li>Github repository for the app is <a href="https://github.com/blockwatch-cc/polydomains"><code>here.</code></a></li>
+									<li>Visit the demo app <a href="https://blockwatch-cc.github.io/Harbinger/"><code>here.</code></a></li>
+									<li>Github repository for the app is <a href="https://github.com/blockwatch-cc/Harbinger"><code>here.</code></a></li>
 								</ul>
 						
 						</div> 
 
 						<h3 id="installing">GitHub Repo & Project overview</h3>
-						<p>The Polydomains wrapper and example can be found in the Poly Repo. In the folder polydomains there's the wrapper folder which contains the codes for the polydomains wrapper and example folder folder which contains a react implementation of the polydomains wrapper. </p>
+						<p>The Harbinger wrapper and example can be found in the Poly Repo. In the folder Harbinger there's the wrapper folder which contains the codes for the Harbinger wrapper and example folder folder which contains a react implementation of the Harbinger wrapper. </p>
 
 						
 
@@ -286,13 +289,13 @@
 						<div class="doc-pagination pt-40">
 							<ul class="d-flex align-items-center justify-content-between">
 								<li class="d-flex align-items-center">
-									<a href="./doc-setup.html"><i class="fa fa-angle-left"
+									<a href="./doc-hicetnunc-js.html"><i class="fa fa-angle-left"
 											aria-hidden="true"></i></a>&nbsp;&nbsp;&nbsp;
-									<span>Setup</span>
+									<span>Hic Et Nunc JS Integration</span>
 								</li>
 								<li class="d-flex align-items-center">
-									<span>Polydomains Wrapper</span> &nbsp;&nbsp;&nbsp;
-									<a href="./doc-polydomains-wrapper.html"><i class="fa fa-angle-right" aria-hidden="true"></i></a>
+									<span>Harbinger Wrapper</span> &nbsp;&nbsp;&nbsp;
+									<a href="./doc-harbinger-wrapper.html"><i class="fa fa-angle-right" aria-hidden="true"></i></a>
 								</li>
 							</ul>
 						</div>

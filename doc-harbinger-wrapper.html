@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+</span></span><!DOCTYPE html>
 <html lang="en">
 	
 <!-- Mirrored from html.creativegigstf.com/deski/deski/doc-fullwidth.html by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 30 Jan 2022 17:09:30 GMT -->
@@ -166,16 +166,16 @@
 								<ul class="list-item">
 									<li class="dropdown-holder">
 										<h4>Getting Started</h4>
-										<ul class="sub-menu ">
-											<li><a href="./doc-quickstart.html">Quick start</a></li>
+										<ul class="sub-menu">
+											<li><a href="./doc-quickstart.html" >Quick start</a></li>
 											<li><a href="./doc-setup.html">Setup</a></li>
 										</ul>
 									</li>
 									<li class="dropdown-holder">
 										<h4>Polydomains</h4>
-										<ul class="sub-menu show">
+										<ul class="sub-menu">
 											<li><a href="./doc-polydomains-intro.html">Introduction</a></li>
-											<li><a href="./doc-polydomains-wrapper.html" class="active">Polywrapper</a></li>
+											<li><a href="./doc-polydomains-wrapper.html">Polywrapper</a></li>
 											<li><a href="./doc-polydomains-js.html">JS Integration</a></li>
 										</ul>
 									</li>
@@ -189,9 +189,9 @@
 									</li>
 									<li class="dropdown-holder">
 										<h4>Harbinger</h4>
-										<ul class="sub-menu">
+										<ul class="sub-menu show">
 											<li><a href="./doc-harbinger-intro.html">Introduction</a></li>
-											<li><a href="./doc-harbinger-wrapper.html">Polywrapper</a></li>
+											<li><a href="./doc-harbinger-wrapper.html" class="active">Polywrapper</a></li>
 											<li><a href="./doc-harbinger-js.html">JS Integration</a></li>
 										</ul>
 									</li>
@@ -216,11 +216,11 @@
 						<!-- ****************************** DOC MAIN BODY ********************************* -->
 						<main class="col-md-9 col-xl-8 doc-main-body">
 							
-							<h2>Polydomains</h2>
+							<h2>Harbinger</h2>
 
 							<h3 id="installing">Wrapper Example</h3>
-							<p>The Tezos Plugin is the wrapper folder in the poly GitHub Repo.</p>
-							<p>Remove these lines of code from the package.json file</p>
+							<p>The Harbinger wrapper can be found in ./tezos/harbinger/wrapper folder in the poly GitHub Repo.</p>
+							<p>To setup and get it running remove these lines of code from the package.json file</p>
 							<div class="mark-blue">
 								“@web3api/tezos-test-env”: “0.0.1-prealpha.61”,
 								“@web3api/tezos-plugin-js”: “0.0.1-prealpha.61”,
@@ -264,29 +264,6 @@
 
 
 							<h3 id="installing">Project Structure</h3>
-							<p>
-								<b>Mutations :</b>
-								can be found in ./src/mutation folder if contains the index.ts file which is the assembly script mutation logic and schema.graphql file which contains the graphql schemas for the functions in the mutation’s index file.
-							</p>
-
-
-							<pre class="bg-black">
-								<code>
-									<span class="s2">export function callContractMethodAndConfirmation(input: Input_callContractMethodAndConfirmation):</span>
-									<span class="s2">return Tezos_Mutation.callContractMethodAndConfirmation({</span>
-									<span class="s2">address: input.address,</span>
-									<span class="s2">method: input.method,</span>
-									<span class="s2">args: input.args,</span>
-									<span class="s2">connection: input.connection,</span>
-									<span class="s2">confirmations: input.confirmations,</span>
-									<span class="s2">interval: input.interval,</span>
-									<span class="s2">timeout: input.timeout</span>
-									<span class="s2">})</span>
-									<span class="s2">}</span>
-								</code>
-							</pre> <!-- /.bg-black -->
-
-
 														 
 							<p>
 								<b>Queries :</b>
@@ -296,24 +273,48 @@
 
 							<pre class="bg-black">
 								<code>
-									<span class="s2">export function callContractMethodAndConfirmation(input: Input_callContractMethodAndConfirmation):</span>
-									<span class="s2">return Tezos_Mutation.callContractMethodAndConfirmation({</span>
-									<span class="s2">address: input.address,</span>
-									<span class="s2">method: input.method,</span>
-									<span class="s2">args: input.args,</span>
-									<span class="s2">connection: input.connection,</span>
-									<span class="s2">confirmations: input.confirmations,</span>
-									<span class="s2">interval: input.interval,</span>
-									<span class="s2">timeout: input.timeout</span>
-									<span class="s2">})</span>
+									
+									<span class="s2">export function getAssetData(input: Input_getAssetData): GetAssetResponse {</span>
+									<span class="s2">if (input.network == Network.custom && input.custom === null) {</span>
+									<span class="s2">throw new Error(`custom network should have a valid connection and oracle contract address `)</span>
 									<span class="s2">}</span>
-
-									<span class="s2">export function getTransferEstimate(input: Input_getTransferEstimate): Tezos_EstimateResult {</span>
-									<span class="s2">	return Tezos_Query.getTransferEstimate({</span>
-									<span class="s2">	  connection: input.connection,</span>
-									<span class="s2">	  params: input.params</span>
-									<span class="s2">	});</span>
-									 <span class="s2"> }</span>
+									<span class="s2">let oracleContractAddress: string = "KT1Jr5t9UvGiqkvvsuUbPJHaYx24NzdUwNW9";</span>
+									<span class="s2">let connection: Tezos_Connection = {</span>
+									<span class="s2">provider: "https://rpc.tzstats.com",</span>
+									<span class="s2">networkNameOrChainId: "mainnet"</span>
+									<span class="s2">};</span>
+									<span class="s2">switch (input.network) {</span>
+									<span class="s2">case Network.granadanet:</span>
+									<span class="s2">connection = <Tezos_Connection> {</span>
+									<span class="s2">provider: "https://rpc.granada.tzstats.com",</span>
+									<span class="s2">networkNameOrChainId: "granadanet"  </span>
+									<span class="s2">}</span>
+									<span class="s2">oracleContractAddress = "KT1ENR6CK7cBWCtZt1G3PovwTw3FgSW472mS";</span>
+									<span class="s2">break;</span>
+									<span class="s2">case Network.custom:</span>
+									<span class="s2">connection = input.custom!.connection;</span>
+									<span class="s2">oracleContractAddress = input.custom!.oracleContractAddress;</span>
+									<span class="s2">break;</span>
+									<span class="s2">}</span>
+									<span class="s2">const storageValue = Tezos_Query.getContractStorage({</span>
+									<span class="s2">address: oracleContractAddress,</span>
+									<span class="s2">connection: connection,</span>
+									<span class="s2">key: "oracleData",</span>
+									<span class="s2">field: input.assetCode</span>
+									<span class="s2">});</span>
+									<span class="s2">const assetData = <JSON.Obj>JSON.parse(storageValue);</span>
+									<span class="s2">return {</span>
+									<span class="s2">low:  normalizeValue(parseFloat(getString(assetData, "4"))),</span>
+									<span class="s2">open: normalizeValue(parseFloat(getString(assetData, "2"))),</span>
+									<span class="s2">high: normalizeValue(parseFloat(getString(assetData, "3"))),</span>
+									<span class="s2">asset: input.assetCode,</span>
+									<span class="s2">close: normalizeValue(parseFloat(getString(assetData, "5"))),</span>
+									<span class="s2">volume: normalizeValue(parseFloat(getString(assetData, "6"))),</span>
+									<span class="s2">endPeriod: getString(assetData, "1"),</span>
+									<span class="s2">startPeriod: getString(assetData, "0"),</span>
+									<span class="s2">};</span>
+									<span class="s2">}</span>
+									  
 
 								</code>
 							</pre> <!-- /.bg-black -->
@@ -321,28 +322,40 @@
 
 							<p>
 								<b>Tests :</b>
-								To test the function written in the query/index.ts and mutation/index.js e2e tests are written in the __tests__/e2e folder.
+								To test the function written in the query/index.ts e2e tests are written in the __tests__/e2e folder.
 							</p>
 
 
 							<pre class="bg-black">
 								<code>
-									<span class="s2">it("should check the balance of a valid address", async () => {</span>
-									<span class="s2">const response =  await client.query<{ getBalance: string }>({</span>
+									<span class="s2">it("should get asset data for `XTZ-USD` on mainnet", async () => {</span>
+									<span class="s2">const response =  await client.query<{ getAssetData: QuerySchema.GetAssetResponse}>({</span>
 									<span class="s2">uri: ensUri,</span>
 									<span class="s2">query: `</span>
 									<span class="s2">query {</span>
-									<span class="s2">getBalance(address: $address)</span>
+									<span class="s2">getAssetData(</span>
+									<span class="s2">assetCode: $assetCode,</span>
+									<span class="s2">network: mainnet</span>
+									<span class="s2">)</span>
 									<span class="s2">}</span>
 									<span class="s2">`,</span>
 									<span class="s2">variables: {</span>
-									<span class="s2">address: accounts[0].address</span>
+									<span class="s2">assetCode: "XTZ-USD",</span>
+									<span class="s2">network: "granadanet",</span>
 									<span class="s2">}</span>
 									<span class="s2">})</span>
+
 									<span class="s2">expect(response.errors).toBeUndefined()</span>
 									<span class="s2">expect(response.data).toBeDefined()</span>
-									<span class="s2">expect(response.data?.getBalance).toBeDefined()</span>
-									<span class="s2">expect(response.data?.getBalance).toBe("2000000000000")</span>
+									<span class="s2">expect(response.data?.getAssetData).toBeDefined()</span>
+									<span class="s2">expect(response.data?.getAssetData.low).toBeDefined()</span>
+									<span class="s2">expect(response.data?.getAssetData.open).toBeDefined()</span>
+									<span class="s2">expect(response.data?.getAssetData.high).toBeDefined()</span>
+									<span class="s2">expect(response.data?.getAssetData.asset).toBeDefined()</span>
+									<span class="s2">expect(response.data?.getAssetData.close).toBeDefined()</span>
+									<span class="s2">expect(response.data?.getAssetData.volume).toBeDefined()</span>
+									<span class="s2">expect(response.data?.getAssetData.endPeriod).toBeDefined()</span>
+									<span class="s2">expect(response.data?.getAssetData.startPeriod).toBeDefined()</span>
 									<span class="s2">})</span>
 								</code>
 							</pre> <!-- /.bg-black -->
@@ -352,12 +365,12 @@
 							<div class="doc-pagination pt-40">
 								<ul class="d-flex align-items-center justify-content-between">
 									<li class="d-flex align-items-center">
-										<a href="./doc-polydomains-intro.html"><i class="fa fa-angle-left" aria-hidden="true"></i></a>&nbsp;&nbsp;&nbsp;
-										<span>Polydomains Introduction</span>
+										<a href="./doc-harbinger-intro.html"><i class="fa fa-angle-left" aria-hidden="true"></i></a>&nbsp;&nbsp;&nbsp;
+										<span>Harbinger Introduction</span>
 									</li>
 									<li class="d-flex align-items-center">
-										<span>Polydomains JS Integration</span> &nbsp;&nbsp;&nbsp;
-										<a href="./doc-polydomains-js.html"><i class="fa fa-angle-right" aria-hidden="true"></i></a>
+										<span>Harbinger JS Integration</span> &nbsp;&nbsp;&nbsp;
+										<a href="./doc-harbinger-js.html"><i class="fa fa-angle-right" aria-hidden="true"></i></a>
 									</li>
 								</ul>
 							</div>

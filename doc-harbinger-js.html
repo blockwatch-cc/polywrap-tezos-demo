@@ -167,15 +167,15 @@
 									<li class="dropdown-holder">
 										<h4>Getting Started</h4>
 										<ul class="sub-menu ">
-											<li><a href="./doc-quickstart.html">Quick start</a></li>
+											<li><a href="./doc-quickstart.html" >Quick start</a></li>
 											<li><a href="./doc-setup.html">Setup</a></li>
 										</ul>
 									</li>
 									<li class="dropdown-holder">
 										<h4>Polydomains</h4>
-										<ul class="sub-menu show">
+										<ul class="sub-menu">
 											<li><a href="./doc-polydomains-intro.html">Introduction</a></li>
-											<li><a href="./doc-polydomains-wrapper.html" class="active">Polywrapper</a></li>
+											<li><a href="./doc-polydomains-wrapper.html">Polywrapper</a></li>
 											<li><a href="./doc-polydomains-js.html">JS Integration</a></li>
 										</ul>
 									</li>
@@ -189,10 +189,10 @@
 									</li>
 									<li class="dropdown-holder">
 										<h4>Harbinger</h4>
-										<ul class="sub-menu">
+										<ul class="sub-menu show">
 											<li><a href="./doc-harbinger-intro.html">Introduction</a></li>
 											<li><a href="./doc-harbinger-wrapper.html">Polywrapper</a></li>
-											<li><a href="./doc-harbinger-js.html">JS Integration</a></li>
+											<li><a href="./doc-harbinger-js.html" class="active">JS Integration</a></li>
 										</ul>
 									</li>
 									<li class="dropdown-holder">
@@ -215,149 +215,78 @@
 						</div> <!-- /.doc-sidebar -->
 						<!-- ****************************** DOC MAIN BODY ********************************* -->
 						<main class="col-md-9 col-xl-8 doc-main-body">
+							<h2>Harbinger</h2>
+							<h3 id="installing">JS Integration</h3>
+							<p>The built wrapper codes in the ./build folder thats generated when the yarn build command is run. The generated WASM codes are deployed on IPFS. To use the wrappers in your JS application you have to import it using the poly wrap JS Client package.</p>
 							
-							<h2>Polydomains</h2>
-
-							<h3 id="installing">Wrapper Example</h3>
-							<p>The Tezos Plugin is the wrapper folder in the poly GitHub Repo.</p>
-							<p>Remove these lines of code from the package.json file</p>
 							<div class="mark-blue">
-								“@web3api/tezos-test-env”: “0.0.1-prealpha.61”,
-								“@web3api/tezos-plugin-js”: “0.0.1-prealpha.61”,
-							</div> 
-
-							<p>Now link the wrapper to Tezos-plugin-js using the command</p>
-							<div class="mark-red">
-								yarn link @web3api/tezos-plugin-js
-							</div> 
-
-
-							<p>Now link the wrapper to tezos-test-env using the command</p>
-							<div class="mark-red">
-								yarn link @web3api/tezos-test-env
-							</div> 
-
-
-							<p>Install the node packages using the command </p>
-							<div class="mark-red">
-								yarn
-							</div> 
-
-							<p>Build the plugin-js project using the command</p>
-							<div class="mark-red">
-								yarn build
-							</div> 
-
-							<p>Install the node packages using the command </p>
-							<div class="mark-red">
-								yarn
-							</div> 
-
-
-							<h3 id="installing">Running Tests</h3>
-							<p>The e2e tests can be found in the src/__tests__/e2e folder.</p>
-							<p>Run the e2e tests using the command</p>
-							<div class="mark-red">
-								yarn test
-							</div>
-
-
-
-							<h3 id="installing">Project Structure</h3>
-							<p>
-								<b>Mutations :</b>
-								can be found in ./src/mutation folder if contains the index.ts file which is the assembly script mutation logic and schema.graphql file which contains the graphql schemas for the functions in the mutation’s index file.
-							</p>
-
+								<pre>Creating a Web3 Client with Tezos Plugin Support</pre>
+							</div>  
 
 							<pre class="bg-black">
 								<code>
-									<span class="s2">export function callContractMethodAndConfirmation(input: Input_callContractMethodAndConfirmation):</span>
-									<span class="s2">return Tezos_Mutation.callContractMethodAndConfirmation({</span>
-									<span class="s2">address: input.address,</span>
-									<span class="s2">method: input.method,</span>
-									<span class="s2">args: input.args,</span>
-									<span class="s2">connection: input.connection,</span>
-									<span class="s2">confirmations: input.confirmations,</span>
-									<span class="s2">interval: input.interval,</span>
-									<span class="s2">timeout: input.timeout</span>
+									<span class="s2">import { Web3ApiClient } from "@web3api/client-js"</span>
+									<span class="s2">import { tezosPlugin } from "@web3api/tezos-plugin-js"</span>
+									<span class="s2">export const client = new Web3ApiClient({</span>
+									<span class="s2">plugins: [</span>
+									<span class="s2">{</span>
+									<span class="s2">uri: "w3://ens/tezos.web3api.eth",</span>
+									<span class="s2">plugin: tezosPlugin({</span>
+									<span class="s2">networks: {</span>
+									<span class="s2">mainnet: {</span>
+									<span class="s2">provider: "https://rpc.tzstats.com"</span>
+									<span class="s2">},  </span>
+									<span class="s2">granadanet: {</span>
+									<span class="s2">provider: "https://rpc.granada.tzstats.com",</span>
+									<span class="s2">}</span>
+									<span class="s2">},</span>
+									<span class="s2">defaultNetwork: "mainnet"</span>
 									<span class="s2">})</span>
 									<span class="s2">}</span>
+									<span class="s2">]</span>
+									<span class="s2">})</span>
 								</code>
 							</pre> <!-- /.bg-black -->
 
-
-														 
-							<p>
-								<b>Queries :</b>
-								can be found in ./src/query folder if contains the index.ts file which is the assembly script query logic and schema.graphql file which contains the graphql schemas for the functions in the query's index file.
-							</p>
-
+							<div class="mark-blue">
+								<pre>Call a function from the URI via Polywrap+GraphQL</pre>
+							</div>  
 
 							<pre class="bg-black">
 								<code>
-									<span class="s2">export function callContractMethodAndConfirmation(input: Input_callContractMethodAndConfirmation):</span>
-									<span class="s2">return Tezos_Mutation.callContractMethodAndConfirmation({</span>
-									<span class="s2">address: input.address,</span>
-									<span class="s2">method: input.method,</span>
-									<span class="s2">args: input.args,</span>
-									<span class="s2">connection: input.connection,</span>
-									<span class="s2">confirmations: input.confirmations,</span>
-									<span class="s2">interval: input.interval,</span>
-									<span class="s2">timeout: input.timeout</span>
-									<span class="s2">})</span>
-									<span class="s2">}</span>
-
-									<span class="s2">export function getTransferEstimate(input: Input_getTransferEstimate): Tezos_EstimateResult {</span>
-									<span class="s2">	return Tezos_Query.getTransferEstimate({</span>
-									<span class="s2">	  connection: input.connection,</span>
-									<span class="s2">	  params: input.params</span>
-									<span class="s2">	});</span>
-									 <span class="s2"> }</span>
-
-								</code>
-							</pre> <!-- /.bg-black -->
-
-
-							<p>
-								<b>Tests :</b>
-								To test the function written in the query/index.ts and mutation/index.js e2e tests are written in the __tests__/e2e folder.
-							</p>
-
-
-							<pre class="bg-black">
-								<code>
-									<span class="s2">it("should check the balance of a valid address", async () => {</span>
-									<span class="s2">const response =  await client.query<{ getBalance: string }>({</span>
-									<span class="s2">uri: ensUri,</span>
+									<span class="s2">import { client } from './client'</span>
+									<span class="s2">const HARBINGER_URI = 'w3://ipfs/QmYEz2Zxr5Zd3UuWs2ijocsGkvaoLurkzXJb1Wc9NK1nWt'</span>
+									<span class="s2">export const getAssetData = async (assetCode, network) => {</span>
+									<span class="s2">return await client.query({</span>
+									<span class="s2">uri: HARBINGER_URI,</span>
 									<span class="s2">query: `</span>
 									<span class="s2">query {</span>
-									<span class="s2">getBalance(address: $address)</span>
-									<span class="s2">}</span>
-									<span class="s2">`,</span>
+									<span class="s2">getAssetData(</span>
+									<span class="s2">network: $network,</span>
+									<span class="s2">assetCode: $assetCode,</span>
+									<span class="s2">)</span>
+									<span class="s2">}`,</span>
 									<span class="s2">variables: {</span>
-									<span class="s2">address: accounts[0].address</span>
+									<span class="s2">assetCode,</span>
+									<span class="s2">network</span>
 									<span class="s2">}</span>
-									<span class="s2">})</span>
-									<span class="s2">expect(response.errors).toBeUndefined()</span>
-									<span class="s2">expect(response.data).toBeDefined()</span>
-									<span class="s2">expect(response.data?.getBalance).toBeDefined()</span>
-									<span class="s2">expect(response.data?.getBalance).toBe("2000000000000")</span>
-									<span class="s2">})</span>
+									<span class="s2">});</span>
+									<span class="s2">}</span>
 								</code>
 							</pre> <!-- /.bg-black -->
-															
-							
 
+
+							
+							
 							<div class="doc-pagination pt-40">
 								<ul class="d-flex align-items-center justify-content-between">
 									<li class="d-flex align-items-center">
-										<a href="./doc-polydomains-intro.html"><i class="fa fa-angle-left" aria-hidden="true"></i></a>&nbsp;&nbsp;&nbsp;
-										<span>Polydomains Introduction</span>
+										<a href="./doc-harbinger-wrapper.html"><i class="fa fa-angle-left" aria-hidden="true"></i></a>&nbsp;&nbsp;&nbsp;
+										<span>Harbinger Wrapper</span>
 									</li>
 									<li class="d-flex align-items-center">
-										<span>Polydomains JS Integration</span> &nbsp;&nbsp;&nbsp;
-										<a href="./doc-polydomains-js.html"><i class="fa fa-angle-right" aria-hidden="true"></i></a>
+										<!-- <span>Site Preparation</span> &nbsp;&nbsp;&nbsp;
+										<a href="#"><i class="fa fa-angle-right" aria-hidden="true"></i></a> -->
 									</li>
 								</ul>
 							</div>
