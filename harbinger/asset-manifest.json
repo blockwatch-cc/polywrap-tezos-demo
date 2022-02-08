@@ -1,0 +1,18 @@
+{
+  "files": {
+    "main.js": "/polywrap-tezos-demo/static/js/main.fa065530.chunk.js",
+    "main.js.map": "/polywrap-tezos-demo/static/js/main.fa065530.chunk.js.map",
+    "runtime-main.js": "/polywrap-tezos-demo/static/js/runtime-main.88176862.js",
+    "runtime-main.js.map": "/polywrap-tezos-demo/static/js/runtime-main.88176862.js.map",
+    "static/js/2.fc55da40.chunk.js": "/polywrap-tezos-demo/static/js/2.fc55da40.chunk.js",
+    "static/js/2.fc55da40.chunk.js.map": "/polywrap-tezos-demo/static/js/2.fc55da40.chunk.js.map",
+    "index.html": "/polywrap-tezos-demo/index.html",
+    "precache-manifest.3b8dea1a57d9e5bd29abf9cfc89b226d.js": "/polywrap-tezos-demo/precache-manifest.3b8dea1a57d9e5bd29abf9cfc89b226d.js",
+    "service-worker.js": "/polywrap-tezos-demo/service-worker.js"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.88176862.js",
+    "static/js/2.fc55da40.chunk.js",
+    "static/js/main.fa065530.chunk.js"
+  ]
+}
