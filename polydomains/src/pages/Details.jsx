@@ -29,6 +29,7 @@ import { WalletContext } from '../context/wallet';
 import { extractErrorMessage } from '../utils/text';
 import { resolveDomainRecords } from '../services/web3/query';
 import { resolveDomainRecordsReducer } from '../reducer/domain';
+import { useCallback } from 'react';
 
 function Details() {
     const { name } = useParams()
@@ -36,8 +37,8 @@ function Details() {
     const { hasCopied, onCopy } = useClipboard(address);
     const [domainRecord, dispatch] = useReducer(resolveDomainRecordsReducer, { state: '', name, payload: null, errors: null })
     const { app } = useContext(WalletContext)
-
-    const getDomainRecord = async () => {
+    
+    const getDomainRecord = useCallback(async () => {
         if (typeof domainRecord.name !== 'string' || domainRecord.name.length === 0) {
             return
         }
@@ -54,11 +55,11 @@ function Details() {
             response.data.resolveDomain.Metadata = JSON.parse(response.data.resolveDomain?.Data)
             dispatch({ state: 'QUERY_SUCCESS', payload: response.data.resolveDomain });
         }
-    }
+    }, [app.network, domainRecord.name])
 
     useEffect(() => {
         getDomainRecord()
-    }, [])
+    }, [getDomainRecord])
 
     return (
         <Box minHeight="100vh" >
