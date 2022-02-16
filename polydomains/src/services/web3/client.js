@@ -1,11 +1,13 @@
 import { Web3ApiClient } from "@web3api/client-js"
 import { tezosDomainsPlugin } from "@web3api/tezos-domains-plugin-js"
+import { tezosPlugin } from "@web3api/tezos-plugin-js"
+
+export const TEZOS_PLUGIN_JS = 'w3://ens/tezos.web3api.eth'
+export const TEZOS_DOMAINS_WRAPPER_URI = 'w3://ipfs/QmVJkM2U6nnasMyp3RSH13LCg3N2xBmCBC6WG7kcXG2Pku'
+export const TEZOS_DOMAINS_PLUGIN_JS = 'w3://ens/tezosDomainsPlugin.web3api.eth'
+
 
 export const TezosConnections = {
-  granadanet: {
-    provider: "https://rpc.granada.tzstats.com",
-    supportedTLDs: ['gra']
-  },
   hangzhounet: {
     provider: "https://rpc.hangzhou.tzstats.com",
     supportedTLDs: ['han']
@@ -17,13 +19,26 @@ export const TezosConnections = {
 }
 
 export const client = new Web3ApiClient({
-    plugins: [
-        {
-          uri: "w3://ens/tezos-domains.web3api.eth",
-          plugin: tezosDomainsPlugin({
-              connections: TezosConnections,
-              defaultNetwork: "mainnet"
-          })
-        }
-    ]
+  plugins: [
+    {
+      uri: TEZOS_PLUGIN_JS,
+      plugin: tezosPlugin({
+        networks: {
+          mainnet: {
+              provider: "https://rpc.tzstats.com"
+          },  
+          hangzhounet: {
+              provider: "https://rpc.hangzhou.tzstats.com",
+          }
+        },
+        defaultNetwork: "hangzhounet"
+      })
+    },
+    {
+      uri: TEZOS_DOMAINS_PLUGIN_JS,
+      plugin: tezosDomainsPlugin({
+          defaultNetwork: "hangzhounet"
+      })
+    }
+  ]
 })

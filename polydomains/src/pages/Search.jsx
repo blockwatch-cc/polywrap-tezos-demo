@@ -55,7 +55,7 @@ function Search() {
                 }
             }
         }
-        const response = await getAcquisitionInfo({ network }, domain.name);
+        const response = await getAcquisitionInfo(network, domain.name);
         if (response.errors) {
             const message = extractErrorMessage(response.errors, 'failed to get domain avaialable')
             toast.error(message)

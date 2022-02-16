@@ -1,31 +1,38 @@
 import { client } from './client'
+import { TEZOS_DOMAINS_WRAPPER_URI, TEZOS_DOMAINS_PLUGIN_JS } from './client'
 
-const uri = 'w3://ens/tezos-domains.web3api.eth'
-
-export const resolveDomainRecords = async (connection, domain) => {
+export const resolveDomainRecords = async (network, domain) => {
     return client.query({
-        uri,
+        uri: TEZOS_DOMAINS_WRAPPER_URI,
         query: `
             query {
-                resolveDomainRecords(connection: $connection, domain: "${domain}" )
+                resolveDomain(
+                    network: $network, 
+                    domain: $domain 
+                )
             }
         `,
         variables: {
-            connection
+            network,
+            domain
         }
     })
 }
 
-export const getAcquisitionInfo = async (connection, domain) => {
+export const getAcquisitionInfo = async (network, domain) => {
     return client.query({
-        uri,
+        uri: TEZOS_DOMAINS_PLUGIN_JS,
         query: `
             query {
-                getAcquisitionInfo(connection: $connection, domain: "${domain}" )
+                getAcquisitionInfo(
+                    network: $network, 
+                    domain: $domain 
+                )
             },
         `,
         variables: {
-            connection
+            network,
+            domain
         }
     })
 }

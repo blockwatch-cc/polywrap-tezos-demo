@@ -42,17 +42,17 @@ function Details() {
             return
         }
         dispatch({ state: 'LOADING' })
-        const response = await resolveDomainRecords({ network: app.network }, domainRecord.name);
+        const response = await resolveDomainRecords(app.network, domainRecord.name);
         if (response.errors) {
             const message = extractErrorMessage(response.errors, 'failed to get domain records')
             toast.error(message)
             dispatch({ state: 'QUERY_FAILED', errors: response.errors });
             return
         }
-        if(response.data.resolveDomainRecords) {
-            setAddress(response.data.resolveDomainRecords?.address)
-            response.data.resolveDomainRecords.metadata = JSON.parse(response.data.resolveDomainRecords.data)
-            dispatch({ state: 'QUERY_SUCCESS', payload: response.data.resolveDomainRecords });
+        if(response.data.resolveDomain) {
+            setAddress(response.data.resolveDomain?.Address)
+            response.data.resolveDomain.Metadata = JSON.parse(response.data.resolveDomain?.Data)
+            dispatch({ state: 'QUERY_SUCCESS', payload: response.data.resolveDomain });
         }
     }
 
@@ -120,7 +120,7 @@ function Details() {
                                                                     <Heading fontSize='md' mt="2">Address</Heading>
                                                                 </Box>
                                                                 <Box w='670px'>
-                                                                    <Text fontSize='md' mt="2">{domainRecord?.payload?.address ? domainRecord?.payload?.address : "" }</Text>
+                                                                    <Text fontSize='md' mt="2">{domainRecord?.payload?.Address ? domainRecord?.payload?.Address : "" }</Text>
                                                                 </Box>
                                                             </HStack>
                                                             <HStack spacing='30px' pb="2">
@@ -128,18 +128,18 @@ function Details() {
                                                                         <Heading fontSize='md' mt="2">Expiry</Heading>
                                                                     </Box>
                                                                     <Box w='670px'>
-                                                                        <Text fontSize='md' mt="2">{domainRecord?.payload?.expiry ? domainRecord?.payload?.expiry : ""}</Text>
+                                                                        <Text fontSize='md' mt="2">{domainRecord?.payload?.Expiry ? domainRecord?.payload?.Expiry : ""}</Text>
                                                                     </Box>
                                                             </HStack>
                                                             <hr />
                                                             <Heading fontSize='lg' py="2">Additional Information</Heading>
-                                                            {Object.keys(domainRecord?.payload?.metadata).map((keyName, idx) => (
+                                                            {Object.keys(domainRecord?.payload?.Metadata).map((keyName, idx) => (
                                                                 <HStack spacing='24px' key={`${keyName}-${idx}`}>
                                                                     <Box w='130px'>
                                                                         <Heading fontSize='md' mt="2">{keyName}</Heading>
                                                                     </Box>
                                                                     <Box w='670px'>
-                                                                        <Text fontSize='md' mt="2">{domainRecord?.payload?.metadata[keyName]}</Text>
+                                                                        <Text fontSize='md' mt="2">{domainRecord?.payload?.Metadata[keyName]}</Text>
                                                                     </Box>
                                                                 </HStack>
                                                             ))}
