@@ -1,8 +1,5 @@
 import {
-  List,
-  ListItem,
   Grid,
-  GridItem,
   Box, 
   Heading,
   Button,
@@ -103,29 +100,17 @@ function Buy() {
       <Box d="block">
         <Box d="flex" mt="10" justifyContent="center">
           <Box d="flex" width="80vw" borderRadius="10" boxShadow='xl'>            
-              <Grid>
-                <GridItem rowSpan={2}>
-                    <List spacing={3}>
-                        <ListItem mt="5"   p="8" pb="10" >
-                            <Grid templateColumns='repeat(5, 1fr)' gap={6}>
-                                <Box w='100%' h='10'>
-                                    <Heading letterSpacing="wide" size="2xl" textAlign="center">{domainName}</Heading>
-                                </Box>
-                            </Grid>
-                        </ListItem>
-                    </List>
-                </GridItem>
-                <GridItem rowSpan={2} p={4}>
-                  <Box pb={2}>
-                    WRITE TEXT TALKING ABOUT THE IMPORTANCE OF MAKING A COMMITMENT
-                  </Box> 
+            <Grid templateColumns='repeat(5, 1fr)' gap={6}>
+                <Box w='100%' p={8} d='flex' >
+                  <Heading letterSpacing="wide" size="2xl" textAlign="center">{domainName}</Heading>
                   <Button 
                     colorScheme='teal' 
                     onClick={buy} 
                     variant='solid' 
                     size='md' 
-                    ml={2}> Buy </Button>
-                </GridItem>
+                    ml={8}
+                    mt={2}>Buy</Button>
+                </Box>
             </Grid>
           </Box>
         </Box>
