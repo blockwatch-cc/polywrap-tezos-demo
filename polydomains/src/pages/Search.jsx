@@ -14,13 +14,15 @@ import { useLocation, Link } from "react-router-dom"
 import { Search2Icon, PlusSquareIcon, InfoOutlineIcon } from "@chakra-ui/icons";
 import { toast } from 'react-toastify';
 
-import { getAcquisitionInfo } from "../services/web3/query"
 import { Header } from '../components/Header';
 import { Loader } from '../components/Loader';
-import { acquisitionReducer } from '../reducer/domain'
+import { getTezValue } from '../utils/helpers';
 import { WalletContext } from '../context/wallet';
-import { extractErrorMessage, getTLD } from '../utils/text';
 import { TezosConnections } from '../services/web3/client';
+import { acquisitionReducer } from '../reducer/domain'
+import { getAcquisitionInfo } from "../services/web3/query"
+import { extractErrorMessage, getTLD } from '../utils/text';
+import { TezSign } from '../components/TezSign'
 
 function Search() {
     let domainInitialValue = ''
@@ -113,18 +115,23 @@ function Search() {
                                 <Text bgClip="text" fontSize="2xl" mt="2" color="black">{domain.name}</Text>
                             </Box>
                             {['Taken', 'CanBeBought'].includes(domain.payload.state) ?
-                                <Box>
+                                <Box d="flex" flexDirection="row">
+                                    {domain.payload.cost ?
+                                        <Box mr={5} d="flex" flexDirection="row">
+                                            {getTezValue(domain.payload.cost)} <TezSign />
+                                        </Box>
+                                    : null}
                                     <Link to={domain.payload.state === 'Taken' ? {
                                         pathname: `/details/${domain.name}`
                                     }: {
-                                        pathname: `/register/${domain.name}`
+                                        pathname: `/buy/${domain.name}`
                                     }}>
                                         {domain.payload.state === 'Taken' ? 
-                                            <Button colorScheme='teal' variant='solid' size='lg'> 
+                                            <Button colorScheme='teal' variant='solid' size='md'> 
                                                 <InfoOutlineIcon color="white" w={15} h={15} /> 
                                                 <Text ml="2">View</Text>    
                                             </Button>
-                                        : <Button colorScheme='teal' variant='solid' size='lg' disabled> 
+                                        : <Button colorScheme='teal' variant='solid' size='md'> 
                                             <PlusSquareIcon color="white" w={15} h={15} /> 
                                             <Text ml="2">Register</Text>    
                                             </Button>

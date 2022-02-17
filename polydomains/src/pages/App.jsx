@@ -1,17 +1,19 @@
 import { useState } from "react";
-import {HashRouter, Routes, Route} from "react-router-dom";
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import {HashRouter, Routes, Route} from "react-router-dom"
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
-import Home from './Home';
-import Search from './Search';
-import Details from './Details';
+import Home from './Home'
+import Search from './Search'
+import Details from './Details'
+import Buy from './Buy'
 
-import { WalletContext } from "../context/wallet"
+import { WalletContext } from '../context/wallet'
 
 function App() {
   const [app, setApp] = useState({
-    network: 'mainnet'
+    network: 'mainnet',
+    account: null
   })
 
   return (
@@ -21,6 +23,7 @@ function App() {
           <Route exact path="/" element={<Home />} />
           <Route path="/search" element={<Search/>} />
           <Route path="/details/:name" element={<Details />} />
+          <Route path="/buy/:name" element={<Buy />} />
         </Routes>
       </HashRouter>
       <ToastContainer position="top-center" />

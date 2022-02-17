@@ -16,3 +16,9 @@ body {
   font-size: 0.7em !important;
   font-weight: 200;
 }
+
+.tez-sign {
+  width: 0.8rem;
+  margin-left: 0.2rem;
+  margin-top: 0.3rem;
+}
