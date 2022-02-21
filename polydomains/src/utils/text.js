@@ -4,8 +4,11 @@ export const shortenAddress = (address) => {
 
 export const extractErrorMessage = (errors, defaultMessage) => {
     let message
-    if(errors[0]) {
-        message = errors[0].message.match(/(?<=exception: ).*/)[0] 
+    if(errors.length > 0 && errors[0]) {
+        const matches = errors[0].message.match(/(?<=exception: ).*/) 
+        if (!!matches && matches.length > 0) {
+            message = matches[0]
+        }
     }
     if(!message && defaultMessage) {
         message = defaultMessage
