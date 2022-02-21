@@ -3,7 +3,7 @@ import { tezosDomainsPlugin } from "@web3api/tezos-domains-plugin-js"
 import { tezosPlugin } from "@web3api/tezos-plugin-js"
 
 export const TEZOS_PLUGIN_JS = 'w3://ens/tezos.web3api.eth'
-export const TEZOS_DOMAINS_WRAPPER_URI = 'w3://ipfs/QmSbeyrDnWXMPrJbNyCVWbHFevwP2BWvgFMGEZNby3KKeQ'
+export const TEZOS_DOMAINS_WRAPPER_URI = 'w3://ipfs/QmTeyTLBZqY5VZtMgfAbHS6ePF8PYsvaLThCM8Ke64qc6h'
 export const TEZOS_DOMAINS_PLUGIN_JS = 'w3://ens/tezosDomainsPlugin.web3api.eth'
 
 
