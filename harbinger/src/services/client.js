@@ -14,8 +14,8 @@ export const client = new Web3ApiClient({
                     provider: "https://rpc.granada.tzstats.com",
                 }
             },
-            defaultNetwork: "mainnet"
-          })
+            defaultNetwork: "mainnet",
+          }),
         }
-    ]
+    ],
 })
