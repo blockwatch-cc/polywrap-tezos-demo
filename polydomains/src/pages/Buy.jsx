@@ -3,28 +3,60 @@ import {
   Box, 
   Heading,
   Button,
+  Text,
+  Flex
 } from '@chakra-ui/react'
 import { toast } from "react-toastify"
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useContext, useEffect, useState } from 'react';
-
 import { Header } from "../components/Header";
+import { AlertSpin } from "../components/AlertSpin";
 import { WalletContext } from '../context/wallet';
 import { extractErrorMessage } from '../utils/text';
 import { buyDomain, commitDomain } from '../services/web3/mutation';
 import { assertWalletConnected, generateNonce, getDomainWithoutTLD } from '../utils/helpers';
 import { TEZOS_PLUGIN_JS, client } from '../services/web3/client';
 
+import { EditIcon, CheckIcon, PlusSquareIcon } from "@chakra-ui/icons";
+import { TezSign } from '../components/TezSign';
+
+    
+
 function Buy() {
   const { name: domainName } = useParams()
   const [name, setName] = useState('')
+  const [buystate, setBuystate] = useState('1')
+  const [gennonce, setGennonce] = useState(0)
+  const [alertstate, setAlertstate] = useState({
+    show: false,
+    type: '',
+    message: '',
+    spin: false
+  })
+
+
   const { app } = useContext(WalletContext)
   
-  const buy = async () => {
-    const nonce = generateNonce()
+  
+  const changeBuyState = async (state) => {
+    setBuystate(state);
+  }
+
+  const requestBuy = async () => {
+    const nonce = generateNonce();
+    setGennonce(nonce);
+    
     if (!assertWalletConnected(app.account)) {
       return
     }
+
+    setAlertstate({
+      show: true,
+      type: 'info',
+      message: 'Confirm the operation in your wallet to proceed.',
+      spin: true
+    })
+
     const commitResponse = await commitDomain(app.network, { 
       commitParams: {
         label: name,
@@ -35,8 +67,22 @@ function Buy() {
     if (commitResponse.errors) {
       const message = extractErrorMessage(commitResponse.errors, 'Failed to commit domain')
       toast.error(message)
+      setAlertstate({
+        show: true,
+        type: 'error',
+        message: message,
+        spin: false
+      })
       return
     }
+
+
+    setAlertstate({
+      show: true,
+      type: 'info',
+      message: 'Waiting for the operation to be included on the blockchain...',
+      spin: true
+    })
     const getSubscription = client.subscribe({
       uri: TEZOS_PLUGIN_JS,
       query: `
@@ -52,6 +98,7 @@ function Buy() {
       },
       frequency: { ms: 6000 },
     });
+
     for await (let query of getSubscription) {
       if (query.errors) {
         continue
@@ -63,6 +110,46 @@ function Buy() {
         }
       }
     }
+
+    setAlertstate({
+      show: true,
+      type: 'success',
+      message: 'Done registering the domain',
+      spin: false
+    })
+
+    setTimeout(
+      function() {
+        setAlertstate({
+          show: false,
+          type: '',
+          message: '',
+          spin: false
+        });
+        changeBuyState('2');
+      }
+      .bind(this),
+      2000
+    );
+  }
+
+
+  const registerBuy = async () => {
+    
+    const nonce = gennonce;
+    
+    if (!assertWalletConnected(app.account)) {
+      return
+    }
+
+
+    setAlertstate({
+      show: true,
+      type: 'info',
+      message: 'Waiting for the buy operation to complete...',
+      spin: true
+    })
+
     const response = await buyDomain(app.network, { 
       buyParams: {
         label: name,
@@ -78,15 +165,46 @@ function Buy() {
         amount: 1
       }
     })
+
     if (response.errors) {
       const message = extractErrorMessage(response.errors, 'Failed to buy domain')
       toast.error(message)
+      setAlertstate({
+        show: true,
+        type: 'error',
+        message: message,
+        spin: false
+      })
       return
     }
+
     if (response.data.buy) {
       toast.success(`domain '${name}' bought`)
     }
+
+    setAlertstate({
+      show: true,
+      type: 'success',
+      message: 'Done registering the domain',
+      spin: false
+    })
+
+    setTimeout(
+      function() {
+        setAlertstate({
+          show: false,
+          type: '',
+          message: '',
+          spin: false
+        });
+        changeBuyState('3');
+      }
+      .bind(this),
+      2000
+    );
+
   }
+
 
   useEffect(() => {
     if (!name && domainName) {
@@ -99,21 +217,130 @@ function Buy() {
       <Header showSearch={true} />
       <Box d="block">
         <Box d="flex" mt="10" justifyContent="center">
-          <Box d="flex" width="80vw" borderRadius="10" boxShadow='xl'>            
+          <Box d="flex" width="80vw" borderRadius="10">            
             <Grid templateColumns='repeat(5, 1fr)' gap={6}>
                 <Box w='100%' p={8} d='flex' >
-                  <Heading letterSpacing="wide" size="2xl" textAlign="center">{domainName}</Heading>
-                  <Button 
-                    colorScheme='teal' 
-                    onClick={buy} 
-                    variant='solid' 
-                    size='md' 
-                    ml={8}
-                    mt={2}>Buy</Button>
+                  <Flex width="75vw" justifyContent="space-between">
+                    <Box mr={2}>
+                      <Heading letterSpacing="wide" size="2xl" textAlign="center">{domainName}</Heading>
+                    </Box>
+                    <Box mr={2}>
+                      
+                    </Box>
+                  </Flex>
                 </Box>
             </Grid>
           </Box>
         </Box>
+
+        <Box d="flex"  justifyContent="center">
+          <Box d="flex" width="80vw" borderRadius="10" boxShadow='xl'>            
+            <Grid templateColumns='repeat(5, 1fr)' gap={6}>
+                <Box w='100%' p={8} d='flex' >
+                  <Flex width="75vw" justifyContent="space-between" direction="vertical">
+                    <Box>
+                      <Box d="flex" flexDirection="row">
+                        <Heading letterSpacing="wide" size="md" textAlign="left">This domain is available! Register it now for 1</Heading>
+                        <TezSign />
+                      </Box>
+                      
+                      <Text bgClip="text" fontSize="md" mt="2" color="black">Complete the following steps to register your domain:</Text>
+                      
+                      <Box>
+                        <Heading letterSpacing="wide" size="sm" mt="10" textAlign="left"> 
+                          <PlusSquareIcon color="teal" mr="2"/>
+                          Request
+                        </Heading>
+                        {buystate === '1' &&
+                          <Box align='center'>
+                            {alertstate.show &&
+                              <AlertSpin type={alertstate.type} message={alertstate.message} spin={alertstate.spin} align="center"/>
+                            }
+                            <Text bgClip="text" fontSize="md" mt="5" color="black">First, we need to publish your intent to buy this domain. This protects your domain from being taken by an adversary. Click 'Request' and your wallet will open. You will then be asked to confirm the operation.</Text>
+                            <Button 
+                              colorScheme='teal' 
+                              onClick={() => requestBuy()} 
+                              variant='solid' 
+                              size='md' 
+                              mt="5"
+                              width="30vw" 
+                              > Request
+                            </Button>
+                          </Box>
+                        }
+                      </Box>
+
+                      <Box>
+                        <Heading letterSpacing="wide" size="sm" mt="10" textAlign="left" color= {buystate === '2' || buystate === '3'  ? ('teal'):('gray.300')}> 
+                          <EditIcon mr="2"/>
+                          Register
+                        </Heading>
+                        {buystate === '2' &&
+                          <Box>
+                            {alertstate.show &&
+                              <AlertSpin type='info' message='Waiting for the operation to be included on the blockchain...' spin={true} />
+                            }
+                            <Text bgClip="text" fontSize="md" mt="5" color="black">Select a registration period and click 'Register'. Your wallet will re-open so that you can confirm the operation. Once confirmed the domain is yours.</Text>
+                            <Box border='1px' borderColor='gray.200' borderRadius="md" mt="5" p="2" textAlign="left">
+                              <Box d="flex" flexDirection="row">
+                                <Heading letterSpacing="wide" size="md" textAlign="left"> Price : 1</Heading>
+                                <TezSign />
+                              </Box>
+
+                              <Box d="flex" flexDirection="row">
+                                <Text bgClip="text" fontSize="md" mt="5" color="black">Domain points to: </Text>
+                                <Heading letterSpacing="wide" size="sm" mt="6" ml="2" textAlign="left"> {app.account ? `${app.account.pkh}` : 'Connect Wallet'} </Heading>
+                              </Box>
+                            </Box>
+                            <Box w="100%" align='center'>
+                              <Button 
+                                colorScheme='teal' 
+                                onClick={() => registerBuy()} 
+                                variant='solid' 
+                                size='md' 
+                                mt="5"
+                                width="30vw" 
+                                > Request
+                              </Button>
+                            </Box>
+                          </Box>
+                        }
+                      </Box>
+
+                      <Box>
+                        <Heading letterSpacing="wide" size="sm" mt="10" textAlign="left" color={buystate === '3' ? ('teal'):('gray.300')} > 
+                          <CheckIcon mr="2"/>
+                          Done. It's yours!
+                        </Heading>
+                        {buystate === '3' &&
+                          <Box align='center'>
+                            <Text bgClip="text" fontSize="md" mt="5" color="black">Congratulations! Your domain was successfully registered.</Text>
+                            <Link to={domainName !== '' ? {
+                                  pathname: `/details/${domainName}`
+                              }: {
+                                  pathname: `/home`
+                              }} >
+                              <Button 
+                                colorScheme='teal' 
+                                variant='solid' 
+                                size='md' 
+                                mt="5"
+                                width="30vw" 
+                                > Manage Domain
+                              </Button>
+                            </Link>
+                          </Box>
+                        }
+                      </Box>
+                    </Box>
+                    
+                  </Flex>
+                </Box>
+            </Grid>
+          </Box>
+        </Box>
+
+
       </Box>
     </Box>
   );
