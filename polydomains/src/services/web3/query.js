@@ -19,7 +19,9 @@ export const resolveDomainRecords = async (network, domain) => {
     })
 }
 
-export const getAcquisitionInfo = async (network, domain) => {
+export const getAcquisitionInfo = async (network, domain, days=365) => {
+    
+    
     return client.query({
         uri: TEZOS_DOMAINS_PLUGIN_JS,
         query: `
@@ -27,12 +29,15 @@ export const getAcquisitionInfo = async (network, domain) => {
                 getAcquisitionInfo(
                     network: $network, 
                     domain: $domain 
+                    duration: $days 
                 )
             },
         `,
         variables: {
             network,
-            domain
+            domain,
+            days
         }
     })
+    
 }

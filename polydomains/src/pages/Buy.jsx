@@ -4,7 +4,11 @@ import {
   Heading,
   Button,
   Text,
-  Flex
+  Flex,
+  InputGroup,
+  InputLeftAddon,
+  InputRightAddon,
+  Input
 } from '@chakra-ui/react'
 import { toast } from "react-toastify"
 import { Link, useParams } from "react-router-dom";
@@ -17,8 +21,13 @@ import { buyDomain, commitDomain } from '../services/web3/mutation';
 import { assertWalletConnected, generateNonce, getDomainWithoutTLD } from '../utils/helpers';
 import { TEZOS_PLUGIN_JS, client } from '../services/web3/client';
 
+import { getTezValue } from '../utils/helpers';
+
 import { EditIcon, CheckIcon, PlusSquareIcon } from "@chakra-ui/icons";
 import { TezSign } from '../components/TezSign';
+
+import { CalendarIcon } from "@chakra-ui/icons";
+import { getAcquisitionInfo } from "../services/web3/query"
 
     
 
@@ -26,6 +35,11 @@ function Buy() {
   const { name: domainName } = useParams()
   const [name, setName] = useState('')
   const [buystate, setBuystate] = useState('1')
+  const [duration, setDuration] = useState({
+    price: '1000000',
+    years: '1',
+    days: '365'
+  })
   const [gennonce, setGennonce] = useState(0)
   const [alertstate, setAlertstate] = useState({
     show: false,
@@ -34,10 +48,65 @@ function Buy() {
     spin: false
   })
 
-
   const { app } = useContext(WalletContext)
+
+  const handleSetDuration = (e) => {
+    console.log(e.target.value);
+    let years = e.target.value;
+    let days = 365 * parseInt(years);
+
+    setDuration({
+      price: duration.price,
+      years: years,
+      days: days.toString() 
+    });
+
+    getPriceOnDurationChange(years, days);
+  }
   
-  
+  const getPriceOnDurationChange = async (years, days) => {
+
+    let network =  app.network
+    
+    setAlertstate({
+      show: true,
+      type: 'info',
+      message: 'Getting price for ' + years + ' years',
+      spin: true
+    })
+
+    const response = await getAcquisitionInfo(network, domainName, days);
+    console.log(response);
+    if (response.errors) {
+        const message = extractErrorMessage(response.errors, 'failed to get domain avaialable')
+        toast.error(message)
+        setAlertstate({
+          show: true,
+          type: 'error',
+          message: message,
+          spin: false
+        })
+        return
+    }
+    
+    if(response.data.getAcquisitionInfo?.state) {
+      setDuration({
+        price: response.data.getAcquisitionInfo?.cost.toString() ,
+        years: years,
+        days: days.toString() 
+      });
+
+      setAlertstate({
+        show: false,
+        type: '',
+        message: '',
+        spin: false
+      });
+    }
+
+
+  }
+
   const changeBuyState = async (state) => {
     setBuystate(state);
   }
@@ -105,7 +174,7 @@ function Buy() {
       }
       const operationStatus = query.data?.getOperationStatus;
       if (operationStatus !== undefined) {
-        if (operationStatus.confirmations > 15) {
+        if (operationStatus.confirmations > 3) {
           break
         }
       }
@@ -133,7 +202,6 @@ function Buy() {
     );
   }
 
-
   const registerBuy = async () => {
     
     const nonce = gennonce;
@@ -154,7 +222,7 @@ function Buy() {
       buyParams: {
         label: name,
         owner: app.account.pkh,
-        duration: 365,
+        duration: parseInt(duration.years),
         metadata: {
           isMichelsonMap: true,
           values: []
@@ -162,7 +230,7 @@ function Buy() {
         nonce
       },
       sendParams: {
-        amount: 1
+        amount: getTezValue(parseInt(duration.price))
       }
     })
 
@@ -240,7 +308,7 @@ function Buy() {
                   <Flex width="75vw" justifyContent="space-between" direction="vertical">
                     <Box>
                       <Box d="flex" flexDirection="row">
-                        <Heading letterSpacing="wide" size="md" textAlign="left">This domain is available! Register it now for 1</Heading>
+                        <Heading letterSpacing="wide" size="md" textAlign="left">This domain is available! Register it now for {getTezValue(duration.price)}</Heading>
                         <TezSign />
                       </Box>
                       
@@ -254,7 +322,7 @@ function Buy() {
                         {buystate === '1' &&
                           <Box align='center'>
                             {alertstate.show &&
-                              <AlertSpin type={alertstate.type} message={alertstate.message} spin={alertstate.spin} align="center"/>
+                              <AlertSpin type={alertstate.type} message={alertstate.message} spin={alertstate.spin} />
                             }
                             <Text bgClip="text" fontSize="md" mt="5" color="black">First, we need to publish your intent to buy this domain. This protects your domain from being taken by an adversary. Click 'Request' and your wallet will open. You will then be asked to confirm the operation.</Text>
                             <Button 
@@ -278,12 +346,13 @@ function Buy() {
                         {buystate === '2' &&
                           <Box>
                             {alertstate.show &&
-                              <AlertSpin type='info' message='Waiting for the operation to be included on the blockchain...' spin={true} />
+                              <AlertSpin type={alertstate.type} message={alertstate.message} spin={alertstate.spin} />
                             }
                             <Text bgClip="text" fontSize="md" mt="5" color="black">Select a registration period and click 'Register'. Your wallet will re-open so that you can confirm the operation. Once confirmed the domain is yours.</Text>
                             <Box border='1px' borderColor='gray.200' borderRadius="md" mt="5" p="2" textAlign="left">
+                              
                               <Box d="flex" flexDirection="row">
-                                <Heading letterSpacing="wide" size="md" textAlign="left"> Price : 1</Heading>
+                                <Heading letterSpacing="wide" size="md" textAlign="left"> Price : {getTezValue(duration.price)}</Heading>
                                 <TezSign />
                               </Box>
 
@@ -291,6 +360,29 @@ function Buy() {
                                 <Text bgClip="text" fontSize="md" mt="5" color="black">Domain points to: </Text>
                                 <Heading letterSpacing="wide" size="sm" mt="6" ml="2" textAlign="left"> {app.account ? `${app.account.pkh}` : 'Connect Wallet'} </Heading>
                               </Box>
+
+                              <Box d="flex" flexDirection="column">
+                                <Text bgClip="text" fontSize="md" mt="5" color="black">Registration Period: </Text>
+                                <InputGroup mt="2" mb="2" width="50%" height="50%">
+                                  <InputLeftAddon bg="white">
+                                    <CalendarIcon color="gray.300" />
+                                  </InputLeftAddon>
+                                  <Input 
+                                    variant="outline" 
+                                    colorScheme="whiteAlpha"  
+                                    placeholder="Years" 
+                                    type="number"
+                                    onChange={handleSetDuration}
+                                    value={duration.years}
+                                    bg="white" 
+                                    size="md" 
+                                    mr={0}  
+                                  />
+                                  <InputRightAddon children='years' />
+
+                                </InputGroup>
+                              </Box>
+
                             </Box>
                             <Box w="100%" align='center'>
                               <Button 
@@ -315,10 +407,9 @@ function Buy() {
                         {buystate === '3' &&
                           <Box align='center'>
                             <Text bgClip="text" fontSize="md" mt="5" color="black">Congratulations! Your domain was successfully registered.</Text>
-                            <Link to={domainName !== '' ? {
-                                  pathname: `/details/${domainName}`
-                              }: {
-                                  pathname: `/home`
+                            <Link to={{
+                                pathname: '/search',
+                                search: `?domain=${domainName}`
                               }} >
                               <Button 
                                 colorScheme='teal' 
