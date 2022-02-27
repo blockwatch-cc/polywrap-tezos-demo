@@ -1,2 +1,4 @@
 
 .DS_Store
+polydomains/node_modules/
+polydomains/build/
