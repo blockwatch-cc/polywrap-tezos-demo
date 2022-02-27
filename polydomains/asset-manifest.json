@@ -1,26 +1,26 @@
 {
   "files": {
-    "main.css": "/polywrap-tezos-demo/static/css/main.c6fb34c8.chunk.css",
-    "main.js": "/polywrap-tezos-demo/static/js/main.524e759f.chunk.js",
-    "main.js.map": "/polywrap-tezos-demo/static/js/main.524e759f.chunk.js.map",
-    "runtime-main.js": "/polywrap-tezos-demo/static/js/runtime-main.bcdf5af6.js",
-    "runtime-main.js.map": "/polywrap-tezos-demo/static/js/runtime-main.bcdf5af6.js.map",
+    "main.css": "/polywrap-tezos-demo/static/css/main.c4779794.chunk.css",
+    "main.js": "/polywrap-tezos-demo/static/js/main.40db370c.chunk.js",
+    "main.js.map": "/polywrap-tezos-demo/static/js/main.40db370c.chunk.js.map",
+    "runtime-main.js": "/polywrap-tezos-demo/static/js/runtime-main.ef3d6153.js",
+    "runtime-main.js.map": "/polywrap-tezos-demo/static/js/runtime-main.ef3d6153.js.map",
     "static/css/2.f4c56af9.chunk.css": "/polywrap-tezos-demo/static/css/2.f4c56af9.chunk.css",
-    "static/js/2.3d9794b4.chunk.js": "/polywrap-tezos-demo/static/js/2.3d9794b4.chunk.js",
-    "static/js/2.3d9794b4.chunk.js.map": "/polywrap-tezos-demo/static/js/2.3d9794b4.chunk.js.map",
-    "static/js/3.3402257c.chunk.js": "/polywrap-tezos-demo/static/js/3.3402257c.chunk.js",
-    "static/js/3.3402257c.chunk.js.map": "/polywrap-tezos-demo/static/js/3.3402257c.chunk.js.map",
+    "static/js/2.e897e6bb.chunk.js": "/polywrap-tezos-demo/static/js/2.e897e6bb.chunk.js",
+    "static/js/2.e897e6bb.chunk.js.map": "/polywrap-tezos-demo/static/js/2.e897e6bb.chunk.js.map",
+    "static/js/3.21a2c59c.chunk.js": "/polywrap-tezos-demo/static/js/3.21a2c59c.chunk.js",
+    "static/js/3.21a2c59c.chunk.js.map": "/polywrap-tezos-demo/static/js/3.21a2c59c.chunk.js.map",
     "index.html": "/polywrap-tezos-demo/index.html",
     "static/css/2.f4c56af9.chunk.css.map": "/polywrap-tezos-demo/static/css/2.f4c56af9.chunk.css.map",
-    "static/css/main.c6fb34c8.chunk.css.map": "/polywrap-tezos-demo/static/css/main.c6fb34c8.chunk.css.map",
-    "static/js/2.3d9794b4.chunk.js.LICENSE.txt": "/polywrap-tezos-demo/static/js/2.3d9794b4.chunk.js.LICENSE.txt",
+    "static/css/main.c4779794.chunk.css.map": "/polywrap-tezos-demo/static/css/main.c4779794.chunk.css.map",
+    "static/js/2.e897e6bb.chunk.js.LICENSE.txt": "/polywrap-tezos-demo/static/js/2.e897e6bb.chunk.js.LICENSE.txt",
     "static/media/search.db237059.png": "/polywrap-tezos-demo/static/media/search.db237059.png"
   },
   "entrypoints": [
-    "static/js/runtime-main.bcdf5af6.js",
+    "static/js/runtime-main.ef3d6153.js",
     "static/css/2.f4c56af9.chunk.css",
-    "static/js/2.3d9794b4.chunk.js",
-    "static/css/main.c6fb34c8.chunk.css",
-    "static/js/main.524e759f.chunk.js"
+    "static/js/2.e897e6bb.chunk.js",
+    "static/css/main.c4779794.chunk.css",
+    "static/js/main.40db370c.chunk.js"
   ]
 }
