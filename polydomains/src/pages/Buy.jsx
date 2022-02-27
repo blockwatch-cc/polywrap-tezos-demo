@@ -22,14 +22,10 @@ import { assertWalletConnected, generateNonce, getDomainWithoutTLD } from '../ut
 import { TEZOS_PLUGIN_JS, client } from '../services/web3/client';
 
 import { getTezValue } from '../utils/helpers';
-
-import { EditIcon, CheckIcon, PlusSquareIcon } from "@chakra-ui/icons";
 import { TezSign } from '../components/TezSign';
-
 import { CalendarIcon } from "@chakra-ui/icons";
 import { getAcquisitionInfo } from "../services/web3/query"
-
-    
+import { EditIcon, CheckIcon, PlusSquareIcon } from "@chakra-ui/icons";
 
 function Buy() {
   const { name: domainName } = useParams()
@@ -40,43 +36,34 @@ function Buy() {
     years: '1',
     days: '365'
   })
-  const [gennonce, setGennonce] = useState(0)
+  const [nonce, setNonce] = useState(0)
   const [alertstate, setAlertstate] = useState({
     show: false,
     type: '',
     message: '',
     spin: false
   })
-
   const { app } = useContext(WalletContext)
 
   const handleSetDuration = (e) => {
-    console.log(e.target.value);
     let years = e.target.value;
     let days = 365 * parseInt(years);
-
     setDuration({
       price: duration.price,
       years: years,
       days: days.toString() 
     });
-
     getPriceOnDurationChange(years, days);
   }
   
   const getPriceOnDurationChange = async (years, days) => {
-
-    let network =  app.network
-    
     setAlertstate({
       show: true,
       type: 'info',
       message: 'Getting price for ' + years + ' years',
       spin: true
     })
-
-    const response = await getAcquisitionInfo(network, domainName, days);
-    console.log(response);
+    const response = await getAcquisitionInfo(app.network, domainName, days);
     if (response.errors) {
         const message = extractErrorMessage(response.errors, 'failed to get domain avaialable')
         toast.error(message)
@@ -88,14 +75,12 @@ function Buy() {
         })
         return
     }
-    
     if(response.data.getAcquisitionInfo?.state) {
       setDuration({
         price: response.data.getAcquisitionInfo?.cost.toString() ,
         years: years,
         days: days.toString() 
       });
-
       setAlertstate({
         show: false,
         type: '',
@@ -103,8 +88,6 @@ function Buy() {
         spin: false
       });
     }
-
-
   }
 
   const changeBuyState = async (state) => {
@@ -112,25 +95,22 @@ function Buy() {
   }
 
   const requestBuy = async () => {
-    const nonce = generateNonce();
-    setGennonce(nonce);
-    
     if (!assertWalletConnected(app.account)) {
       return
     }
-
+    const newNonce = generateNonce() 
+    setNonce(newNonce)
     setAlertstate({
       show: true,
       type: 'info',
       message: 'Confirm the operation in your wallet to proceed.',
       spin: true
     })
-
     const commitResponse = await commitDomain(app.network, { 
       commitParams: {
         label: name,
         owner: app.account.pkh,
-        nonce
+        nonce: newNonce
       }
     })
     if (commitResponse.errors) {
@@ -144,8 +124,6 @@ function Buy() {
       })
       return
     }
-
-
     setAlertstate({
       show: true,
       type: 'info',
@@ -167,7 +145,6 @@ function Buy() {
       },
       frequency: { ms: 6000 },
     });
-
     for await (let query of getSubscription) {
       if (query.errors) {
         continue
@@ -179,7 +156,6 @@ function Buy() {
         }
       }
     }
-
     setAlertstate({
       show: true,
       type: 'success',
@@ -202,22 +178,16 @@ function Buy() {
     );
   }
 
-  const registerBuy = async () => {
-    
-    const nonce = gennonce;
-    
+  const registerDomainName = async (activeNonce) => {
     if (!assertWalletConnected(app.account)) {
       return
     }
-
-
     setAlertstate({
       show: true,
       type: 'info',
       message: 'Waiting for the buy operation to complete...',
       spin: true
     })
-
     const response = await buyDomain(app.network, { 
       buyParams: {
         label: name,
@@ -227,13 +197,12 @@ function Buy() {
           isMichelsonMap: true,
           values: []
         },
-        nonce
+        nonce: activeNonce
       },
       sendParams: {
         amount: getTezValue(parseInt(duration.price))
       }
     })
-
     if (response.errors) {
       const message = extractErrorMessage(response.errors, 'Failed to buy domain')
       toast.error(message)
@@ -245,18 +214,15 @@ function Buy() {
       })
       return
     }
-
     if (response.data.buy) {
       toast.success(`domain '${name}' bought`)
     }
-
     setAlertstate({
       show: true,
       type: 'success',
       message: 'Done registering the domain',
       spin: false
     })
-
     setTimeout(
       function() {
         setAlertstate({
@@ -270,7 +236,6 @@ function Buy() {
       .bind(this),
       2000
     );
-
   }
 
 
@@ -311,9 +276,7 @@ function Buy() {
                         <Heading letterSpacing="wide" size="md" textAlign="left">This domain is available! Register it now for {getTezValue(duration.price)}</Heading>
                         <TezSign />
                       </Box>
-                      
                       <Text bgClip="text" fontSize="md" mt="2" color="black">Complete the following steps to register your domain:</Text>
-                      
                       <Box>
                         <Heading letterSpacing="wide" size="sm" mt="10" textAlign="left"> 
                           <PlusSquareIcon color="teal" mr="2"/>
@@ -321,23 +284,21 @@ function Buy() {
                         </Heading>
                         {buystate === '1' &&
                           <Box align='center'>
-                            {alertstate.show &&
+                            { alertstate.show &&
                               <AlertSpin type={alertstate.type} message={alertstate.message} spin={alertstate.spin} />
                             }
                             <Text bgClip="text" fontSize="md" mt="5" color="black">First, we need to publish your intent to buy this domain. This protects your domain from being taken by an adversary. Click 'Request' and your wallet will open. You will then be asked to confirm the operation.</Text>
                             <Button 
                               colorScheme='teal' 
-                              onClick={() => requestBuy()} 
+                              onClick={requestBuy} 
                               variant='solid' 
                               size='md' 
                               mt="5"
                               width="30vw" 
                               > Request
                             </Button>
-                          </Box>
-                        }
+                          </Box> }
                       </Box>
-
                       <Box>
                         <Heading letterSpacing="wide" size="sm" mt="10" textAlign="left" color= {buystate === '2' || buystate === '3'  ? ('teal'):('gray.300')}> 
                           <EditIcon mr="2"/>
@@ -349,8 +310,7 @@ function Buy() {
                               <AlertSpin type={alertstate.type} message={alertstate.message} spin={alertstate.spin} />
                             }
                             <Text bgClip="text" fontSize="md" mt="5" color="black">Select a registration period and click 'Register'. Your wallet will re-open so that you can confirm the operation. Once confirmed the domain is yours.</Text>
-                            <Box border='1px' borderColor='gray.200' borderRadius="md" mt="5" p="2" textAlign="left">
-                              
+                            <Box border='1px' borderColor='gray.200' borderRadius="md" mt="5" p="2" textAlign="left">                
                               <Box d="flex" flexDirection="row">
                                 <Heading letterSpacing="wide" size="md" textAlign="left"> Price : {getTezValue(duration.price)}</Heading>
                                 <TezSign />
@@ -360,7 +320,6 @@ function Buy() {
                                 <Text bgClip="text" fontSize="md" mt="5" color="black">Domain points to: </Text>
                                 <Heading letterSpacing="wide" size="sm" mt="6" ml="2" textAlign="left"> {app.account ? `${app.account.pkh}` : 'Connect Wallet'} </Heading>
                               </Box>
-
                               <Box d="flex" flexDirection="column">
                                 <Text bgClip="text" fontSize="md" mt="5" color="black">Registration Period: </Text>
                                 <InputGroup mt="2" mb="2" width="50%" height="50%">
@@ -379,15 +338,13 @@ function Buy() {
                                     mr={0}  
                                   />
                                   <InputRightAddon children='years' />
-
                                 </InputGroup>
                               </Box>
-
                             </Box>
                             <Box w="100%" align='center'>
                               <Button 
                                 colorScheme='teal' 
-                                onClick={() => registerBuy()} 
+                                onClick={() => registerDomainName(nonce)} 
                                 variant='solid' 
                                 size='md' 
                                 mt="5"
@@ -423,8 +380,7 @@ function Buy() {
                           </Box>
                         }
                       </Box>
-                    </Box>
-                    
+                    </Box>      
                   </Flex>
                 </Box>
             </Grid>
