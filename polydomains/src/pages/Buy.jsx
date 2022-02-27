@@ -192,7 +192,7 @@ function Buy() {
       buyParams: {
         label: name,
         owner: app.account.pkh,
-        duration: parseInt(duration.years),
+        duration: parseInt(duration.days),
         metadata: {
           isMichelsonMap: true,
           values: []
