@@ -1,25 +1,21 @@
 import { client } from './client'
-import { TEZOS_DOMAINS_PLUGIN_JS } from './client'
+import { TEZOS_QUIPUSWAP_WRAPPER_URI } from './client'
 
 
-export const getAcquisitionInfo = async (network, domain, days=365) => {
+export const listTokenPairs = async (network) => {
     
     
     return client.query({
-        uri: TEZOS_DOMAINS_PLUGIN_JS,
+        uri: TEZOS_QUIPUSWAP_WRAPPER_URI,
         query: `
             query {
-                getAcquisitionInfo(
-                    network: $network, 
-                    domain: $domain 
-                    duration: $days 
-                )
-            },
+              listTokenPairs(
+                network: mainnet
+              )
+            }
         `,
         variables: {
             network,
-            domain,
-            days
         }
     })
     
