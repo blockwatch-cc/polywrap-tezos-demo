@@ -176,8 +176,12 @@ import {
   getDexStorage,
   findTezDex,
   confirmOperation,
+  getNetwork
 } from "@/core";
+
 import { notifyConfirm, notifyError } from "../toast";
+
+import { swapDirect, removeOperator, addOperator } from "../services/web3/mutation";
 
 @Component({
   components: {
@@ -605,254 +609,304 @@ export default class SwapOrSend extends Vue {
   }
 
   async swap() {
-    if (this.swapping) return;
-    this.swapping = true;
-
-    try {
-      const tezos = await useWallet();
-      const me = await tezos.wallet.pkh();
-
-      const recipient = this.send ? this.recipientAddress : me;
-
-      const inTk = this.inputToken!;
-      const outTk = this.outputToken!;
-      const inpAmn = new BigNumber(this.inputAmount!);
-      const minOut = new BigNumber(this.minimumReceived!);
-
-      let bal: BigNumber | undefined;
-      try {
-        bal = await getBalance(me, inTk);
-      } catch (_err) {}
-      if (bal && bal.isLessThan(inpAmn)) {
-        throw new Error("Not Enough Funds");
-      }
-
-      let operation: WalletOperation;
-      if (inTk.type === "xtz" && outTk.type === "token" && this.outputDexAddress) {
-        const contract = await tezos.wallet.at(this.outputDexAddress);
-
-        operation = await contract.methods
-          .use("tezToTokenPayment", toNat(minOut, outTk).toFixed(), recipient)
-          .send({ amount: inpAmn as any });
-      } else if (inTk.type === "token" && outTk.type === "xtz" && this.inputDexAddress) {
-        const [tokenContract, dexContract] = await Promise.all([
-          tezos.wallet.at(inTk.id),
-          tezos.wallet.at(this.inputDexAddress),
-        ]);
-
-        const tokenAmountNat = toNat(inpAmn, inTk).toFixed();
-
-        let withAllowanceReset = false;
-        try {
-          await tezos.estimate.batch([
-            {
-              kind: OpKind.TRANSACTION,
-              ...approveToken(
-                inTk,
-                tokenContract,
-                me,
-                this.inputDexAddress,
-                tokenAmountNat
-              ).toTransferParams(),
-            },
-            {
-              kind: OpKind.TRANSACTION,
-              ...dexContract.methods
-                .use(
-                  "tokenToTezPayment",
-                  tokenAmountNat,
-                  tzToMutez(minOut),
-                  recipient
-                )
-                .toTransferParams(),
-            },
-          ]);
-        } catch (err) {
-          if (isUnsafeAllowanceChangeError(err)) {
-            withAllowanceReset = true;
-          } else {
-            console.error(err);
-          }
-        }
-
-        let batch = tezos.wallet.batch([]);
-
-        if (withAllowanceReset) {
-          batch = batch.withTransfer(
-            approveToken(
-              inTk,
-              tokenContract,
-              me,
-              this.inputDexAddress,
-              0
-            ).toTransferParams()
-          );
-        }
-
-        batch = batch
-          .withTransfer(
-            approveToken(
-              inTk,
-              tokenContract,
-              me,
-              this.inputDexAddress,
-              tokenAmountNat
-            ).toTransferParams()
-          )
-          .withTransfer(
-            dexContract.methods
-              .use(
-                "tokenToTezPayment",
-                tokenAmountNat,
-                tzToMutez(minOut),
-                recipient
-              )
-              .toTransferParams()
-          );
-
-        deapproveFA2(
-          batch,
-          inTk,
-          tokenContract,
-          me,
-          this.inputDexAddress,
-        );
-
-        operation = await batch.send();
-      } else if (inTk.type === "token" && outTk.type === "token" && this.inputDexAddress && this.outputDexAddress) {
-        const [
-          inTokenContract,
-          inDexContract,
-          outDexContract,
-        ] = await Promise.all([
-          tezos.wallet.at(inTk.id),
-          tezos.wallet.at(this.inputDexAddress),
-          tezos.wallet.at(this.outputDexAddress),
-        ]);
-
-        const tezAmount = estimateTokenToTez(
-          this.inputAmount,
-          await getDexStorage(this.inputDexAddress),
-          inTk
-        );
-
-        const inpAmnNat = toNat(inpAmn, inTk).toFixed();
-
-        let withAllowanceReset = false;
-        try {
-          await tezos.estimate.batch([
-            {
-              kind: OpKind.TRANSACTION,
-              ...approveToken(
-                inTk,
-                inTokenContract,
-                me,
-                this.inputDexAddress,
-                inpAmnNat
-              ).toTransferParams(),
-            },
-            {
-              kind: OpKind.TRANSACTION,
-              ...inDexContract.methods
-                .use(
-                  "tokenToTezPayment",
-                  inpAmnNat,
-                  tzToMutez(tezAmount)
-                    .integerValue(BigNumber.ROUND_DOWN)
-                    .toFixed(),
-                  me
-                )
-                .toTransferParams(),
-            },
-            {
-              kind: OpKind.TRANSACTION,
-              ...outDexContract.methods
-                .use("tezToTokenPayment", toNat(minOut, outTk), recipient)
-                .toTransferParams({ amount: tezAmount.toFixed() as any }),
-            },
-          ]);
-        } catch (err) {
-          if (isUnsafeAllowanceChangeError(err)) {
-            withAllowanceReset = true;
-          } else {
-            console.error(err);
-          }
-        }
-
-        let batch = tezos.wallet.batch([]);
-
-        if (withAllowanceReset) {
-          batch = batch.withTransfer(
-            approveToken(
-              inTk,
-              inTokenContract,
-              me,
-              this.inputDexAddress,
-              0
-            ).toTransferParams()
-          );
-        }
-
-        batch = batch
-          .withTransfer(
-            approveToken(
-              inTk,
-              inTokenContract,
-              me,
-              this.inputDexAddress,
-              inpAmnNat
-            ).toTransferParams()
-          )
-          .withTransfer(
-            inDexContract.methods
-              .use(
-                "tokenToTezPayment",
-                inpAmnNat,
-                tzToMutez(tezAmount)
-                  .integerValue(BigNumber.ROUND_DOWN)
-                  .toFixed(),
-                me
-              )
-              .toTransferParams()
-          )
-          .withTransfer(
-            outDexContract.methods
-              .use("tezToTokenPayment", toNat(minOut, outTk), recipient)
-              .toTransferParams({ amount: tezAmount.toFixed() as any })
-          );
-
-        deapproveFA2(
-          batch,
-          inTk,
-          inTokenContract,
-          me,
-          this.inputDexAddress,
-        );
-
-        operation = await batch.send();
-      }
-
-      notifyConfirm(
-         confirmOperation(tezos, operation!.opHash)
-          .finally(() => this.refresh())
-      );
-    } catch (err) {
-      console.error(err);
-      notifyError(err);
-
-      const msg = err.message;
-      this.swapStatus =
-        msg && msg.length < 30
-          ? msg.startsWith("Dex/")
-            ? msg.replace("Dex/", "")
-            : msg
-          : "Something went wrong";
+    const net = getNetwork();
+    const payload_add =  {
+      owner: "tz1dUru8MXTpHoXLmcHQrs2iPWmDP1Y9rDEY",
+      tokenId: 0,
+      operator: "KT1Ni6JpXqGyZKXhJCPQJZ9x5x5bd7tXPNPC"
     }
-    this.swapping = false;
 
-    await new Promise((res) => setTimeout(res, 5000));
-    this.swapStatus = this.defaultSwapStatus;
+    const response_add = await addOperator(net.id, payload_add);
+    console.log("## addOperator ##");
+    console.log(response_add);
+
+
+    let payload_swap = {
+      hops: [
+        {
+          pair_id:16,
+          operation: "b_to_a"
+        },
+        {
+          pair_id:7,
+          operation:"a_to_b"
+        },
+        {
+          pair_id:4,
+          operation:"b_to_a"
+        },
+        {
+          pair_id:13,
+          operation:"a_to_b"
+        }
+      ],
+      swapParams: {
+        amountIn: 13574,
+        minAmountOut: 8191,
+        receiver: "tz1ZuBvvtrS9JroGs5e4B3qg2PLntxhj1h8Z",
+        deadline: "2022-03-10T09:30:03Z"
+      }
+    }
+
+    const response_swap = await swapDirect(net.id, payload_swap);
+    console.log("## swapDirect ##");
+    console.log(response_swap);
+
+    const response_remove = await removeOperator(net.id, response_add);
+    console.log("## removeOperator ##");
+    console.log(response_remove);
   }
+
+
+  // async swap() {
+  //   if (this.swapping) return;
+  //   this.swapping = true;
+
+  //   try {
+  //     const tezos = await useWallet();
+  //     const me = await tezos.wallet.pkh();
+
+  //     const recipient = this.send ? this.recipientAddress : me;
+
+  //     const inTk = this.inputToken!;
+  //     const outTk = this.outputToken!;
+  //     const inpAmn = new BigNumber(this.inputAmount!);
+  //     const minOut = new BigNumber(this.minimumReceived!);
+
+  //     let bal: BigNumber | undefined;
+  //     try {
+  //       bal = await getBalance(me, inTk);
+  //     } catch (_err) {}
+  //     if (bal && bal.isLessThan(inpAmn)) {
+  //       throw new Error("Not Enough Funds");
+  //     }
+
+  //     let operation: WalletOperation;
+  //     if (inTk.type === "xtz" && outTk.type === "token" && this.outputDexAddress) {
+  //       const contract = await tezos.wallet.at(this.outputDexAddress);
+
+  //       operation = await contract.methods
+  //         .use("tezToTokenPayment", toNat(minOut, outTk).toFixed(), recipient)
+  //         .send({ amount: inpAmn as any });
+  //     } else if (inTk.type === "token" && outTk.type === "xtz" && this.inputDexAddress) {
+  //       const [tokenContract, dexContract] = await Promise.all([
+  //         tezos.wallet.at(inTk.id),
+  //         tezos.wallet.at(this.inputDexAddress),
+  //       ]);
+
+  //       const tokenAmountNat = toNat(inpAmn, inTk).toFixed();
+
+  //       let withAllowanceReset = false;
+  //       try {
+  //         await tezos.estimate.batch([
+  //           {
+  //             kind: OpKind.TRANSACTION,
+  //             ...approveToken(
+  //               inTk,
+  //               tokenContract,
+  //               me,
+  //               this.inputDexAddress,
+  //               tokenAmountNat
+  //             ).toTransferParams(),
+  //           },
+  //           {
+  //             kind: OpKind.TRANSACTION,
+  //             ...dexContract.methods
+  //               .use(
+  //                 "tokenToTezPayment",
+  //                 tokenAmountNat,
+  //                 tzToMutez(minOut),
+  //                 recipient
+  //               )
+  //               .toTransferParams(),
+  //           },
+  //         ]);
+  //       } catch (err) {
+  //         if (isUnsafeAllowanceChangeError(err)) {
+  //           withAllowanceReset = true;
+  //         } else {
+  //           console.error(err);
+  //         }
+  //       }
+
+  //       let batch = tezos.wallet.batch([]);
+
+  //       if (withAllowanceReset) {
+  //         batch = batch.withTransfer(
+  //           approveToken(
+  //             inTk,
+  //             tokenContract,
+  //             me,
+  //             this.inputDexAddress,
+  //             0
+  //           ).toTransferParams()
+  //         );
+  //       }
+
+  //       batch = batch
+  //         .withTransfer(
+  //           approveToken(
+  //             inTk,
+  //             tokenContract,
+  //             me,
+  //             this.inputDexAddress,
+  //             tokenAmountNat
+  //           ).toTransferParams()
+  //         )
+  //         .withTransfer(
+  //           dexContract.methods
+  //             .use(
+  //               "tokenToTezPayment",
+  //               tokenAmountNat,
+  //               tzToMutez(minOut),
+  //               recipient
+  //             )
+  //             .toTransferParams()
+  //         );
+
+  //       deapproveFA2(
+  //         batch,
+  //         inTk,
+  //         tokenContract,
+  //         me,
+  //         this.inputDexAddress,
+  //       );
+
+  //       operation = await batch.send();
+  //     } else if (inTk.type === "token" && outTk.type === "token" && this.inputDexAddress && this.outputDexAddress) {
+  //       const [
+  //         inTokenContract,
+  //         inDexContract,
+  //         outDexContract,
+  //       ] = await Promise.all([
+  //         tezos.wallet.at(inTk.id),
+  //         tezos.wallet.at(this.inputDexAddress),
+  //         tezos.wallet.at(this.outputDexAddress),
+  //       ]);
+
+  //       const tezAmount = estimateTokenToTez(
+  //         this.inputAmount,
+  //         await getDexStorage(this.inputDexAddress),
+  //         inTk
+  //       );
+
+  //       const inpAmnNat = toNat(inpAmn, inTk).toFixed();
+
+  //       let withAllowanceReset = false;
+  //       try {
+  //         await tezos.estimate.batch([
+  //           {
+  //             kind: OpKind.TRANSACTION,
+  //             ...approveToken(
+  //               inTk,
+  //               inTokenContract,
+  //               me,
+  //               this.inputDexAddress,
+  //               inpAmnNat
+  //             ).toTransferParams(),
+  //           },
+  //           {
+  //             kind: OpKind.TRANSACTION,
+  //             ...inDexContract.methods
+  //               .use(
+  //                 "tokenToTezPayment",
+  //                 inpAmnNat,
+  //                 tzToMutez(tezAmount)
+  //                   .integerValue(BigNumber.ROUND_DOWN)
+  //                   .toFixed(),
+  //                 me
+  //               )
+  //               .toTransferParams(),
+  //           },
+  //           {
+  //             kind: OpKind.TRANSACTION,
+  //             ...outDexContract.methods
+  //               .use("tezToTokenPayment", toNat(minOut, outTk), recipient)
+  //               .toTransferParams({ amount: tezAmount.toFixed() as any }),
+  //           },
+  //         ]);
+  //       } catch (err) {
+  //         if (isUnsafeAllowanceChangeError(err)) {
+  //           withAllowanceReset = true;
+  //         } else {
+  //           console.error(err);
+  //         }
+  //       }
+
+  //       let batch = tezos.wallet.batch([]);
+
+  //       if (withAllowanceReset) {
+  //         batch = batch.withTransfer(
+  //           approveToken(
+  //             inTk,
+  //             inTokenContract,
+  //             me,
+  //             this.inputDexAddress,
+  //             0
+  //           ).toTransferParams()
+  //         );
+  //       }
+
+  //       batch = batch
+  //         .withTransfer(
+  //           approveToken(
+  //             inTk,
+  //             inTokenContract,
+  //             me,
+  //             this.inputDexAddress,
+  //             inpAmnNat
+  //           ).toTransferParams()
+  //         )
+  //         .withTransfer(
+  //           inDexContract.methods
+  //             .use(
+  //               "tokenToTezPayment",
+  //               inpAmnNat,
+  //               tzToMutez(tezAmount)
+  //                 .integerValue(BigNumber.ROUND_DOWN)
+  //                 .toFixed(),
+  //               me
+  //             )
+  //             .toTransferParams()
+  //         )
+  //         .withTransfer(
+  //           outDexContract.methods
+  //             .use("tezToTokenPayment", toNat(minOut, outTk), recipient)
+  //             .toTransferParams({ amount: tezAmount.toFixed() as any })
+  //         );
+
+  //       deapproveFA2(
+  //         batch,
+  //         inTk,
+  //         inTokenContract,
+  //         me,
+  //         this.inputDexAddress,
+  //       );
+
+  //       operation = await batch.send();
+  //     }
+
+  //     notifyConfirm(
+  //        confirmOperation(tezos, operation!.opHash)
+  //         .finally(() => this.refresh())
+  //     );
+  //   } catch (err) {
+  //     console.error(err);
+  //     notifyError(err);
+
+  //     const msg = err.message;
+  //     this.swapStatus =
+  //       msg && msg.length < 30
+  //         ? msg.startsWith("Dex/")
+  //           ? msg.replace("Dex/", "")
+  //           : msg
+  //         : "Something went wrong";
+  //   }
+  //   this.swapping = false;
+
+  //   await new Promise((res) => setTimeout(res, 5000));
+  //   this.swapStatus = this.defaultSwapStatus;
+  // }
 
   refresh() {
     clearMem();
