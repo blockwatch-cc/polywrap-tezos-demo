@@ -476,7 +476,7 @@ function withSlippage(val: BigNumber.Value, tolerance: BigNumber.Value) {
 .field {
   @apply px-3 flex items-stretch;
   min-height: 5rem;
-  background: #2a3248;
+  background: #fff;
 }
 
 .fieldval {
