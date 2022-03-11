@@ -4,7 +4,6 @@ import { TEZOS_QUIPUSWAP_WRAPPER_URI } from './client'
 
 export const listTokenPairs = async (network) => {
     
-    
     return client.query({
         uri: TEZOS_QUIPUSWAP_WRAPPER_URI,
         query: `

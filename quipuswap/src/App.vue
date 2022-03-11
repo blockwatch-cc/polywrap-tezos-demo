@@ -247,7 +247,8 @@
     getAccount,
     signout,
     useWallet,
-    connectTempleWalletWrapper
+    connectTempleWalletWrapper,
+    getTokenPairs,
   } from "@/store";
 
 
@@ -258,8 +259,10 @@
   })
 
   export default class App extends Vue {
+    
     networkSelectOpened = false;
     selectedNetwork = getNetwork();
+
 
     accountBalance: string | null = null;
     accountLabelHovered = false;
@@ -290,6 +293,7 @@
 
     created() {
       this.loadAccBalance();
+      getTokenPairs();
     }
 
     @Watch("account")

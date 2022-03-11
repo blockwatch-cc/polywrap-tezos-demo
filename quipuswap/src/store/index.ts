@@ -29,6 +29,7 @@ import BigNumber from "bignumber.js";
 
 
 import { connectTempleWallet } from "../services/web3/mutation";
+import { listTokenPairs } from "../services/web3/query";
 
 Vue.use(Vuex);
 
@@ -407,4 +408,21 @@ function setLastUsedConnect(val: "temple" | "beacon") {
 
 function cleanLastUsedConnect() {
   localStorage.removeItem("last-used-connect");
+}
+
+export async function getTokenPairs(){
+  const net = getNetwork();
+  console.log("getTokenPairs ... ");
+
+  const response = await listTokenPairs(net.id);
+  console.log("getTokenPairs");
+  console.log(response);
+  if (response?.errors) {
+      console.log(response.errors)
+      return
+  }
+  if (response?.data?.connectTempleWallet) {
+      const resp = response?.data?.connectTempleWallet;
+      return
+  }
 }
