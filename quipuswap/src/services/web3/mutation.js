@@ -105,6 +105,101 @@ export const removeOperator = (network, payload) => {
   
 }
 
+
+export const transfer = (network, payload) => {
+
+  return client.query({
+    uri: TEZOS_QUIPUSWAP_WRAPPER_URI,
+    query: `
+      mutation {
+        transfer(
+          network: hangzhounet,
+          params: $params,
+          sendParams: $sendParams
+        )
+      }
+    `,
+    variables: {
+      params: {
+        to: "tz1ZuBvvtrS9JroGs5e4B3qg2PLntxhj1h8Z",
+        tokenId: 0,
+        amount: "1",
+      },
+      sendParams: {
+        to: "",
+        amount: 0,
+        mutez: true
+      }
+    }
+  })
+  
+}
+
+
+export const transferFrom = (network, payload) => {
+
+  return client.query({
+    uri: TEZOS_QUIPUSWAP_WRAPPER_URI,
+    query: `
+      mutation {
+        transferFrom(
+          network: hangzhounet,
+          from: $from,
+          params: $params,
+          sendParams: $sendParams
+        )
+      }
+    `,
+    variables: {
+      from: "KT1Ni6JpXqGyZKXhJCPQJZ9x5x5bd7tXPNPC",
+      params: {
+        to: "tz1ZuBvvtrS9JroGs5e4B3qg2PLntxhj1h8Z",
+        tokenId: 0,
+        amount: "1",
+      },
+      sendParams: {
+        to: "",
+        amount: 0,
+        mutez: true
+      }
+    }
+  })
+  
+}
+
+
+export const divest = (network, payload) => {
+
+  return client.query({
+    uri: TEZOS_QUIPUSWAP_WRAPPER_URI,
+    query: `
+      mutation {
+        divest(
+          network: hangzhounet,
+          params: $params,
+          sendParams: $sendParams
+        )
+      }
+    `,
+    variables: {
+      params: {
+        pairId: 14,
+        shares: "10",
+        minTokenAOut: "144587",
+        minTokenBOut: "4",
+        deadline: add(new Date(), { minutes: 10 }).toISOString(),
+      },
+      sendParams: {
+        to: "",
+        amount: 0,
+        mutez: true
+      }
+    }
+  })
+  
+}
+
+
 export const batchContractCalls = (payload) => {
 
   return client.query({
