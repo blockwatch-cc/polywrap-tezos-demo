@@ -1,6 +1,6 @@
 <template>
   <div class="flex">
-    <div class="w-1/3 text-center">
+    <div class="w-1/2 text-center">
       <router-link
         to="/invest/add-liquidity"
         active-class="active"
@@ -28,7 +28,7 @@
         />
       </router-link>
     </div>
-    <div class="w-1/3 text-center">
+    <!-- <div class="w-1/3 text-center">
       <router-link
         to="/invest/add-token"
         active-class="active"
@@ -41,7 +41,7 @@
           content="Create a Liquidity pool with a new token. You need to add a pair of tokens: your token and XTZ. Read how to do these actions in <a href='https://madfish.crunch.help/quipu-swap/how-to-add-a-new-liquidity-pool-to-quipu-swap' target='_blank' rel='nofollow noopener'>the tutorial.</a>"
         />
       </router-link>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -75,5 +75,6 @@ a.active {
 
 .nav {
   position: relative;
+  color: #576487;
 }
 </style>
