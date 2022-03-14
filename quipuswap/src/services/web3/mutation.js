@@ -35,11 +35,7 @@ export const addOperator = (network, payload) => {
         },
     `,
     variables: {
-      params: {
-        owner: "tz1ZuBvvtrS9JroGs5e4B3qg2PLntxhj1h8Z",
-        tokenId: 0,
-        operator: "KT1Ni6JpXqGyZKXhJCPQJZ9x5x5bd7tXPNPC"
-      }
+      params: payload
     }
   })
 
@@ -60,21 +56,8 @@ export const swapDirect = (network, payload) => {
         },
     `,
     variables: {
-      params: {
-        pairId: 14,
-        direction: `b_to_a`,
-        swapParams: {
-          amountIn: "1",
-          minAmountOut: "26288",
-          deadline: add(new Date(), { minutes: 10 }).toISOString(),
-          receiver:  "tz1ZuBvvtrS9JroGs5e4B3qg2PLntxhj1h8Z"
-        }
-      },
-      sendParams: {
-        to: "",
-        amount: 0,
-        mutez: true
-      }
+      params: payload.params,
+      sendParams: payload.sendParams
     }
   })
   
@@ -95,11 +78,7 @@ export const removeOperator = (network, payload) => {
     `,
     variables: {
         network,
-        params: {
-          owner: "tz1ZuBvvtrS9JroGs5e4B3qg2PLntxhj1h8Z",
-          tokenId: 0,
-          operator: "KT1Ni6JpXqGyZKXhJCPQJZ9x5x5bd7tXPNPC"
-        }
+        params: payload
     }
   })
   
@@ -120,16 +99,8 @@ export const transfer = (network, payload) => {
       }
     `,
     variables: {
-      params: {
-        to: "tz1ZuBvvtrS9JroGs5e4B3qg2PLntxhj1h8Z",
-        tokenId: 0,
-        amount: "1",
-      },
-      sendParams: {
-        to: "",
-        amount: 0,
-        mutez: true
-      }
+      params: payload.params,
+      sendParams: payload.sendParams
     }
   })
   
@@ -151,22 +122,34 @@ export const transferFrom = (network, payload) => {
       }
     `,
     variables: {
-      from: "KT1Ni6JpXqGyZKXhJCPQJZ9x5x5bd7tXPNPC",
-      params: {
-        to: "tz1ZuBvvtrS9JroGs5e4B3qg2PLntxhj1h8Z",
-        tokenId: 0,
-        amount: "1",
-      },
-      sendParams: {
-        to: "",
-        amount: 0,
-        mutez: true
-      }
+      from: payload.from,
+      params: payload.params,
+      sendParams: payload.sendParams
     }
   })
   
 }
 
+export const invest = (network, payload) => {
+
+  return client.query({
+    uri: TEZOS_QUIPUSWAP_WRAPPER_URI,
+    query: `
+      mutation {
+        invest(
+          network: hangzhounet,
+          params: $params,
+          sendParams: $sendParams
+        )
+      }
+    `,
+    variables: {
+      params: payload.params,
+      sendParams: payload.sendParams    
+    }
+  })
+  
+}
 
 export const divest = (network, payload) => {
 
@@ -182,18 +165,8 @@ export const divest = (network, payload) => {
       }
     `,
     variables: {
-      params: {
-        pairId: 14,
-        shares: "10",
-        minTokenAOut: "144587",
-        minTokenBOut: "4",
-        deadline: add(new Date(), { minutes: 10 }).toISOString(),
-      },
-      sendParams: {
-        to: "",
-        amount: 0,
-        mutez: true
-      }
+      params: payload.params,
+      sendParams: payload.sendParams
     }
   })
   
