@@ -180,8 +180,8 @@ import {
 } from "@/core";
 
 import { notifyConfirm, notifyError } from "../toast";
-
-import { swapDirect, removeOperator, addOperator } from "../services/web3/mutation";
+import add from "date-fns/add";
+import { swapDirect, removeOperator, addOperator, transfer, transferFrom, batchContractCalls,} from "../services/web3/mutation";
 
 @Component({
   components: {
@@ -609,52 +609,101 @@ export default class SwapOrSend extends Vue {
   }
 
   async swap() {
+
+    
+    const me = getAccount().pkh
+    const recipient = this.send ? this.recipientAddress : me;
+
+    const inTk = this.inputToken!;
+    const outTk = this.outputToken!;
+    const inpAmn = this.inputAmount!;
+    const minOut = this.minimumReceived!;
+
+    const operator = "KT1Ni6JpXqGyZKXhJCPQJZ9x5x5bd7tXPNPC";
+
+
     const net = getNetwork();
-    const payload_add =  {
-      owner: "tz1dUru8MXTpHoXLmcHQrs2iPWmDP1Y9rDEY",
+    let response = null;
+
+    const payload =  {
+      owner: me,
       tokenId: 0,
-      operator: "KT1Ni6JpXqGyZKXhJCPQJZ9x5x5bd7tXPNPC"
+      operator: operator
     }
 
-    const response_add = await addOperator(net.id, payload_add);
+    const response_add = await addOperator(net.id, payload);
     console.log("## addOperator ##");
     console.log(response_add);
 
-
-    let payload_swap = {
-      hops: [
-        {
-          pair_id:16,
-          operation: "b_to_a"
+    if(this.send){
+      console.log("send");
+      let payload_swap = {
+        from: operator,
+        params: {
+          to: me,
+          tokenId: 0,
+          amount: inpAmn,
         },
-        {
-          pair_id:7,
-          operation:"a_to_b"
-        },
-        {
-          pair_id:4,
-          operation:"b_to_a"
-        },
-        {
-          pair_id:13,
-          operation:"a_to_b"
+        sendParams: {
+          to: "",
+          amount: 0,
+          mutez: true
         }
-      ],
-      swapParams: {
-        amountIn: 13574,
-        minAmountOut: 8191,
-        receiver: "tz1ZuBvvtrS9JroGs5e4B3qg2PLntxhj1h8Z",
-        deadline: "2022-03-10T09:30:03Z"
       }
+
+      response = await transferFrom(net.id, payload_swap);
+      console.log("## Send ##");
+      console.log(response);
+      
+    }else{
+
+
+      let payload_swap = {
+        params: {
+          pairId: 14,
+          direction: `b_to_a`,
+          swapParams: {
+            amountIn: inpAmn,
+            minAmountOut: "26288",
+            deadline: add(new Date(), { minutes: 10 }).toISOString(),
+            receiver:  me
+          }
+        },
+        sendParams: {
+          to: "",
+          amount: 0,
+          mutez: true
+        }
+      }
+
+      response = await swapDirect(net.id, payload_swap);
+      console.log("## swapDirect ##");
+      console.log(response);
+
+      
     }
 
-    const response_swap = await swapDirect(net.id, payload_swap);
-    console.log("## swapDirect ##");
-    console.log(response_swap);
 
-    const response_remove = await removeOperator(net.id, response_add);
+    const response_remove = await removeOperator(net.id, payload);
     console.log("## removeOperator ##");
     console.log(response_remove);
+
+
+    let payload_batch = null;
+    if(this.send){
+      payload_batch = [response_add.data?.addOperator, response.data?.transferFrom, response_remove.data?.removeOperator];
+    }else{
+      payload_batch = [response_add.data?.addOperator, response.data?.swapDirect, response_remove.data?.removeOperator];
+    }
+
+    
+
+    
+    // const response_batchcalls = await batchContractCalls(payload_batch);
+    console.log("## Batch Calls ##");
+    console.log(payload_batch);
+
+
   }
 
 
