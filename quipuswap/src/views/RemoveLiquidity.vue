@@ -166,9 +166,16 @@ import {
   toAssetSlug,
   findTezDex,
   confirmOperation,
+  getNetwork
 } from "@/core";
 import { XTZ_TOKEN } from "@/core/defaults";
 import { notifyConfirm, notifyError } from "../toast";
+
+
+
+import add from "date-fns/add";
+import { addOperator, removeOperator, divest } from "../services/web3/mutation";
+
 
 type InTokens = {
   tezos: string;
@@ -402,59 +409,121 @@ export default class RemoveLiquidity extends Vue {
   }
 
   async removeLiquidity() {
-    if (this.processing) return;
-    this.processing = true;
-    try {
-      const tezos = await useWallet();
 
-      const shares = sharesToNat(this.sharesToRemove!);
-      const selTk = this.selectedToken!;
-      const dexAddress = this.dexAddress!;
 
-      const mySharesPure = await getDexShares(this.account.pkh, dexAddress);
-      let myShares: string | undefined;
-      if (mySharesPure) {
-        myShares = mySharesPure.unfrozen.toFixed();
-      }
 
-      if (!myShares || shares.isGreaterThan(myShares)) {
-        throw new Error("Not Enough Shares");
-      }
+    const net = getNetwork();
 
-      const slippage = new BigNumber(this.activeSlippagePercentage || 0).div(100);
-
-      const minTezos = withSlippage(tzToMutez(this.inTokens!.tezos), slippage);
-      const minToken = withSlippage(toNat(this.inTokens!.token, selTk), slippage);
-
-      const dexContract = await tezos.wallet.at(dexAddress);
-      const operation = await dexContract.methods
-        .use(
-          "divestLiquidity",
-          minTezos.toFixed(),
-          minToken.toFixed(),
-          shares.toFixed()
-        )
-        .send();
-
-      notifyConfirm(
-        confirmOperation(tezos, operation.opHash)
-          .finally(() => this.refresh())
-      );
-    } catch (err) {
-      console.error(err);
-      notifyError(err);
-      const msg = err.message;
-      this.remLiqStatus =
-        msg && msg.length < 30
-          ? msg.startsWith("Dex/")
-            ? msg.replace("Dex/", "")
-            : msg
-          : "Something went wrong";
+    const payload_quip =  {
+      owner: "tz1ZuBvvtrS9JroGs5e4B3qg2PLntxhj1h8Z",
+      tokenId: 0,
+      operator: "KT1Ni6JpXqGyZKXhJCPQJZ9x5x5bd7tXPNPC"
     }
-    this.processing = false;
 
-    await new Promise((res) => setTimeout(res, 5000));
-    this.remLiqStatus = this.defaultRemLiqStatus;
+    const response_add_quip = await addOperator(net.id, payload_quip);
+    console.log("## addOperator quip ##");
+    console.log(response_add_quip);
+
+
+    const payload_rct =  {
+      owner: "KT1QGgr6k1CDf4Svd18MtKNQukboz8JzRPd5",
+      tokenId: 0,
+      operator: "KT1Ni6JpXqGyZKXhJCPQJZ9x5x5bd7tXPNPC"
+    }
+
+    const response_add_rct = await addOperator(net.id, payload_rct);
+    console.log("## addOperator rct ##");
+    console.log(response_add_rct);
+
+    const payload_divest = {
+        params: {
+          pairId: 14,
+          shares: "10",
+          minTokenAOut: "144587",
+          minTokenBOut: "4",
+          deadline: add(new Date(), { minutes: 10 }).toISOString(),
+        },
+        sendParams: {
+          to: "",
+          amount: 0,
+          mutez: true
+        }
+      }
+
+    const response_divest = await divest(net.id, payload_divest);
+    console.log("## divest ##");
+    console.log(response_divest);
+
+
+    const response_remove_quip = await removeOperator(net.id, payload_quip);
+    console.log("## removeOperator quip ##");
+    console.log(response_remove_quip);
+
+    const response_remove_rct = await removeOperator(net.id, payload_rct);
+    console.log("## removeOperator rct ##");
+    console.log(response_remove_rct);
+
+
+
+    const payload_batch = [response_add_quip.data?.addOperator, response_add_rct.data?.addOperator, response_divest.data?.divest, response_remove_quip.data?.removeOperator, response_remove_rct.data?.removeOperator];
+        
+    // const response_batchcalls = await batchContractCalls(payload_batch);
+    console.log("## Batch Calls ##");
+    console.log(payload_batch);
+
+    // if (this.processing) return;
+    // this.processing = true;
+    // try {
+    //   const tezos = await useWallet();
+
+    //   const shares = sharesToNat(this.sharesToRemove!);
+    //   const selTk = this.selectedToken!;
+    //   const dexAddress = this.dexAddress!;
+
+    //   const mySharesPure = await getDexShares(this.account.pkh, dexAddress);
+    //   let myShares: string | undefined;
+    //   if (mySharesPure) {
+    //     myShares = mySharesPure.unfrozen.toFixed();
+    //   }
+
+    //   if (!myShares || shares.isGreaterThan(myShares)) {
+    //     throw new Error("Not Enough Shares");
+    //   }
+
+    //   const slippage = new BigNumber(this.activeSlippagePercentage || 0).div(100);
+
+    //   const minTezos = withSlippage(tzToMutez(this.inTokens!.tezos), slippage);
+    //   const minToken = withSlippage(toNat(this.inTokens!.token, selTk), slippage);
+
+    //   const dexContract = await tezos.wallet.at(dexAddress);
+    //   const operation = await dexContract.methods
+    //     .use(
+    //       "divestLiquidity",
+    //       minTezos.toFixed(),
+    //       minToken.toFixed(),
+    //       shares.toFixed()
+    //     )
+    //     .send();
+
+    //   notifyConfirm(
+    //     confirmOperation(tezos, operation.opHash)
+    //       .finally(() => this.refresh())
+    //   );
+    // } catch (err) {
+    //   console.error(err);
+    //   notifyError(err);
+    //   const msg = err.message;
+    //   this.remLiqStatus =
+    //     msg && msg.length < 30
+    //       ? msg.startsWith("Dex/")
+    //         ? msg.replace("Dex/", "")
+    //         : msg
+    //       : "Something went wrong";
+    // }
+    // this.processing = false;
+
+    // await new Promise((res) => setTimeout(res, 5000));
+    // this.remLiqStatus = this.defaultRemLiqStatus;
   }
 
   refresh() {
