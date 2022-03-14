@@ -410,30 +410,30 @@ export default class RemoveLiquidity extends Vue {
 
   async removeLiquidity() {
 
-
+//   const shares = sharesToNat(this.sharesToRemove!);
 
     const net = getNetwork();
 
-    const payload_quip =  {
-      owner: "tz1ZuBvvtrS9JroGs5e4B3qg2PLntxhj1h8Z",
-      tokenId: 0,
-      operator: "KT1Ni6JpXqGyZKXhJCPQJZ9x5x5bd7tXPNPC"
-    }
+    // const payload_quip =  {
+    //   owner: "tz1ZuBvvtrS9JroGs5e4B3qg2PLntxhj1h8Z",
+    //   tokenId: 0,
+    //   operator: "KT1Ni6JpXqGyZKXhJCPQJZ9x5x5bd7tXPNPC"
+    // }
 
-    const response_add_quip = await addOperator(net.id, payload_quip);
-    console.log("## addOperator quip ##");
-    console.log(response_add_quip);
+    // const response_add_quip = await addOperator(net.id, payload_quip);
+    // console.log("## addOperator quip ##");
+    // console.log(response_add_quip);
 
 
-    const payload_rct =  {
-      owner: "KT1QGgr6k1CDf4Svd18MtKNQukboz8JzRPd5",
-      tokenId: 0,
-      operator: "KT1Ni6JpXqGyZKXhJCPQJZ9x5x5bd7tXPNPC"
-    }
+    // const payload_rct =  {
+    //   owner: "KT1QGgr6k1CDf4Svd18MtKNQukboz8JzRPd5",
+    //   tokenId: 0,
+    //   operator: "KT1Ni6JpXqGyZKXhJCPQJZ9x5x5bd7tXPNPC"
+    // }
 
-    const response_add_rct = await addOperator(net.id, payload_rct);
-    console.log("## addOperator rct ##");
-    console.log(response_add_rct);
+    // const response_add_rct = await addOperator(net.id, payload_rct);
+    // console.log("## addOperator rct ##");
+    // console.log(response_add_rct);
 
     const payload_divest = {
         params: {
@@ -455,21 +455,21 @@ export default class RemoveLiquidity extends Vue {
     console.log(response_divest);
 
 
-    const response_remove_quip = await removeOperator(net.id, payload_quip);
-    console.log("## removeOperator quip ##");
-    console.log(response_remove_quip);
+    // const response_remove_quip = await removeOperator(net.id, payload_quip);
+    // console.log("## removeOperator quip ##");
+    // console.log(response_remove_quip);
 
-    const response_remove_rct = await removeOperator(net.id, payload_rct);
-    console.log("## removeOperator rct ##");
-    console.log(response_remove_rct);
+    // const response_remove_rct = await removeOperator(net.id, payload_rct);
+    // console.log("## removeOperator rct ##");
+    // console.log(response_remove_rct);
 
 
 
-    const payload_batch = [response_add_quip.data?.addOperator, response_add_rct.data?.addOperator, response_divest.data?.divest, response_remove_quip.data?.removeOperator, response_remove_rct.data?.removeOperator];
+    // const payload_batch = [response_add_quip.data?.addOperator, response_add_rct.data?.addOperator, response_divest.data?.divest, response_remove_quip.data?.removeOperator, response_remove_rct.data?.removeOperator];
         
     // const response_batchcalls = await batchContractCalls(payload_batch);
-    console.log("## Batch Calls ##");
-    console.log(payload_batch);
+    // console.log("## Batch Calls ##");
+    // console.log(payload_batch);
 
     // if (this.processing) return;
     // this.processing = true;

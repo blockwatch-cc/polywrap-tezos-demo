@@ -393,10 +393,18 @@ export default class AddLiquidity extends Vue {
 
     const net = getNetwork();
 
+    const me = getAccount().pkh
+    const rct_address = "KT1QGgr6k1CDf4Svd18MtKNQukboz8JzRPd5";
+    const operator = "KT1Ni6JpXqGyZKXhJCPQJZ9x5x5bd7tXPNPC";
+
+
+    const initialTezAmount = this.tezAmount;
+    const initialTokenAmount = this.tokenAmount;
+
     const payload_quip =  {
-      owner: "tz1ZuBvvtrS9JroGs5e4B3qg2PLntxhj1h8Z",
+      owner: me,
       tokenId: 0,
-      operator: "KT1Ni6JpXqGyZKXhJCPQJZ9x5x5bd7tXPNPC"
+      operator: operator
     }
 
     const response_add_quip = await addOperator(net.id, payload_quip);
@@ -405,9 +413,9 @@ export default class AddLiquidity extends Vue {
 
 
     const payload_rct =  {
-      owner: "KT1QGgr6k1CDf4Svd18MtKNQukboz8JzRPd5",
+      owner: rct_address,
       tokenId: 0,
-      operator: "KT1Ni6JpXqGyZKXhJCPQJZ9x5x5bd7tXPNPC"
+      operator: operator
     }
 
     const response_add_rct = await addOperator(net.id, payload_rct);

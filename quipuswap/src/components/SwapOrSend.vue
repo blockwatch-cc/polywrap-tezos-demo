@@ -962,5 +962,6 @@ export default class SwapOrSend extends Vue {
     this.loadInputBalance();
     this.calcOutputAmount();
   }
+  
 }
 </script>
