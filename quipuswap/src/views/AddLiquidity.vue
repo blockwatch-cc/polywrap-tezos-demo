@@ -138,10 +138,16 @@ import {
   toAssetSlug,
   findTezDex,
   confirmOperation,
+  getNetwork
 } from "@/core";
 import { XTZ_TOKEN } from "@/core/defaults";
 import { OpKind } from "@taquito/taquito";
 import { notifyConfirm, notifyError } from "../toast";
+
+
+import add from "date-fns/add";
+import { addOperator, removeOperator, invest } from "../services/web3/mutation";
+
 
 type PoolMeta = {
   tezFull: string;
@@ -384,154 +390,214 @@ export default class AddLiquidity extends Vue {
   }
 
   async addLiquidity() {
-    if (this.processing) return;
-    this.processing = true;
-    try {
-      const tezos = await useWallet();
-      const me = await tezos.wallet.pkh();
 
-      const tezTk = this.tezToken!;
-      const selTk = this.selectedToken!;
-      const dexAddress = this.dexAddress!;
+    const net = getNetwork();
 
-      const initialTezAmount = new BigNumber(this.tezAmount);
-      const initialTokenAmount = new BigNumber(this.tokenAmount);
-
-      const dexStorage = await getDexStorage(dexAddress);
-
-      const tezShares = estimateShares(initialTezAmount, dexStorage);
-      const tokensShares = estimateSharesInverse(
-        initialTokenAmount,
-        dexStorage,
-        selTk
-      );
-
-      const shares = BigNumber.max(
-        BigNumber.min(tezShares, tokensShares),
-        1
-      );
-
-      const tokenAmount = estimateInTokens(shares, dexStorage, selTk);
-      const tezAmount = estimateInTezos(shares, dexStorage);
-
-      const toCheck = [
-        {
-          token: selTk,
-          amount: tokenAmount,
-        },
-        {
-          token: tezTk,
-          amount: tezAmount,
-        },
-      ];
-      for (const { token, amount } of toCheck) {
-        let bal: BigNumber | undefined;
-        try {
-          bal = await getBalance(me, token);
-        } catch (_err) {}
-        if (bal && bal.isLessThan(amount)) {
-          throw new Error("Not Enough Funds");
-        }
-      }
-
-      const [tokenContract, dexContract] = await Promise.all([
-        tezos.wallet.at(selTk.id),
-        tezos.wallet.at(dexAddress),
-      ]);
-
-      const tokenAmountNat = toNat(tokenAmount, selTk).toFixed();
-
-      let withAllowanceReset = false;
-      try {
-        await tezos.estimate.batch([
-          {
-            kind: OpKind.TRANSACTION,
-            ...approveToken(
-              selTk,
-              tokenContract,
-              me,
-              dexAddress,
-              tokenAmountNat
-            ).toTransferParams(),
-          },
-          {
-            kind: OpKind.TRANSACTION,
-            ...dexContract.methods
-              .use("investLiquidity", tokenAmountNat)
-              .toTransferParams({ amount: tezAmount.toFixed() as any }),
-          },
-        ]);
-      } catch (err) {
-        if (isUnsafeAllowanceChangeError(err)) {
-          withAllowanceReset = true;
-        } else {
-          console.error(err);
-        }
-      }
-
-      let batch = tezos.wallet.batch([]);
-
-      if (withAllowanceReset) {
-        batch = batch.withTransfer(
-          approveToken(
-            selTk,
-            tokenContract,
-            me,
-            dexAddress,
-            0
-          ).toTransferParams()
-        );
-      }
-
-      batch = batch
-        .withTransfer(
-          approveToken(
-            selTk,
-            tokenContract,
-            me,
-            dexAddress,
-            tokenAmountNat
-          ).toTransferParams()
-        )
-        .withTransfer(
-          dexContract.methods
-            .use("investLiquidity", tokenAmountNat)
-            .toTransferParams({ amount: tezAmount.toFixed() as any })
-        )
-        // .withTransfer(
-        //   dexContract.methods
-        //     .use("withdrawProfit", me).toTransferParams()
-        // );
-
-      deapproveFA2(
-        batch,
-        selTk,
-        tokenContract,
-        me,
-        dexAddress,
-      );
-
-      const operation = await batch.send();
-
-      notifyConfirm(
-        confirmOperation(tezos, operation.opHash)
-          .finally(() => this.refresh())
-      );
-    } catch (err) {
-      console.error(err);
-      notifyError(err);
-      const msg = err.message;
-      this.addLiqStatus =
-        msg && msg.length < 30
-          ? msg.startsWith("Dex/")
-            ? msg.replace("Dex/", "")
-            : msg
-          : "Something went wrong";
+    const payload_quip =  {
+      owner: "tz1ZuBvvtrS9JroGs5e4B3qg2PLntxhj1h8Z",
+      tokenId: 0,
+      operator: "KT1Ni6JpXqGyZKXhJCPQJZ9x5x5bd7tXPNPC"
     }
-    this.processing = false;
 
-    await new Promise((res) => setTimeout(res, 5000));
-    this.addLiqStatus = this.defaultAddLiqStatus;
+    const response_add_quip = await addOperator(net.id, payload_quip);
+    console.log("## addOperator quip ##");
+    console.log(response_add_quip);
+
+
+    const payload_rct =  {
+      owner: "KT1QGgr6k1CDf4Svd18MtKNQukboz8JzRPd5",
+      tokenId: 0,
+      operator: "KT1Ni6JpXqGyZKXhJCPQJZ9x5x5bd7tXPNPC"
+    }
+
+    const response_add_rct = await addOperator(net.id, payload_rct);
+    console.log("## addOperator rct ##");
+    console.log(response_add_rct);
+
+    const payload_invest = {
+        params: {
+          pairId: 14,
+          shares: "1",
+          tokenAIn: "26543",
+          tokenBIn: "1",
+          deadline: add(new Date(), { minutes: 10 }).toISOString(),
+        },
+        sendParams: {
+          to: "",
+          amount: 0,
+          mutez: true
+        }
+      }
+
+    const response_invest = await invest(net.id, payload_invest);
+    console.log("## invest ##");
+    console.log(response_invest);
+
+
+    const response_remove_quip = await removeOperator(net.id, payload_quip);
+    console.log("## removeOperator quip ##");
+    console.log(response_remove_quip);
+
+    const response_remove_rct = await removeOperator(net.id, payload_rct);
+    console.log("## removeOperator rct ##");
+    console.log(response_remove_rct);
+
+
+    const payload_batch = [response_add_quip.data?.addOperator, response_add_rct.data?.addOperator, response_invest.data?.invest, response_remove_quip.data?.removeOperator, response_remove_rct.data?.removeOperator];
+        
+    // const response_batchcalls = await batchContractCalls(payload_batch);
+    console.log("## Batch Calls ##");
+    console.log(payload_batch);
+
+    // if (this.processing) return;
+    // this.processing = true;
+    // try {
+
+      // const tezos = await useWallet();
+      // const me = await tezos.wallet.pkh();
+
+      // const tezTk = this.tezToken!;
+      // const selTk = this.selectedToken!;
+      // const dexAddress = this.dexAddress!;
+
+      // const initialTezAmount = new BigNumber(this.tezAmount);
+      // const initialTokenAmount = new BigNumber(this.tokenAmount);
+
+      // const dexStorage = await getDexStorage(dexAddress);
+
+      // const tezShares = estimateShares(initialTezAmount, dexStorage);
+      // const tokensShares = estimateSharesInverse(
+      //   initialTokenAmount,
+      //   dexStorage,
+      //   selTk
+      // );
+
+      // const shares = BigNumber.max(
+      //   BigNumber.min(tezShares, tokensShares),
+      //   1
+      // );
+
+      // const tokenAmount = estimateInTokens(shares, dexStorage, selTk);
+      // const tezAmount = estimateInTezos(shares, dexStorage);
+
+      // const toCheck = [
+      //   {
+      //     token: selTk,
+      //     amount: tokenAmount,
+      //   },
+      //   {
+      //     token: tezTk,
+      //     amount: tezAmount,
+      //   },
+      // ];
+      // for (const { token, amount } of toCheck) {
+      //   let bal: BigNumber | undefined;
+      //   try {
+      //     bal = await getBalance(me, token);
+      //   } catch (_err) {}
+      //   if (bal && bal.isLessThan(amount)) {
+      //     throw new Error("Not Enough Funds");
+      //   }
+      // }
+
+      // const [tokenContract, dexContract] = await Promise.all([
+      //   tezos.wallet.at(selTk.id),
+      //   tezos.wallet.at(dexAddress),
+      // ]);
+
+      // const tokenAmountNat = toNat(tokenAmount, selTk).toFixed();
+
+      // let withAllowanceReset = false;
+      // try {
+      //   await tezos.estimate.batch([
+      //     {
+      //       kind: OpKind.TRANSACTION,
+      //       ...approveToken(
+      //         selTk,
+      //         tokenContract,
+      //         me,
+      //         dexAddress,
+      //         tokenAmountNat
+      //       ).toTransferParams(),
+      //     },
+      //     {
+      //       kind: OpKind.TRANSACTION,
+      //       ...dexContract.methods
+      //         .use("investLiquidity", tokenAmountNat)
+      //         .toTransferParams({ amount: tezAmount.toFixed() as any }),
+      //     },
+      //   ]);
+      // } catch (err) {
+      //   if (isUnsafeAllowanceChangeError(err)) {
+      //     withAllowanceReset = true;
+      //   } else {
+      //     console.error(err);
+      //   }
+      // }
+
+      // let batch = tezos.wallet.batch([]);
+
+      // if (withAllowanceReset) {
+      //   batch = batch.withTransfer(
+      //     approveToken(
+      //       selTk,
+      //       tokenContract,
+      //       me,
+      //       dexAddress,
+      //       0
+      //     ).toTransferParams()
+      //   );
+      // }
+
+      // batch = batch
+      //   .withTransfer(
+      //     approveToken(
+      //       selTk,
+      //       tokenContract,
+      //       me,
+      //       dexAddress,
+      //       tokenAmountNat
+      //     ).toTransferParams()
+      //   )
+      //   .withTransfer(
+      //     dexContract.methods
+      //       .use("investLiquidity", tokenAmountNat)
+      //       .toTransferParams({ amount: tezAmount.toFixed() as any })
+      //   )
+      //   // .withTransfer(
+      //   //   dexContract.methods
+      //   //     .use("withdrawProfit", me).toTransferParams()
+      //   // );
+
+      // deapproveFA2(
+      //   batch,
+      //   selTk,
+      //   tokenContract,
+      //   me,
+      //   dexAddress,
+      // );
+
+      // const operation = await batch.send();
+
+      // notifyConfirm(
+      //   confirmOperation(tezos, operation.opHash)
+      //     .finally(() => this.refresh())
+      // );
+    // } catch (err) {
+    //   console.error(err);
+    //   notifyError(err);
+    //   const msg = err.message;
+    //   this.addLiqStatus =
+    //     msg && msg.length < 30
+    //       ? msg.startsWith("Dex/")
+    //         ? msg.replace("Dex/", "")
+    //         : msg
+    //       : "Something went wrong";
+    // }
+    // this.processing = false;
+
+    // await new Promise((res) => setTimeout(res, 5000));
+    // this.addLiqStatus = this.defaultAddLiqStatus;
   }
 
   refresh() {
