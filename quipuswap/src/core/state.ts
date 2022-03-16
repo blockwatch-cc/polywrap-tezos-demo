@@ -58,11 +58,6 @@ export async function getTokens() {
 
   }
   
-  console.log("whitelist");
-  console.log(axs.data.tokens);
-  console.log(typeof id);
-  console.log(id);
-  console.log(whitelist);
 
   const allTokens: QSAsset[] = await Promise.all(
     whitelist.map(async token => {
@@ -91,9 +86,6 @@ export async function getTokens() {
       };
     })
   );
-
-  console.log("allTokens");
-  console.log(allTokens);
 
   return sanitizeTokens([...allTokens, ...getCustomTokens()]);
 }
