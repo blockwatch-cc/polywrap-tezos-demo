@@ -228,14 +228,15 @@ const beaconWallet = new BeaconWallet({
 export async function connectTempleWalletWrapper(){
   const net = getNetwork();
 
-  const response = await connectTempleWallet(net.id)
+  const response = await connectTempleWallet(net.id);
+  
   if (response?.errors) {
       // const message = extractErrorMessage(response.errors, 'Failed to connect to temple wallet')
       console.log(response.errors)
       return
   }
   if (response?.data?.connectTempleWallet) {
-      // setApp((a) => ({ ...a, account: response.data.connectTempleWallet }))
+    
       const resp = response?.data?.connectTempleWallet;
 
       setLastUsedConnect("temple");
@@ -412,17 +413,48 @@ function cleanLastUsedConnect() {
 
 export async function getTokenPairs(){
   const net = getNetwork();
-  console.log("getTokenPairs ... ");
 
   const response = await listTokenPairs(net.id);
-  console.log("getTokenPairs");
-  console.log(response);
+  
   if (response?.errors) {
       console.log(response.errors)
       return
   }
-  if (response?.data?.connectTempleWallet) {
-      const resp = response?.data?.connectTempleWallet;
+  if (response?.data?.listTokenPairs) {
+      const resp:any = response?.data?.listTokenPairs;
+      // console.log("getTokenPairs");
+      // console.log(resp);
+      localStorage.setItem("listTokenPairs", resp);
       return
   }
+}
+
+export async function getTokenPairsID(token_a_address, token_b_address){
+
+  let listTokenPairs:any = localStorage.getItem("listTokenPairs");  
+  let respose_pairid = null;
+
+  if(listTokenPairs != undefined){
+
+    let listTokenPairs_arr:any = JSON.parse(listTokenPairs);
+
+    listTokenPairs_arr.forEach(myFunction);
+
+    function myFunction(item) {
+      const token_a_fa2 = item?.token_a?.fa2?.token_address
+      const token_a_fa12 = item?.token_a?.fa12
+      const token_b_fa2 = item?.token_b?.fa2?.token_address
+      const token_b_fa12 = item?.token_b?.fa12
+
+      const tokens = [token_a_fa2, token_a_fa12, token_b_fa2, token_b_fa12];
+    
+      if(tokens.includes(token_a_address) && tokens.includes(token_b_address) ){
+        respose_pairid = item.pair_id;
+      }
+
+    }
+  }
+
+  return respose_pairid
+
 }
