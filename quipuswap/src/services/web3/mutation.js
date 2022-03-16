@@ -176,16 +176,16 @@ export const divest = (network, payload) => {
 export const batchContractCalls = (payload) => {
 
   return client.query({
-    uri: TEZOS_QUIPUSWAP_WRAPPER_URI,
+    uri: TEZOS_PLUGIN_JS,
     query: `
         mutation {
-          batchContractCalls (
+          batchWalletContractCalls (
             params: $params
           )
         },
     `,
     variables: {
-      params: [addQuipuResponse.data?.addOperator, swapResponse.data?.swapDirect, removeQuipuResponse.data?.removeOperator]
+      params: payload
     }
   })
   
