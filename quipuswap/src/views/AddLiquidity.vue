@@ -146,7 +146,7 @@ import { notifyConfirm, notifyError } from "../toast";
 
 
 import add from "date-fns/add";
-import { addOperator, removeOperator, invest } from "../services/web3/mutation";
+import { addOperator, removeOperator, invest, batchContractCalls } from "../services/web3/mutation";
 
 
 type PoolMeta = {
@@ -401,27 +401,6 @@ export default class AddLiquidity extends Vue {
     const initialTezAmount = this.tezAmount;
     const initialTokenAmount = this.tokenAmount;
 
-    const payload_quip =  {
-      owner: me,
-      tokenId: 0,
-      operator: operator
-    }
-
-    const response_add_quip = await addOperator(net.id, payload_quip);
-    console.log("## addOperator quip ##");
-    console.log(response_add_quip);
-
-
-    const payload_rct =  {
-      owner: rct_address,
-      tokenId: 0,
-      operator: operator
-    }
-
-    const response_add_rct = await addOperator(net.id, payload_rct);
-    console.log("## addOperator rct ##");
-    console.log(response_add_rct);
-
     const payload_invest = {
         params: {
           pairId: 14,
@@ -441,21 +420,45 @@ export default class AddLiquidity extends Vue {
     console.log("## invest ##");
     console.log(response_invest);
 
-
-    const response_remove_quip = await removeOperator(net.id, payload_quip);
-    console.log("## removeOperator quip ##");
-    console.log(response_remove_quip);
-
-    const response_remove_rct = await removeOperator(net.id, payload_rct);
-    console.log("## removeOperator rct ##");
-    console.log(response_remove_rct);
-
-
-    const payload_batch = [response_add_quip.data?.addOperator, response_add_rct.data?.addOperator, response_invest.data?.invest, response_remove_quip.data?.removeOperator, response_remove_rct.data?.removeOperator];
-        
-    // const response_batchcalls = await batchContractCalls(payload_batch);
+    const payload_batch = response_invest.data?.invest;
+    
     console.log("## Batch Calls ##");
     console.log(payload_batch);
+
+
+    const response_batchcalls = await batchContractCalls(payload_batch);
+    console.log("## Batch Calls ##");
+    const response_batch:any = response_batchcalls.data?.batchWalletContractCalls;
+    console.log(response_batchcalls);
+    console.log(response_batch);
+    
+    let firemessage = null;
+    if(response_batch != undefined){
+      firemessage = {
+        title: 'Successful',
+        html:
+          'Click on ' +
+          '<a href="https://hangzhou.tzstats.com/'+response_batch+'" target="_blank"><b style="color: green;">...'+response_batch?.substring(response_batch?.length - 10)+'</b></a> ' +
+          'to view transaction details.',
+        showCancelButton: false,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Done!'
+      }
+    }else{
+      firemessage = {
+        title: 'Unsuccesful',
+        html:
+          'Operation was unsuccessful',
+        showCancelButton: false,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Done!'
+      }
+    }
+
+    this.$fire(firemessage);
+
 
     // if (this.processing) return;
     // this.processing = true;
