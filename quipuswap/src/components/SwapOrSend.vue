@@ -153,7 +153,7 @@ import Loader from "@/components/Loader.vue";
 
 import BigNumber from "bignumber.js";
 import { OpKind, WalletOperation } from "@taquito/taquito";
-import store, { getAccount, useWallet } from "@/store";
+import store, { getAccount, useWallet, getTokenPairsID, connectTempleWalletWrapper } from "@/store";
 import {
   FEE_RATE,
   XTZ_TOKEN,
@@ -182,6 +182,9 @@ import {
 import { notifyConfirm, notifyError } from "../toast";
 import add from "date-fns/add";
 import { swapDirect, removeOperator, addOperator, transfer, transferFrom, batchContractCalls,} from "../services/web3/mutation";
+
+import VueSimpleAlert from "vue-simple-alert";
+Vue.use(VueSimpleAlert);
 
 @Component({
   components: {
@@ -610,33 +613,42 @@ export default class SwapOrSend extends Vue {
 
   async swap() {
 
+    if (this.swapping) return;
+    this.swapping = true;
+
+
+    let payload_batch = null;
+
+    await connectTempleWalletWrapper();
     
     const me = getAccount().pkh
     const recipient = this.send ? this.recipientAddress : me;
 
     const inTk = this.inputToken!;
     const outTk = this.outputToken!;
+    const inTkAddress = this.inputDexAddress != undefined ? this.inputDexAddress : 'KT1SaouedthKUtAujiBD232mZYGtKwpZ6mFD';
+    const outTkAddress = this.outputDexAddress != undefined ? this.outputDexAddress : 'KT1SaouedthKUtAujiBD232mZYGtKwpZ6mFD';
     const inpAmn = this.inputAmount!;
     const minOut = this.minimumReceived!;
 
     const operator = "KT1Ni6JpXqGyZKXhJCPQJZ9x5x5bd7tXPNPC";
 
 
+    let pairId = await getTokenPairsID("KT1EBpRMdK98rPpaXqJeW4822WAdwXYNL64d","KT1M2JnD1wsg7w2B4UXJXtKQPuDUpU2L7cJH");
+    console.log("getTokenPairsID");
+    console.log(pairId);
+    console.log(me);
+    
+
+    if(pairId == undefined){
+      return
+    }
+
     const net = getNetwork();
     let response = null;
 
-    const payload =  {
-      owner: me,
-      tokenId: 0,
-      operator: operator
-    }
-
-    const response_add = await addOperator(net.id, payload);
-    console.log("## addOperator ##");
-    console.log(response_add);
-
     if(this.send){
-      console.log("send");
+      
       let payload_swap = {
         from: operator,
         params: {
@@ -654,7 +666,8 @@ export default class SwapOrSend extends Vue {
       response = await transferFrom(net.id, payload_swap);
       console.log("## Send ##");
       console.log(response);
-      
+      payload_batch = [response.data?.transferFrom];
+
     }else{
 
 
@@ -676,33 +689,51 @@ export default class SwapOrSend extends Vue {
         }
       }
 
+
       response = await swapDirect(net.id, payload_swap);
       console.log("## swapDirect ##");
       console.log(response);
-
-      
+      payload_batch = response.data?.swapDirect;
     }
 
-
-    const response_remove = await removeOperator(net.id, payload);
-    console.log("## removeOperator ##");
-    console.log(response_remove);
-
-
-    let payload_batch = null;
-    if(this.send){
-      payload_batch = [response_add.data?.addOperator, response.data?.transferFrom, response_remove.data?.removeOperator];
-    }else{
-      payload_batch = [response_add.data?.addOperator, response.data?.swapDirect, response_remove.data?.removeOperator];
-    }
-
-    
-
-    
-    // const response_batchcalls = await batchContractCalls(payload_batch);
+    const response_batchcalls = await batchContractCalls(payload_batch);
     console.log("## Batch Calls ##");
-    console.log(payload_batch);
+    const response_batch:any = response_batchcalls.data?.batchWalletContractCalls;
+    console.log(response_batchcalls);
+    console.log(response_batch);
+    
+    let firemessage = null;
+    if(response_batch != undefined){
+      firemessage = {
+        title: 'Successful',
+        html:
+          'Click on ' +
+          '<a href="https://hangzhou.tzstats.com/'+response_batch+'" target="_blank"><b style="color: green;">...'+response_batch?.substring(response_batch?.length - 10)+'</b></a> ' +
+          'to view transaction details.',
+        showCancelButton: false,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Done!'
+      }
+    }else{
+      firemessage = {
+        title: 'Unsuccesful',
+        html:
+          'Operation was unsuccessful',
+        showCancelButton: false,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Done!'
+      }
+    }
 
+    this.$fire(firemessage);
+
+
+    this.swapping = false;
+    this.swapStatus = this.defaultSwapStatus;
+    
+    this.refresh();
 
   }
 
@@ -958,6 +989,7 @@ export default class SwapOrSend extends Vue {
   // }
 
   refresh() {
+    console.log("refresh was called");
     clearMem();
     this.loadInputBalance();
     this.calcOutputAmount();
