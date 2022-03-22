@@ -9,7 +9,7 @@ export const listTokenPairs = async (network) => {
         query: `
             query {
               listTokenPairs(
-                network: mainnet
+                network: hangzhounet
               )
             }
         `,
