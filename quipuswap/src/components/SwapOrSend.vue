@@ -655,7 +655,7 @@ export default class SwapOrSend extends Vue {
           direction: `b_to_a`,
           swapParams: {
             amountIn: inpAmn,
-            minAmountOut: "26288",
+            minAmountOut: "11288",
             deadline: add(new Date(), { minutes: 10 }).toISOString(),
             receiver:  recipient
           }
@@ -682,7 +682,7 @@ export default class SwapOrSend extends Vue {
           direction: `b_to_a`,
           swapParams: {
             amountIn: inpAmn,
-            minAmountOut: "26288",
+            minAmountOut: "11288",
             deadline: add(new Date(), { minutes: 10 }).toISOString(),
             receiver:  me
           }
@@ -692,7 +692,8 @@ export default class SwapOrSend extends Vue {
           amount: 0,
           mutez: true
         }
-      }
+      };
+
 
 
       response = await swapDirect(net.id, payload_swap);
