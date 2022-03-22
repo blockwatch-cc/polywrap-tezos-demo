@@ -112,7 +112,7 @@ import Form, { FormField, FormIcon, FormInfo } from "@/components/Form";
 import SubmitBtn from "@/components/SubmitBtn.vue";
 
 import BigNumber from "bignumber.js";
-import store, { getAccount, useWallet } from "@/store";
+import store, { getAccount, useWallet, connectTempleWalletWrapper } from "@/store";
 import {
   QSAsset,
   isAddressValid,
@@ -146,7 +146,7 @@ import { notifyConfirm, notifyError } from "../toast";
 
 
 import add from "date-fns/add";
-import { addOperator, removeOperator, invest, batchContractCalls } from "../services/web3/mutation";
+import { invest, batchContractCalls } from "../services/web3/mutation";
 
 
 type PoolMeta = {
@@ -391,73 +391,85 @@ export default class AddLiquidity extends Vue {
 
   async addLiquidity() {
 
-    const net = getNetwork();
 
-    const me = getAccount().pkh
-    const rct_address = "KT1QGgr6k1CDf4Svd18MtKNQukboz8JzRPd5";
-    const operator = "KT1Ni6JpXqGyZKXhJCPQJZ9x5x5bd7tXPNPC";
+    if (this.processing) return;
+    this.processing = true;
+    try {
+        
+      const net = getNetwork();
+      
+      await connectTempleWalletWrapper();
+      const me = getAccount().pkh;
 
 
-    const initialTezAmount = this.tezAmount;
-    const initialTokenAmount = this.tokenAmount;
+      const initialTezAmount = this.tezAmount;
+      const initialTokenAmount = this.tokenAmount;
 
-    const payload_invest = {
-        params: {
-          pairId: 14,
-          shares: "1",
-          tokenAIn: "26543",
-          tokenBIn: "1",
-          deadline: add(new Date(), { minutes: 10 }).toISOString(),
-        },
-        sendParams: {
-          to: "",
-          amount: 0,
-          mutez: true
+      const payload_invest = {
+          params: {
+            pairId: 14,
+            shares: "16",
+            tokenAIn: "201000",
+            tokenBIn: "11",
+            deadline: add(new Date(), { minutes: 10 }).toISOString(),
+          },
+          sendParams: {
+            to: "",
+            amount: 0,
+            mutez: true
+          }
+        }
+
+      const response_invest = await invest(net.id, payload_invest);
+      console.log("## invest ##");
+      console.log(response_invest);
+
+      const payload_batch = response_invest.data?.invest;
+      
+      console.log("## Batch Calls ##");
+      console.log(payload_batch);
+
+
+      const response_batchcalls = await batchContractCalls(payload_batch);
+      console.log("## Batch Calls ##");
+      const response_batch:any = response_batchcalls.data?.batchWalletContractCalls;
+      console.log(response_batchcalls);
+      console.log(response_batch);
+      
+      let firemessage = null;
+      if(response_batch != undefined){
+        firemessage = {
+          title: 'Successful',
+          html:
+            'Transaction ' +
+            '<a href="https://hangzhou.tzstats.com/'+response_batch+'" target="_blank"><b style="color: green;">...'+response_batch?.substring(response_batch?.length - 10)+'</b></a> ' +
+            ' was completed.',
+          showCancelButton: false,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Done!',
+          onClose: this.reloadpage
+        }
+      }else{
+        firemessage = {
+          title: 'Unsuccessful',
+          html:
+            'Operation was unsuccessful',
+          showCancelButton: false,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Done!',
+          onClose: this.reloadpage
         }
       }
 
-    const response_invest = await invest(net.id, payload_invest);
-    console.log("## invest ##");
-    console.log(response_invest);
+      this.$fire(firemessage);
 
-    const payload_batch = response_invest.data?.invest;
-    
-    console.log("## Batch Calls ##");
-    console.log(payload_batch);
-
-
-    const response_batchcalls = await batchContractCalls(payload_batch);
-    console.log("## Batch Calls ##");
-    const response_batch:any = response_batchcalls.data?.batchWalletContractCalls;
-    console.log(response_batchcalls);
-    console.log(response_batch);
-    
-    let firemessage = null;
-    if(response_batch != undefined){
-      firemessage = {
-        title: 'Successful',
-        html:
-          'Transaction ' +
-          '<a href="https://hangzhou.tzstats.com/'+response_batch+'" target="_blank"><b style="color: green;">...'+response_batch?.substring(response_batch?.length - 10)+'</b></a> ' +
-          ' was completed.',
-        showCancelButton: false,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Done!'
-      }
-    }else{
-      firemessage = {
-        title: 'Unsuccessful',
-        html:
-          'Operation was unsuccessful',
-        showCancelButton: false,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Done!'
-      }
+    } catch (err) {
+      console.error(err);
+      notifyError(err);
     }
-
-    this.$fire(firemessage);
+    this.processing = false;
 
 
     // if (this.processing) return;
@@ -609,6 +621,12 @@ export default class AddLiquidity extends Vue {
 
     // await new Promise((res) => setTimeout(res, 5000));
     // this.addLiqStatus = this.defaultAddLiqStatus;
+  }
+
+
+  reloadpage(){
+    this.refresh();
+    window.location.reload();
   }
 
   refresh() {
