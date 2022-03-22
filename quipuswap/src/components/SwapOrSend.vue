@@ -276,6 +276,12 @@ export default class SwapOrSend extends Vue {
   }
 
   get exchangeRate() {
+    console.log("exchangeRate");
+    console.log(this.inputToken);
+    console.log(this.outputToken);
+    console.log(this.inputAmount);
+    console.log(this.outputAmount);
+
     if (
       !this.inputToken ||
       !this.outputToken ||
@@ -489,6 +495,11 @@ export default class SwapOrSend extends Vue {
     const inType = this.inputToken.type;
     const outType = this.outputToken.type;
 
+    console.log("outputDexAddress");
+    console.log(this.outputDexAddress);
+    // var asn = await getDexStorage(this.outputDexAddress);
+    // console.log(asn);
+
     let amount: BigNumber | undefined;
     switch (true) {
       case inType === "xtz" && outType === "token":
@@ -631,16 +642,26 @@ export default class SwapOrSend extends Vue {
     const inpAmn = this.inputAmount!;
     const minOut = this.minimumReceived!;
 
-    const operator = "KT1Ni6JpXqGyZKXhJCPQJZ9x5x5bd7tXPNPC";
+    let firemessage = null;
 
-
-    let pairId = await getTokenPairsID("KT1EBpRMdK98rPpaXqJeW4822WAdwXYNL64d","KT1M2JnD1wsg7w2B4UXJXtKQPuDUpU2L7cJH");
-    console.log("getTokenPairsID");
-    console.log(pairId);
-    console.log(me);
-    
+    let pairId = await getTokenPairsID(inTkAddress,outTkAddress);
 
     if(pairId == undefined){
+      firemessage = {
+        title: 'Unavailable Pair',
+        html:
+          'We only support FA12 and FA1218 Pair Transaction now.',
+        showCancelButton: false,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Done!'
+      }
+
+      this.$fire(firemessage);
+
+      this.swapping = false;
+      this.swapStatus = this.defaultSwapStatus;
+      
       return
     }
 
@@ -708,7 +729,7 @@ export default class SwapOrSend extends Vue {
     console.log(response_batchcalls);
     console.log(response_batch);
     
-    let firemessage = null;
+
     if(response_batch != undefined){
       firemessage = {
         title: 'Successful',
