@@ -7,9 +7,9 @@
 
       <FormField
         placeholder="0.0"
-        label="Tezos Deposit"
+        label="Token Deposit"
         :withTezos="false"
-        :onlyTezos="true"
+        :onlyTezos="false"
         :subLabelName="tezBalance ? 'Balance: ' : undefined"
         :subLabelValue="tezBalance || undefined"
         :isLoading="tezLoading"
@@ -112,7 +112,7 @@ import Form, { FormField, FormIcon, FormInfo } from "@/components/Form";
 import SubmitBtn from "@/components/SubmitBtn.vue";
 
 import BigNumber from "bignumber.js";
-import store, { getAccount, useWallet, connectTempleWalletWrapper } from "@/store";
+import store, { getAccount, useWallet, connectTempleWalletWrapper, getTokenPairsID } from "@/store";
 import {
   QSAsset,
   isAddressValid,
@@ -401,9 +401,33 @@ export default class AddLiquidity extends Vue {
       await connectTempleWalletWrapper();
       const me = getAccount().pkh;
 
-
+      let firemessage = null;
       const initialTezAmount = this.tezAmount;
       const initialTokenAmount = this.tokenAmount;
+
+      // const inTkAddress = this.inputDexAddress != undefined ? this.inputDexAddress : 'KT1SaouedthKUtAujiBD232mZYGtKwpZ6mFD';
+      // const outTkAddress = this.outputDexAddress != undefined ? this.outputDexAddress : 'KT1SaouedthKUtAujiBD232mZYGtKwpZ6mFD';
+    
+      // let pairId = await getTokenPairsID(inTkAddress,outTkAddress);
+
+      // if(pairId == undefined){
+      //   firemessage = {
+      //     title: 'Unavailable Pair',
+      //     html:
+      //       'We only support FA12 and FA1218 Pair Transaction now.',
+      //     showCancelButton: false,
+      //     confirmButtonColor: '#3085d6',
+      //     cancelButtonColor: '#d33',
+      //     confirmButtonText: 'Done!'
+      //   }
+
+      //   this.$fire(firemessage);
+
+      //   this.swapping = false;
+      //   this.swapStatus = this.defaultSwapStatus;
+        
+      //   return
+      // }
 
       const payload_invest = {
           params: {
@@ -436,7 +460,7 @@ export default class AddLiquidity extends Vue {
       console.log(response_batchcalls);
       console.log(response_batch);
       
-      let firemessage = null;
+      
       if(response_batch != undefined){
         firemessage = {
           title: 'Successful',

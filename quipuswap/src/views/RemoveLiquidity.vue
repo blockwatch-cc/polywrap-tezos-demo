@@ -420,6 +420,30 @@ export default class RemoveLiquidity extends Vue {
       await connectTempleWalletWrapper();
       const me = getAccount().pkh;
 
+      // const inTkAddress = this.inputDexAddress != undefined ? this.inputDexAddress : 'KT1SaouedthKUtAujiBD232mZYGtKwpZ6mFD';
+      // const outTkAddress = this.outputDexAddress != undefined ? this.outputDexAddress : 'KT1SaouedthKUtAujiBD232mZYGtKwpZ6mFD';
+    
+      // let pairId = await getTokenPairsID(inTkAddress,outTkAddress);
+
+      // if(pairId == undefined){
+      //   firemessage = {
+      //     title: 'Unavailable Pair',
+      //     html:
+      //       'We only support FA12 and FA1218 Pair Transaction now.',
+      //     showCancelButton: false,
+      //     confirmButtonColor: '#3085d6',
+      //     cancelButtonColor: '#d33',
+      //     confirmButtonText: 'Done!'
+      //   }
+
+      //   this.$fire(firemessage);
+
+      //   this.swapping = false;
+      //   this.swapStatus = this.defaultSwapStatus;
+        
+      //   return
+      // }
+
       const payload_divest = {
           params: {
             pairId: 14,
