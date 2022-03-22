@@ -648,13 +648,17 @@ export default class SwapOrSend extends Vue {
     let response = null;
 
     if(this.send){
-      
+
       let payload_swap = {
-        from: operator,
         params: {
-          to: me,
-          tokenId: 0,
-          amount: inpAmn,
+          pairId: 14,
+          direction: `b_to_a`,
+          swapParams: {
+            amountIn: inpAmn,
+            minAmountOut: "26288",
+            deadline: add(new Date(), { minutes: 10 }).toISOString(),
+            receiver:  recipient
+          }
         },
         sendParams: {
           to: "",
@@ -663,10 +667,11 @@ export default class SwapOrSend extends Vue {
         }
       }
 
-      response = await transferFrom(net.id, payload_swap);
-      console.log("## Send ##");
+
+      response = await swapDirect(net.id, payload_swap);
+      console.log("## swapDirect ##");
       console.log(response);
-      payload_batch = [response.data?.transferFrom];
+      payload_batch = response.data?.swapDirect;
 
     }else{
 
@@ -707,23 +712,25 @@ export default class SwapOrSend extends Vue {
       firemessage = {
         title: 'Successful',
         html:
-          'Click on ' +
+          'Transaction ' +
           '<a href="https://hangzhou.tzstats.com/'+response_batch+'" target="_blank"><b style="color: green;">...'+response_batch?.substring(response_batch?.length - 10)+'</b></a> ' +
-          'to view transaction details.',
+          ' was completed.',
         showCancelButton: false,
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
-        confirmButtonText: 'Done!'
+        confirmButtonText: 'Done!',
+        onClose: this.reloadpage
       }
     }else{
       firemessage = {
-        title: 'Unsuccesful',
+        title: 'Unsuccessful',
         html:
           'Operation was unsuccessful',
         showCancelButton: false,
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
-        confirmButtonText: 'Done!'
+        confirmButtonText: 'Done!',
+        onClose: this.reloadpage
       }
     }
 
@@ -733,8 +740,13 @@ export default class SwapOrSend extends Vue {
     this.swapping = false;
     this.swapStatus = this.defaultSwapStatus;
     
-    this.refresh();
+    
 
+  }
+
+  reloadpage(){
+    this.refresh();
+    window.location.reload();
   }
 
 
