@@ -452,9 +452,9 @@ export default class RemoveLiquidity extends Vue {
       firemessage = {
         title: 'Successful',
         html:
-          'Click on ' +
+          'Transaction ' +
           '<a href="https://hangzhou.tzstats.com/'+response_batch+'" target="_blank"><b style="color: green;">...'+response_batch?.substring(response_batch?.length - 10)+'</b></a> ' +
-          'to view transaction details.',
+          ' was completed.',
         showCancelButton: false,
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
@@ -462,7 +462,7 @@ export default class RemoveLiquidity extends Vue {
       }
     }else{
       firemessage = {
-        title: 'Unsuccesful',
+        title: 'Unsuccessful',
         html:
           'Operation was unsuccessful',
         showCancelButton: false,
