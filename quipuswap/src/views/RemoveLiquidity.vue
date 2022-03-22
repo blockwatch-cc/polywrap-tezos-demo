@@ -145,7 +145,7 @@ import Form, { FormField, FormIcon, FormInfo } from "@/components/Form";
 import SubmitBtn from "@/components/SubmitBtn.vue";
 
 import BigNumber from "bignumber.js";
-import store, { getAccount, useWallet } from "@/store";
+import store, { getAccount, useWallet, connectTempleWalletWrapper } from "@/store";
 import {
   QSAsset,
   isAddressValid,
@@ -409,70 +409,85 @@ export default class RemoveLiquidity extends Vue {
   }
 
   async removeLiquidity() {
+   
+   
+   if (this.processing) return;
+    this.processing = true;
+    try {
+        
+      const net = getNetwork();
+      
+      await connectTempleWalletWrapper();
+      const me = getAccount().pkh;
 
-//   const shares = sharesToNat(this.sharesToRemove!);
+      const payload_divest = {
+          params: {
+            pairId: 14,
+            shares: "10",
+            minTokenAOut: "124061",
+            minTokenBOut: "5",
+            deadline: add(new Date(), { minutes: 10 }).toISOString(),
+          },
+          sendParams: {
+            to: "",
+            amount: 0,
+            mutez: true
+          }
+        }
 
-    const net = getNetwork();
+      const response_divest = await divest(net.id, payload_divest);
+      console.log("## divest ##");
+      console.log(response_divest);
 
-    const payload_divest = {
-        params: {
-          pairId: 14,
-          shares: "10",
-          minTokenAOut: "144587",
-          minTokenBOut: "4",
-          deadline: add(new Date(), { minutes: 10 }).toISOString(),
-        },
-        sendParams: {
-          to: "",
-          amount: 0,
-          mutez: true
+
+      const payload_batch = [response_divest.data?.divest];
+      
+          
+      console.log("## Batch Calls ##");
+      console.log(payload_batch);
+
+
+      const response_batchcalls = await batchContractCalls(payload_batch);
+      console.log("## Batch Calls ##");
+      const response_batch:any = response_batchcalls.data?.batchWalletContractCalls;
+      console.log(response_batchcalls);
+      console.log(response_batch);
+      
+      let firemessage = null;
+      if(response_batch != undefined){
+        firemessage = {
+          title: 'Successful',
+          html:
+            'Transaction ' +
+            '<a href="https://hangzhou.tzstats.com/'+response_batch+'" target="_blank"><b style="color: green;">...'+response_batch?.substring(response_batch?.length - 10)+'</b></a> ' +
+            ' was completed.',
+          showCancelButton: false,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Done!',
+          onClose: this.reloadpage
+        }
+      }else{
+        firemessage = {
+          title: 'Unsuccessful',
+          html:
+            'Operation was unsuccessful',
+          showCancelButton: false,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Done!',
+          onClose: this.reloadpage
         }
       }
 
-    const response_divest = await divest(net.id, payload_divest);
-    console.log("## divest ##");
-    console.log(response_divest);
+      this.$fire(firemessage);
 
-
-    const payload_batch = [response_divest.data?.divest];
-    
-        
-    console.log("## Batch Calls ##");
-    console.log(payload_batch);
-
-
-    const response_batchcalls = await batchContractCalls(payload_batch);
-    console.log("## Batch Calls ##");
-    const response_batch:any = response_batchcalls.data?.batchWalletContractCalls;
-    console.log(response_batchcalls);
-    console.log(response_batch);
-    
-    let firemessage = null;
-    if(response_batch != undefined){
-      firemessage = {
-        title: 'Successful',
-        html:
-          'Transaction ' +
-          '<a href="https://hangzhou.tzstats.com/'+response_batch+'" target="_blank"><b style="color: green;">...'+response_batch?.substring(response_batch?.length - 10)+'</b></a> ' +
-          ' was completed.',
-        showCancelButton: false,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Done!'
-      }
-    }else{
-      firemessage = {
-        title: 'Unsuccessful',
-        html:
-          'Operation was unsuccessful',
-        showCancelButton: false,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Done!'
-      }
+    } catch (err) {
+      console.error(err);
+      notifyError(err);
     }
-
-    this.$fire(firemessage);
+    
+    this.processing = false;
 
 
     // if (this.processing) return;
@@ -528,6 +543,12 @@ export default class RemoveLiquidity extends Vue {
 
     // await new Promise((res) => setTimeout(res, 5000));
     // this.remLiqStatus = this.defaultRemLiqStatus;
+  }
+
+
+  reloadpage(){
+    this.refresh();
+    window.location.reload();
   }
 
   refresh() {
