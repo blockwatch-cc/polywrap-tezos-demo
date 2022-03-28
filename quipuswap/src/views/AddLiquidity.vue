@@ -15,6 +15,7 @@
         :isLoading="tezLoading"
         v-model="tezAmount"
         @input="(e) => handleTezAmountChange(e.target.value)"
+        @selectToken="handleInputSelect"
         :selectedToken="tezToken"
       />
 
@@ -93,7 +94,8 @@
     </template>
 
     <div class="flex justify-center text-center">
-      <SubmitBtn @click="addLiquidity" :disabled="!valid">
+      <!-- :disabled="!valid" -->
+      <SubmitBtn @click="addLiquidity" >
         <template v-if="!processing">{{ addLiqStatus }}</template>
         <template v-if="processing">
           <Loader size="large" />
@@ -169,7 +171,9 @@ type PoolMeta = {
   },
 })
 export default class AddLiquidity extends Vue {
-  tezToken: QSAsset | null = XTZ_TOKEN;
+  tezToken: QSAsset | null = null;
+  inputToken: string | null = null;
+
   tezAmount = "";
   tezBalance: string | null = null;
   tezLoading = false;
@@ -345,6 +349,15 @@ export default class AddLiquidity extends Vue {
     }
   }
 
+  async handleInputSelect(token: QSAsset) {
+    this.inputToken = token;
+
+    if (this.tezToken && toAssetSlug(token) === toAssetSlug(this.tezToken)) {
+      this.tezToken = null;
+      this.tezAmount = "";
+    }
+  }
+
   handleTezAmountChange(amount: string) {
     this.tezAmount = amount;
     const isNum = /^[0-9.]*$/g.test(amount);
@@ -398,36 +411,116 @@ export default class AddLiquidity extends Vue {
         
       const net = getNetwork();
       
-      await connectTempleWalletWrapper();
-      const me = getAccount().pkh;
+      // await connectTempleWalletWrapper();
+      // const me = getAccount().pkh;
 
       let firemessage = {};
-      const initialTezAmount = this.tezAmount;
-      const initialTokenAmount = this.tokenAmount;
 
-      // const inTkAddress = this.inputDexAddress != undefined ? this.inputDexAddress : 'KT1SaouedthKUtAujiBD232mZYGtKwpZ6mFD';
-      // const outTkAddress = this.outputDexAddress != undefined ? this.outputDexAddress : 'KT1SaouedthKUtAujiBD232mZYGtKwpZ6mFD';
+      const inTkAddress = this.inputToken.id != undefined ? this.inputToken.id : '';
+      const outTkAddress = this.selectedToken.id != undefined ? this.selectedToken.id : '';
     
-      // let pairId = await getTokenPairsID(inTkAddress,outTkAddress);
+      let pairId = await getTokenPairsID(inTkAddress,outTkAddress);
+      
 
-      // if(pairId == undefined){
-      //   firemessage = {
-      //     title: 'Unavailable Pair',
-      //     html:
-      //       'We only support FA12 and FA1218 Pair Transaction now.',
-      //     showCancelButton: false,
-      //     confirmButtonColor: '#3085d6',
-      //     cancelButtonColor: '#d33',
-      //     confirmButtonText: 'Done!'
-      //   }
+      if(pairId == undefined){
+        firemessage = {
+          title: 'Unavailable Pair',
+          html:
+            'We only support FA12 and FA1218 Pair Transaction now.',
+          showCancelButton: false,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Done!'
+        }
 
-      //   this.$fire(firemessage);
-
-      //   this.swapping = false;
-      //   this.swapStatus = this.defaultSwapStatus;
+        this.$fire(firemessage);
+        this.processing = false;
         
-      //   return
-      // }
+        return
+      }
+
+
+      const dex_tokenA = await findTezDex(this.selectedToken);
+      var dexAddress_tokenA:any = null;
+
+      if (dex_tokenA) {
+        dexAddress_tokenA = dex_tokenA.address;
+      }
+      const dexAddress_tokenB = this.dexAddress!;
+
+      const selTk_A = this.inputToken;
+      const selTk_B = this.selectedToken!;
+
+
+      const initialTezAmount_tknA = this.tezAmount;
+      const initialTokenAmount_tknB = this.tokenAmount;
+
+
+      const dexStorage_tknA = await getDexStorage(dexAddress_tokenA);
+      const dexStorage_tknB = await getDexStorage(dexAddress_tokenB);
+
+
+      const tokensShares_tknA = estimateSharesInverse(
+        initialTezAmount_tknA,
+        dexStorage_tknA,
+        selTk_A
+      );
+
+      const tokensShares_tknB = estimateSharesInverse(
+        initialTokenAmount_tknB,
+        dexStorage_tknB,
+        selTk_B
+      );
+
+
+      const shares = BigNumber.max(
+        BigNumber.min(tokensShares_tknA, tokensShares_tknB),
+        1
+      );
+
+      const tokenAmount_A = estimateInTokens(shares, dexStorage_tknA, selTk_A);
+      const tokenAmount_B = estimateInTokens(shares, dexStorage_tknB, selTk_B);
+
+      console.log("Tokens");
+      console.log(selTk_A);
+      console.log(selTk_B);
+      console.log(tokensShares_tknA);
+      console.log(tokensShares_tknB);
+      console.log(dexStorage_tknA);
+      console.log(dexStorage_tknB);
+      console.log(shares.toNumber());
+      console.log(tokenAmount_A.toNumber());
+      console.log(tokenAmount_B.toNumber());
+
+      // console.log(dexStorage);
+      // console.log(tezShares);
+      // console.log(tokensShares);
+      // console.log(tezShares.toNumber());
+      // console.log(shares.toNumber());
+      // console.log(tokenAmount.toNumber());
+      // console.log(tezAmount.toNumber());
+
+      return;
+
+      
+      
+
+
+      const tokenAmount = estimateInTokens(shares, dexStorage, selTk_B);
+      const tezAmount = estimateInTezos(shares, dexStorage);
+
+      console.log("Shares");
+      console.log(dexStorage);
+      console.log(tezShares);
+      console.log(tokensShares);
+      console.log(tezShares.toNumber());
+      console.log(shares.toNumber());
+      console.log(tokenAmount.toNumber());
+      console.log(tezAmount.toNumber());
+      
+      // .c[0]
+
+      return;
 
       const payload_invest = {
           params: {
