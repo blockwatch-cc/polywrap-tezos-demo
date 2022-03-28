@@ -233,14 +233,20 @@ export async function findTezDexPure(token: QSAsset) {
     } = getNetwork();
 
     const oldWhitelist = OLD_WHITELIST[netId] ?? [];
+
+
+    let tid:any = token.fa2TokenId;
+
     let exchange;
 
     if (token.tokenType === QSTokenType.FA2) {
+      
       const factory =
         fa2OldFactoryContract &&
         oldWhitelist.some(w => toOldWhitelistedSlug(w) === tokenSlug)
           ? fa2OldFactoryContract
           : fa2FactoryContract;
+
 
       if (factory) {
         const facStorage = await getFactoryStorage(factory);
@@ -258,9 +264,33 @@ export async function findTezDexPure(token: QSAsset) {
 
       if (factory) {
         const facStorage = await getFactoryStorage(factory);
+
         exchange = await facStorage.token_to_exchange.get(token.id);
       }
     }
+
+
+    if(!isNaN(tid)){
+      
+      const factory =
+        fa2OldFactoryContract &&
+        oldWhitelist.some(w => toOldWhitelistedSlug(w) === tokenSlug)
+          ? fa2OldFactoryContract
+          : fa2FactoryContract;
+
+
+      if (factory) {
+        const facStorage = await getFactoryStorage(factory);
+        exchange = await facStorage.token_to_exchange.get([
+          token.id,
+          token.fa2TokenId,
+        ]);
+      }
+
+    }
+
+    console.log("exchange");
+    console.log(exchange);
 
     if (exchange) {
       return getContract(exchange);
