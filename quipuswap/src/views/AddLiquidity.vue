@@ -401,7 +401,7 @@ export default class AddLiquidity extends Vue {
       await connectTempleWalletWrapper();
       const me = getAccount().pkh;
 
-      let firemessage = null;
+      let firemessage = {};
       const initialTezAmount = this.tezAmount;
       const initialTokenAmount = this.tokenAmount;
 
