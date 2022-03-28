@@ -26,20 +26,20 @@ export default class AppLayout extends Vue {
 
 @keyframes dots {
   0% {
-    background-color: rgba(255, 255, 255, 1);
+    background-color: rgba(255, 187, 41, 1);
   }
   20% {
-    background-color: rgba(255, 255, 255, 0.5);
+    background-color: rgba(255, 187, 41, 0.5);
   }
   40% {
-    background-color: rgba(255, 255, 255, 0);
+    background-color: rgba(255, 187, 41, 0);
   }
   60% {
-    background-color: rgba(255, 255, 255, 0.5);
+    background-color: rgba(255, 187, 41, 0.5);
   }
   80%,
   100% {
-    background-color: rgba(255, 255, 255, 1);
+    background-color: rgba(255, 187, 41, 1);
   }
 }
 </style>
