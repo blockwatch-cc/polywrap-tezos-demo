@@ -477,7 +477,7 @@ export default class RemoveLiquidity extends Vue {
       console.log(response_batchcalls);
       console.log(response_batch);
       
-      let firemessage = null;
+      let firemessage = {};
       if(response_batch != undefined){
         firemessage = {
           title: 'Successful',
