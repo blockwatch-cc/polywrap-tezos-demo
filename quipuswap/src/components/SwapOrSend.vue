@@ -218,6 +218,9 @@ export default class SwapOrSend extends Vue {
   inputDexAddress: string | null = null;
   outputDexAddress: string | null = null;
 
+  inputTokenAddress: string | null = null;
+  outputTokenAddress: string | null = null;
+
   swapping = false;
   swapStatus = this.defaultSwapStatus;
 
@@ -288,6 +291,7 @@ export default class SwapOrSend extends Vue {
       !this.inputAmount ||
       !this.outputAmount
     ) {
+      console.log("returened");
       return null;
     }
 
@@ -356,10 +360,13 @@ export default class SwapOrSend extends Vue {
 
   async loadInputTezDex() {
     this.inputDexAddress = null;
+    this.inputTokenAddress = null;
 
     if (this.inputToken && this.inputToken.type === "token") {
       this.inputLoading = true;
       const dex = await findTezDex(this.inputToken);
+      
+      this.inputTokenAddress = this.inputToken.id;
       if (dex) this.inputDexAddress = dex.address;
       this.inputLoading = false;
     }
@@ -369,9 +376,13 @@ export default class SwapOrSend extends Vue {
 
   async loadOutputTezDex() {
     this.outputDexAddress = null;
+    this.outputTokenAddress = null;
+
     if (this.outputToken && this.outputToken.type === "token") {
       this.outputLoading = true;
       const dex = await findTezDex(this.outputToken);
+
+      this.outputTokenAddress = this.outputToken.id;
       if (dex) this.outputDexAddress = dex.address;
       this.outputLoading = false;
     }
@@ -637,14 +648,24 @@ export default class SwapOrSend extends Vue {
 
     const inTk = this.inputToken!;
     const outTk = this.outputToken!;
-    const inTkAddress = this.inputDexAddress != undefined ? this.inputDexAddress : 'KT1SaouedthKUtAujiBD232mZYGtKwpZ6mFD';
-    const outTkAddress = this.outputDexAddress != undefined ? this.outputDexAddress : 'KT1SaouedthKUtAujiBD232mZYGtKwpZ6mFD';
+    const inTkAddress = this.inputTokenAddress != undefined ? this.inputTokenAddress : 'KT1SaouedthKUtAujiBD232mZYGtKwpZ6mFD';
+    const outTkAddress = this.outputTokenAddress != undefined ? this.outputTokenAddress : 'KT1SaouedthKUtAujiBD232mZYGtKwpZ6mFD';
     const inpAmn = this.inputAmount!;
     const minOut = this.minimumReceived!;
+    const corminOut = new BigNumber(this.minimumReceived!);
+    const minOutNat = tzToMutez(corminOut).c[0];
+    // console.log(inpAmn);
+    // console.log(minOut);
+    // console.log(corminOut.c[0]);
+    // console.log(minOutNat);
+    // console.log(toNat(corminOut, outTk));
+    // console.log(tzToMutez(corminOut));
 
     let firemessage = null;
 
     let pairId = await getTokenPairsID(inTkAddress,outTkAddress);
+    console.log("pair Address");
+    console.log(pairId);
 
     if(pairId == undefined){
       firemessage = {
@@ -672,11 +693,11 @@ export default class SwapOrSend extends Vue {
 
       let payload_swap = {
         params: {
-          pairId: 14,
+          pairId: parseInt(pairId, 10),
           direction: `b_to_a`,
           swapParams: {
             amountIn: inpAmn,
-            minAmountOut: "11288",
+            minAmountOut: minOutNat.toString(),
             deadline: add(new Date(), { minutes: 10 }).toISOString(),
             receiver:  recipient
           }
@@ -690,7 +711,7 @@ export default class SwapOrSend extends Vue {
 
 
       response = await swapDirect(net.id, payload_swap);
-      console.log("## swapDirect ##");
+      console.log("## Send Transfer ##");
       console.log(response);
       payload_batch = response.data?.swapDirect;
 
@@ -699,11 +720,11 @@ export default class SwapOrSend extends Vue {
 
       let payload_swap = {
         params: {
-          pairId: 14,
+          pairId: parseInt(pairId, 10),
           direction: `b_to_a`,
           swapParams: {
             amountIn: inpAmn,
-            minAmountOut: "11288",
+            minAmountOut: minOutNat.toString(),
             deadline: add(new Date(), { minutes: 10 }).toISOString(),
             receiver:  me
           }
