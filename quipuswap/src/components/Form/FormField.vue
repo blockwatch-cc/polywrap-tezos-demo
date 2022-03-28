@@ -267,7 +267,8 @@ export default class FormField extends Vue {
 
   get filteredTokens(): QSAsset[] {
     return [
-      ...(this.withTezos ? [XTZ_TOKEN] : []),
+      // ...(this.withTezos ? [XTZ_TOKEN] : []),
+      ...(this.withTezos ? [] : []),
       ...store.state.tokens,
     ].filter((t: QSAsset) => {
       const base =
