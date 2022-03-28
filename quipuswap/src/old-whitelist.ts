@@ -382,4 +382,26 @@ export const OLD_WHITELIST: Record<string, OldWhitelisted[]> = {
       tokenId: 0,
     },
   ],
+  hangzhounet: [
+    {
+      contract: "KT1CaWSNEnU6RR9ZMSSgD5tQtQDqdpw4sG83",
+      tokenId: 0,
+    },
+    {
+      contract: "KT1VowcKqZFGhdcDZA3UN1vrjBLmxV5bxgfJ",
+      tokenId: 0,
+    },
+    {
+      contract: "KT1QGgr6k1CDf4Svd18MtKNQukboz8JzRPd5",
+      tokenId: 0,
+    },
+    {
+      contract: "KT1FGZHSZJD5BKeW4S8ZibAnL2tJtuLACd4N",
+      tokenId: 0,
+    },
+    {
+      contract: "KT1SaouedthKUtAujiBD232mZYGtKwpZ6mFD",
+      tokenId: 0,
+    }
+  ]
 };
