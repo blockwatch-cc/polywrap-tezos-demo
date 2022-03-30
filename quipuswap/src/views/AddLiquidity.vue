@@ -451,8 +451,8 @@ export default class AddLiquidity extends Vue {
       }
       const dexAddress_tokenB = this.dexAddress!;
 
-      const selTk_A = this.inputToken;
-      const selTk_B = this.selectedToken!;
+      const selTk_A: any = this.inputToken;
+      const selTk_B: any = this.selectedToken!;
 
 
       const initialTezAmount_tknA = new BigNumber(this.tezAmount);
@@ -485,55 +485,23 @@ export default class AddLiquidity extends Vue {
       const tokenAmount_A = estimateInTokens(shares, dexStorage_tknA, selTk_A);
       const tokenAmount_B = estimateInTokens(shares, dexStorage_tknB, selTk_B);
 
-      console.log("Tokens");
-      console.log(selTk_A);
-      console.log(selTk_B);
-      console.log(tokensShares_tknA);
-      console.log(tokensShares_tknB);
-      console.log(dexStorage_tknA);
-      console.log(dexStorage_tknB);
-      console.log(mutezToTz(shares));
-      console.log(mutezToTz(tokenAmount_A));
-      console.log(mutezToTz(tokenAmount_B));
-
-
-
       var pairStorage = await getStorage('KT1Ni6JpXqGyZKXhJCPQJZ9x5x5bd7tXPNPC');
       var pairStorageLQ = await pairStorage.storage.pairs.get(pairId)
       const token_a_pool = pairStorageLQ.token_a_pool.toNumber();
       const token_b_pool = pairStorageLQ.token_b_pool.toNumber();
       const total_supply = pairStorageLQ.total_supply.toNumber();
-      
 
-
-      console.log("pairStorageLQ");
-      console.log(token_a_pool);
-      console.log(token_b_pool);
-      console.log(total_supply);
-
-      // const tA_supply = dexStorage_tknA.totalSupply.toNumber();
-      // const tB_supply = dexStorage_tknB.totalSupply.toNumber();
-
-      // const t_multi = tA_supply * tB_supply;
-      // const totalLiquidity = Math.sqrt(t_multi);
       const amountTknA = parseFloat(this.tezAmount);
-      // const poolTknA = dexStorage_tknB.tokenPool.toNumber();
-      // const lpToken = (totalLiquidity * amountTknA) / poolTknA;
-      console.log(amountTknA);
+
       
       const lpShares = Math.round(((total_supply * amountTknA) / token_a_pool) * Math.pow(10, selTk_A.decimals));
-      
-      console.log("lpShares");
-      console.log(lpShares);
+      const lpShares_not_rounded = ((total_supply * amountTknA) / token_a_pool) * Math.pow(10, selTk_A.decimals);
 
-      const lpRatio = lpShares/total_supply;
-      console.log(lpRatio);
+      var lpRatio = lpShares_not_rounded/total_supply;
 
-      const token_a_in = Math.round(token_a_pool * lpRatio);
-      const token_b_in = Math.round(token_b_pool * lpRatio);
-      
-      console.log(token_a_in);
-      console.log(token_b_in);
+      const token_a_in = Math.ceil(token_a_pool * lpRatio);
+      const token_b_in = Math.ceil(token_b_pool * lpRatio);
+
 
       const payload_invest = {
           params: {
