@@ -535,11 +535,6 @@ export default class AddLiquidity extends Vue {
       console.log(token_a_in);
       console.log(token_b_in);
 
-      
-      // shares: "16",
-      // tokenAIn: "201000",
-      // tokenBIn: "11",
-
       const payload_invest = {
           params: {
             pairId: parseInt(pairId, 10),
