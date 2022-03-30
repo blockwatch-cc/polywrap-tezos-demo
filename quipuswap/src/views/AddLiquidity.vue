@@ -140,7 +140,8 @@ import {
   toAssetSlug,
   findTezDex,
   confirmOperation,
-  getNetwork
+  getNetwork,
+  getStorage
 } from "@/core";
 import { XTZ_TOKEN } from "@/core/defaults";
 import { OpKind } from "@taquito/taquito";
@@ -411,8 +412,8 @@ export default class AddLiquidity extends Vue {
         
       const net = getNetwork();
       
-      // await connectTempleWalletWrapper();
-      // const me = getAccount().pkh;
+      await connectTempleWalletWrapper();
+      const me = getAccount().pkh;
 
       let firemessage = {};
 
@@ -421,6 +422,8 @@ export default class AddLiquidity extends Vue {
     
       let pairId = await getTokenPairsID(inTkAddress,outTkAddress);
       
+      console.log("pairId");
+      console.log(pairId);
 
       if(pairId == undefined){
         firemessage = {
@@ -440,7 +443,7 @@ export default class AddLiquidity extends Vue {
       }
 
 
-      const dex_tokenA = await findTezDex(this.selectedToken);
+      const dex_tokenA = await findTezDex(this.inputToken);
       var dexAddress_tokenA:any = null;
 
       if (dex_tokenA) {
@@ -452,8 +455,8 @@ export default class AddLiquidity extends Vue {
       const selTk_B = this.selectedToken!;
 
 
-      const initialTezAmount_tknA = this.tezAmount;
-      const initialTokenAmount_tknB = this.tokenAmount;
+      const initialTezAmount_tknA = new BigNumber(this.tezAmount);
+      const initialTokenAmount_tknB = new BigNumber(this.tokenAmount);
 
 
       const dexStorage_tknA = await getDexStorage(dexAddress_tokenA);
@@ -465,6 +468,7 @@ export default class AddLiquidity extends Vue {
         dexStorage_tknA,
         selTk_A
       );
+      
 
       const tokensShares_tknB = estimateSharesInverse(
         initialTokenAmount_tknB,
@@ -488,46 +492,60 @@ export default class AddLiquidity extends Vue {
       console.log(tokensShares_tknB);
       console.log(dexStorage_tknA);
       console.log(dexStorage_tknB);
-      console.log(shares.toNumber());
-      console.log(tokenAmount_A.toNumber());
-      console.log(tokenAmount_B.toNumber());
+      console.log(mutezToTz(shares));
+      console.log(mutezToTz(tokenAmount_A));
+      console.log(mutezToTz(tokenAmount_B));
 
-      // console.log(dexStorage);
-      // console.log(tezShares);
-      // console.log(tokensShares);
-      // console.log(tezShares.toNumber());
-      // console.log(shares.toNumber());
-      // console.log(tokenAmount.toNumber());
-      // console.log(tezAmount.toNumber());
 
-      return;
 
-      
+      var pairStorage = await getStorage('KT1Ni6JpXqGyZKXhJCPQJZ9x5x5bd7tXPNPC');
+      var pairStorageLQ = await pairStorage.storage.pairs.get(pairId)
+      const token_a_pool = pairStorageLQ.token_a_pool.toNumber();
+      const token_b_pool = pairStorageLQ.token_b_pool.toNumber();
+      const total_supply = pairStorageLQ.total_supply.toNumber();
       
 
 
-      const tokenAmount = estimateInTokens(shares, dexStorage, selTk_B);
-      const tezAmount = estimateInTezos(shares, dexStorage);
+      console.log("pairStorageLQ");
+      console.log(token_a_pool);
+      console.log(token_b_pool);
+      console.log(total_supply);
 
-      console.log("Shares");
-      console.log(dexStorage);
-      console.log(tezShares);
-      console.log(tokensShares);
-      console.log(tezShares.toNumber());
-      console.log(shares.toNumber());
-      console.log(tokenAmount.toNumber());
-      console.log(tezAmount.toNumber());
+      // const tA_supply = dexStorage_tknA.totalSupply.toNumber();
+      // const tB_supply = dexStorage_tknB.totalSupply.toNumber();
+
+      // const t_multi = tA_supply * tB_supply;
+      // const totalLiquidity = Math.sqrt(t_multi);
+      const amountTknA = parseFloat(this.tezAmount);
+      // const poolTknA = dexStorage_tknB.tokenPool.toNumber();
+      // const lpToken = (totalLiquidity * amountTknA) / poolTknA;
+      console.log(amountTknA);
       
-      // .c[0]
+      const lpShares = Math.round(((total_supply * amountTknA) / token_a_pool) * Math.pow(10, selTk_A.decimals));
+      
+      console.log("lpShares");
+      console.log(lpShares);
 
-      return;
+      const lpRatio = lpShares/total_supply;
+      console.log(lpRatio);
+
+      const token_a_in = Math.round(token_a_pool * lpRatio);
+      const token_b_in = Math.round(token_b_pool * lpRatio);
+      
+      console.log(token_a_in);
+      console.log(token_b_in);
+
+      
+      // shares: "16",
+      // tokenAIn: "201000",
+      // tokenBIn: "11",
 
       const payload_invest = {
           params: {
-            pairId: 14,
-            shares: "16",
-            tokenAIn: "201000",
-            tokenBIn: "11",
+            pairId: parseInt(pairId, 10),
+            shares: lpShares.toString(),
+            tokenAIn: token_a_in.toString(),
+            tokenBIn: token_b_in.toString(),
             deadline: add(new Date(), { minutes: 10 }).toISOString(),
           },
           sendParams: {

@@ -24,6 +24,27 @@ export function estimateToken2Token(
   return fromNat(tokensOut, outputToken);
 }
 
+export function estimateToken2Token2(
+  poolTokenA: any,
+  poolTokenB: any,
+  inputToken: QSAsset,
+  outputToken: QSAsset,
+  amount: BigNumber.Value
+) {
+  if (!amount) return new BigNumber(0);
+
+  console.info(poolTokenA, poolTokenB, inputToken, outputToken, amount);
+
+  const tezInWithFee = toNat(amount, inputToken).times(997);
+  const numerator = tezInWithFee.times(poolTokenA);
+  const denominator = new BigNumber(poolTokenB)
+    .times(1000)
+    .plus(tezInWithFee);
+  const tokensOut = numerator.idiv(denominator);
+
+  return fromNat(tokensOut, outputToken);
+}
+
 export function estimateTezToToken(
   tezAmount: any,
   dexStorage: any,
