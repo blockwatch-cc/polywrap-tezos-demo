@@ -1,6 +1,9 @@
 import BigNumber from "bignumber.js";
 import { tzToMutez, mutezToTz } from "./helpers";
 import { QSAsset } from "./types";
+import {
+  getStorage
+} from "@/core";
 
 const PENNY = 0.000001;
 
@@ -206,4 +209,44 @@ export function toNat(amount: any, token: QSAsset) {
 function toTokens(tezAmount: any, dexStorage: any, token: QSAsset) {
   const shares = estimateShares(tezAmount, dexStorage);
   return estimateInTokens(shares, dexStorage, token);
+}
+
+
+export async function sharesTokenAinTokenBin(
+  pairId: any,
+  tokenAmount: any,
+  selTk_A: any,
+  sharesToRemove: any
+) {
+
+  var pairStorage = await getStorage('KT1Ni6JpXqGyZKXhJCPQJZ9x5x5bd7tXPNPC');
+  var pairStorageLQ = await pairStorage.storage.pairs.get(pairId);
+  
+  const token_a_pool = pairStorageLQ.token_a_pool.toNumber();
+  const token_b_pool = pairStorageLQ.token_b_pool.toNumber();
+  const total_supply = pairStorageLQ.total_supply.toNumber();
+  
+  var lpShares: any = null;
+  var lpShares_not_rounded: any = null;
+  
+  if(sharesToRemove == undefined){
+    const amountTknA = parseFloat(tokenAmount);
+    const lpShares_not_rounded = ((total_supply * amountTknA) / token_a_pool) * Math.pow(10, selTk_A.decimals);
+    lpShares = Math.round(lpShares_not_rounded);
+  }else{
+    lpShares = sharesToRemove;
+    lpShares_not_rounded = sharesToRemove;
+  }
+  
+
+  var lpRatio = lpShares_not_rounded/total_supply;
+  const token_a_in = Math.ceil(token_a_pool * lpRatio);
+  const token_b_in = Math.ceil(token_b_pool * lpRatio);
+
+  return {
+    lpShares: lpShares,
+    token_a_in: token_a_in,
+    token_b_in: token_b_in
+  }
+
 }
