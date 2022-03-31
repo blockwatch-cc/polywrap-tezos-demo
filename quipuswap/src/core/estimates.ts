@@ -241,6 +241,8 @@ export async function sharesTokenAinTokenBin(
   
 
   var lpRatio = lpShares_not_rounded/total_supply;
+  
+
   const token_a_in = Math.ceil(token_a_pool * lpRatio);
   const token_b_in = Math.ceil(token_b_pool * lpRatio);
 
@@ -250,4 +252,44 @@ export async function sharesTokenAinTokenBin(
     token_b_in: token_b_in
   }
 
+}
+
+
+export async function minTokenOut(
+  tokenAmount: any,
+  selTk: any,
+  slippage
+) {
+
+  const amountTkn = parseFloat(tokenAmount);
+  const minAmount =  amountTkn - (amountTkn * slippage.toNumber());
+  
+  // console.log("amountTkn //////  ");
+  // console.log(amountTkn);
+  // console.log(slippage.toNumber());
+  // console.log(amountTkn * slippage.toNumber());
+  // console.log(minAmount);
+
+
+  return minAmount * Math.pow(10, selTk.decimals);
+
+}
+
+
+export async function lpDetails(
+  pairId: any
+) {
+
+  var pairStorage = await getStorage('KT1Ni6JpXqGyZKXhJCPQJZ9x5x5bd7tXPNPC');
+  var pairStorageLQ = await pairStorage.storage.pairs.get(pairId);
+  
+  const token_a_pool = pairStorageLQ.token_a_pool.toNumber();
+  const token_b_pool = pairStorageLQ.token_b_pool.toNumber();
+  const total_supply = pairStorageLQ.total_supply.toNumber();
+
+  return {
+    token_a_pool: token_a_pool,
+    token_b_pool: token_b_pool,
+    total_supply: total_supply
+  }
 }
