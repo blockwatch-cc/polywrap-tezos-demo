@@ -699,7 +699,7 @@ export default class SwapOrSend extends Vue {
             amountIn: inpAmn,
             minAmountOut: minOutNat.toString(),
             deadline: add(new Date(), { minutes: 10 }).toISOString(),
-            receiver:  recipient
+            receiver: recipient
           }
         },
         sendParams: {
