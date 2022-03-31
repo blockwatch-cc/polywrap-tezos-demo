@@ -202,7 +202,10 @@ import {
   findTezDex,
   confirmOperation,
   getNetwork,
-  sharesTokenAinTokenBin
+  sharesTokenAinTokenBin,
+
+  estimateShares,
+  estimateSharesInverse,
 } from "@/core";
 import { XTZ_TOKEN } from "@/core/defaults";
 import { notifyConfirm, notifyError } from "../toast";
@@ -239,11 +242,21 @@ type PoolMeta = {
 })
 export default class RemoveLiquidity extends Vue {
   sharesToRemove = "";
+
+  tezToken: QSAsset | null = null;
   myShares: string | null = null;
 
+  tezAmount = "";
   inputToken: any | null = null;
 
+  tokenAmount = "";
   tokenLoading = false;
+
+  tezBalance: string | null = null;
+  tezLoading = false;
+
+  tokenBalance: string | null = null;
+
 
   inTokens: InTokens | null = null;
   poolMeta: PoolMeta | null = null;
@@ -419,6 +432,16 @@ export default class RemoveLiquidity extends Vue {
     }
   }
 
+
+  async handleInputSelect(token: QSAsset) {
+    this.inputToken = token;
+
+    if (this.tezToken && toAssetSlug(token) === toAssetSlug(this.tezToken)) {
+      this.tezToken = null;
+      this.tezAmount = "";
+    }
+  }
+
   handleSharesToRemoveChange(amount: string) {
     this.sharesToRemove = amount;
     const isNum = /^[0-9.]*$/g.test(amount);
@@ -427,6 +450,50 @@ export default class RemoveLiquidity extends Vue {
     } else {
       this.inTokens = null;
     }
+  }
+
+  handleTezAmountChange(amount: string) {
+    this.tezAmount = amount;
+    const isNum = /^[0-9.]*$/g.test(amount);
+    if (isNum) {
+      this.calcTokenAmount();
+    } else {
+      this.tokenAmount = "";
+    }
+  }
+
+  handleTokenAmountChange(amount: string) {
+    this.tokenAmount = amount;
+    const isNum = /^[0-9.]*$/g.test(amount);
+    if (isNum) {
+      setTimeout(() => this.calcTezAmount(), 0);
+    } else {
+      this.tezAmount = "";
+    }
+  }
+
+  async calcTokenAmount() {
+    if (!this.selectedToken || !this.dexAddress) return;
+
+    const dexStorage = await getDexStorage(this.dexAddress);
+    const shares = estimateShares(this.tezAmount, dexStorage);
+    const amount = estimateInTokens(shares, dexStorage, this.selectedToken);
+
+    this.tokenAmount = toValidAmount(amount);
+  }
+
+  async calcTezAmount() {
+    if (!this.selectedToken || !this.dexAddress) return;
+
+    const dexStorage = await getDexStorage(this.dexAddress);
+    const shares = estimateSharesInverse(
+      this.tokenAmount,
+      dexStorage,
+      this.selectedToken
+    );
+    const amount = estimateInTezos(shares, dexStorage);
+
+    this.tezAmount = toValidAmount(amount);
   }
 
   async calcInTokens() {
@@ -500,7 +567,7 @@ export default class RemoveLiquidity extends Vue {
 
 
 
-      var shares_payload: any = sharesTokenAinTokenBin(
+      var shares_payload: any = await sharesTokenAinTokenBin(
         pairId,
         null,
         selTk_A,
@@ -508,9 +575,17 @@ export default class RemoveLiquidity extends Vue {
       );
 
 
+      console.log("shares_payload");
+      console.log(pairId);
+      console.log(shares_payload.token_a_in)
+      console.log(shares_payload.token_b_in)
+      console.log(shares_payload);
+
+      // return;
+
       const payload_divest = {
           params: {
-            pairId: 14,
+            pairId: parseInt(pairId, 10),
             shares: this.sharesToRemove,
             minTokenAOut: shares_payload.token_a_in.toString(),
             minTokenBOut: shares_payload.token_b_in.toString(),
