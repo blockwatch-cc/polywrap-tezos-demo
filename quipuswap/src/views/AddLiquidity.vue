@@ -141,7 +141,8 @@ import {
   findTezDex,
   confirmOperation,
   getNetwork,
-  getStorage
+  getStorage,
+  sharesTokenAinTokenBin
 } from "@/core";
 import { XTZ_TOKEN } from "@/core/defaults";
 import { OpKind } from "@taquito/taquito";
@@ -173,7 +174,7 @@ type PoolMeta = {
 })
 export default class AddLiquidity extends Vue {
   tezToken: QSAsset | null = null;
-  inputToken: string | null = null;
+  inputToken: any | null = null;
 
   tezAmount = "";
   tezBalance: string | null = null;
@@ -422,8 +423,6 @@ export default class AddLiquidity extends Vue {
     
       let pairId = await getTokenPairsID(inTkAddress,outTkAddress);
       
-      console.log("pairId");
-      console.log(pairId);
 
       if(pairId == undefined){
         firemessage = {
@@ -455,60 +454,45 @@ export default class AddLiquidity extends Vue {
       const selTk_B: any = this.selectedToken!;
 
 
-      const initialTezAmount_tknA = new BigNumber(this.tezAmount);
-      const initialTokenAmount_tknB = new BigNumber(this.tokenAmount);
 
-
-      const dexStorage_tknA = await getDexStorage(dexAddress_tokenA);
-      const dexStorage_tknB = await getDexStorage(dexAddress_tokenB);
-
-
-      const tokensShares_tknA = estimateSharesInverse(
-        initialTezAmount_tknA,
-        dexStorage_tknA,
-        selTk_A
-      );
-      
-
-      const tokensShares_tknB = estimateSharesInverse(
-        initialTokenAmount_tknB,
-        dexStorage_tknB,
-        selTk_B
+      var shares_payload: any = sharesTokenAinTokenBin(
+        pairId,
+        this.tezAmount,
+        selTk_A,
+        null
       );
 
 
-      const shares = BigNumber.max(
-        BigNumber.min(tokensShares_tknA, tokensShares_tknB),
-        1
-      );
+      console.log({
+            pairId: "14",
+            shares: "1000",
+            tokenAIn: "12406163",
+            tokenBIn: "637",
+      });
 
-      const tokenAmount_A = estimateInTokens(shares, dexStorage_tknA, selTk_A);
-      const tokenAmount_B = estimateInTokens(shares, dexStorage_tknB, selTk_B);
+      return;
 
-      var pairStorage = await getStorage('KT1Ni6JpXqGyZKXhJCPQJZ9x5x5bd7tXPNPC');
-      var pairStorageLQ = await pairStorage.storage.pairs.get(pairId)
-      const token_a_pool = pairStorageLQ.token_a_pool.toNumber();
-      const token_b_pool = pairStorageLQ.token_b_pool.toNumber();
-      const total_supply = pairStorageLQ.total_supply.toNumber();
+      // amount = 0.01
+      // {
+      //  "shares": "1000",
+      //  "pair_id": "14",
+      //  "deadline": "2022-03-30T15:02:10Z",
+      //  "min_token_a_out": "12406163",
+      //  "min_token_b_out": "637"
+      // }
 
-      const amountTknA = parseFloat(this.tezAmount);
-
-      
-      const lpShares = Math.round(((total_supply * amountTknA) / token_a_pool) * Math.pow(10, selTk_A.decimals));
-      const lpShares_not_rounded = ((total_supply * amountTknA) / token_a_pool) * Math.pow(10, selTk_A.decimals);
-
-      var lpRatio = lpShares_not_rounded/total_supply;
-
-      const token_a_in = Math.ceil(token_a_pool * lpRatio);
-      const token_b_in = Math.ceil(token_b_pool * lpRatio);
+      // pairId: parseInt(pairId, 10),
+      // shares: shares_payload.lpShares.toString(),
+      // tokenAIn: shares_payload.token_a_in.toString(),
+      // tokenBIn: shares_payload.token_b_in.toString(),
 
 
       const payload_invest = {
           params: {
-            pairId: parseInt(pairId, 10),
-            shares: lpShares.toString(),
-            tokenAIn: token_a_in.toString(),
-            tokenBIn: token_b_in.toString(),
+            pairId: "14",
+            shares: "1000",
+            tokenAIn: "12406163",
+            tokenBIn: "637",
             deadline: add(new Date(), { minutes: 10 }).toISOString(),
           },
           sendParams: {
@@ -517,6 +501,7 @@ export default class AddLiquidity extends Vue {
             mutez: true
           }
         }
+
 
       const response_invest = await invest(net.id, payload_invest);
       console.log("## invest ##");
