@@ -203,9 +203,10 @@ import {
   confirmOperation,
   getNetwork,
   sharesTokenAinTokenBin,
-
+  minTokenOut,
   estimateShares,
   estimateSharesInverse,
+  lpDetails
 } from "@/core";
 import { XTZ_TOKEN } from "@/core/defaults";
 import { notifyConfirm, notifyError } from "../toast";
@@ -472,29 +473,60 @@ export default class RemoveLiquidity extends Vue {
     }
   }
 
+  async getPairID(){
+    const inTkAddress = this.inputToken.id != undefined ? this.inputToken.id : '';
+    const outTkAddress = this.selectedToken.id != undefined ? this.selectedToken.id : '';
+
+    let pairId = await getTokenPairsID(inTkAddress,outTkAddress);
+
+    return pairId;
+  }
+
   async calcTokenAmount() {
-    if (!this.selectedToken || !this.dexAddress) return;
+    if (!this.inputToken.id || !this.selectedToken.id) return;
 
-    const dexStorage = await getDexStorage(this.dexAddress);
-    const shares = estimateShares(this.tezAmount, dexStorage);
-    const amount = estimateInTokens(shares, dexStorage, this.selectedToken);
-
-    this.tokenAmount = toValidAmount(amount);
+    const pairId = await this.getPairID();
+    const lpdetails = await lpDetails(pairId);
+console.log("was called TK");
+    const amount = (parseFloat(this.tezAmount)/lpdetails.token_a_pool) * lpdetails.token_b_pool;
+    this.tokenAmount = amount.toString();
   }
 
   async calcTezAmount() {
-    if (!this.selectedToken || !this.dexAddress) return;
+    if (!this.inputToken.id || !this.selectedToken.id) return;
+console.log("was called Tez");
+    const pairId = await this.getPairID();
+    const lpdetails = await lpDetails(pairId);
 
-    const dexStorage = await getDexStorage(this.dexAddress);
-    const shares = estimateSharesInverse(
-      this.tokenAmount,
-      dexStorage,
-      this.selectedToken
-    );
-    const amount = estimateInTezos(shares, dexStorage);
+    const amount = (parseFloat(this.tokenAmount)/lpdetails.token_b_pool) * lpdetails.token_a_pool;
 
-    this.tezAmount = toValidAmount(amount);
+    this.tezAmount = amount.toString();
   }
+  
+
+  // async calcTokenAmount() {
+  //   if (!this.selectedToken || !this.dexAddress) return;
+
+  //   const dexStorage = await getDexStorage(this.dexAddress);
+  //   const shares = estimateShares(this.tezAmount, dexStorage);
+  //   const amount = estimateInTokens(shares, dexStorage, this.selectedToken);
+
+  //   this.tokenAmount = toValidAmount(amount);
+  // }
+
+  // async calcTezAmount() {
+  //   if (!this.selectedToken || !this.dexAddress) return;
+
+  //   const dexStorage = await getDexStorage(this.dexAddress);
+  //   const shares = estimateSharesInverse(
+  //     this.tokenAmount,
+  //     dexStorage,
+  //     this.selectedToken
+  //   );
+  //   const amount = estimateInTezos(shares, dexStorage);
+
+  //   this.tezAmount = toValidAmount(amount);
+  // }
 
   async calcInTokens() {
     this.inTokens = null;
@@ -565,30 +597,34 @@ export default class RemoveLiquidity extends Vue {
       const selTk_A: any = this.inputToken;
       const selTk_B: any = this.selectedToken!;
 
+      
 
+      const slippage = new BigNumber(this.activeSlippagePercentage || 0).div(100);
 
-      var shares_payload: any = await sharesTokenAinTokenBin(
-        pairId,
-        null,
+      var minAmount_A: any = await minTokenOut(
+        this.tezAmount,
         selTk_A,
-        this.sharesToRemove
+        slippage
       );
 
+      var minAmount_B: any = await minTokenOut(
+        this.tokenAmount,
+        selTk_B,
+        slippage
+      );
 
-      console.log("shares_payload");
-      console.log(pairId);
-      console.log(shares_payload.token_a_in)
-      console.log(shares_payload.token_b_in)
-      console.log(shares_payload);
+      console.log(minAmount_A);
+      console.log(minAmount_B);
+      console.log(slippage);
 
-      // return;
+      return;
 
       const payload_divest = {
           params: {
             pairId: parseInt(pairId, 10),
             shares: this.sharesToRemove,
-            minTokenAOut: shares_payload.token_a_in.toString(),
-            minTokenBOut: shares_payload.token_b_in.toString(),
+            minTokenAOut: minAmount_A,
+            minTokenBOut: minAmount_B,
             deadline: add(new Date(), { minutes: 10 }).toISOString(),
           },
           sendParams: {
