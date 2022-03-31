@@ -455,7 +455,7 @@ export default class AddLiquidity extends Vue {
 
 
 
-      var shares_payload: any = sharesTokenAinTokenBin(
+      var shares_payload: any = await sharesTokenAinTokenBin(
         pairId,
         this.tezAmount,
         selTk_A,
@@ -463,36 +463,16 @@ export default class AddLiquidity extends Vue {
       );
 
 
-      console.log({
-            pairId: "14",
-            shares: "1000",
-            tokenAIn: "12406163",
-            tokenBIn: "637",
-      });
-
-      return;
-
-      // amount = 0.01
-      // {
-      //  "shares": "1000",
-      //  "pair_id": "14",
-      //  "deadline": "2022-03-30T15:02:10Z",
-      //  "min_token_a_out": "12406163",
-      //  "min_token_b_out": "637"
-      // }
-
-      // pairId: parseInt(pairId, 10),
-      // shares: shares_payload.lpShares.toString(),
-      // tokenAIn: shares_payload.token_a_in.toString(),
-      // tokenBIn: shares_payload.token_b_in.toString(),
+      console.log("shares_payload");
+      console.log(shares_payload);
 
 
       const payload_invest = {
           params: {
-            pairId: "14",
-            shares: "1000",
-            tokenAIn: "12406163",
-            tokenBIn: "637",
+            pairId: parseInt(pairId, 10),
+            shares: shares_payload.lpShares.toString(),
+            tokenAIn: shares_payload.token_a_in.toString(),
+            tokenBIn: shares_payload.token_b_in.toString(),
             deadline: add(new Date(), { minutes: 10 }).toISOString(),
           },
           sendParams: {
