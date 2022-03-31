@@ -22,6 +22,41 @@
         <img :src="require('@/assets/arrow-down.svg')" />
       </FormIcon>
 
+      <FormField
+        placeholder="0.0"
+        label="Token Deposit"
+        :withTezos="false"
+        :onlyTezos="false"
+        :subLabelName="tezBalance ? 'Balance: ' : undefined"
+        :subLabelValue="tezBalance || undefined"
+        :isLoading="tezLoading"
+        v-model="tezAmount"
+        @input="(e) => handleTezAmountChange(e.target.value)"
+        @selectToken="handleInputSelect"
+        :selectedToken="tezToken"
+      />
+
+      <FormIcon>
+        <img :src="require('@/assets/plus.svg')" />
+      </FormIcon>
+
+      <FormField
+        placeholder="0.0"
+        label="Token Deposit"
+        :withTezos="false"
+        :subLabelName="tokenBalance ? 'Balance: ' : undefined"
+        :subLabelValue="tokenBalance || undefined"
+        :isLoading="tokenLoading"
+        v-model="tokenAmount"
+        @input="(e) => handleTokenAmountChange(e.target.value)"
+        @selectToken="handleTokenSelect"
+        :selectedToken="selectedToken"
+      />
+
+      <FormIcon>
+        <img :src="require('@/assets/arrow-down.svg')" />
+      </FormIcon>
+
       <div class="-mx-3 shadow-lg xs:-mx-4">
         <div class="relative field rounded-3px">
           <div class="flex flex-col justify-start flex-1 py-6">
@@ -145,7 +180,7 @@ import Form, { FormField, FormIcon, FormInfo } from "@/components/Form";
 import SubmitBtn from "@/components/SubmitBtn.vue";
 
 import BigNumber from "bignumber.js";
-import store, { getAccount, useWallet, connectTempleWalletWrapper } from "@/store";
+import store, { getAccount, useWallet, connectTempleWalletWrapper, getTokenPairsID } from "@/store";
 import {
   QSAsset,
   isAddressValid,
@@ -166,7 +201,8 @@ import {
   toAssetSlug,
   findTezDex,
   confirmOperation,
-  getNetwork
+  getNetwork,
+  sharesTokenAinTokenBin
 } from "@/core";
 import { XTZ_TOKEN } from "@/core/defaults";
 import { notifyConfirm, notifyError } from "../toast";
@@ -204,6 +240,9 @@ type PoolMeta = {
 export default class RemoveLiquidity extends Vue {
   sharesToRemove = "";
   myShares: string | null = null;
+
+  inputToken: any | null = null;
+
   tokenLoading = false;
 
   inTokens: InTokens | null = null;
@@ -420,36 +459,61 @@ export default class RemoveLiquidity extends Vue {
       await connectTempleWalletWrapper();
       const me = getAccount().pkh;
 
-      // const inTkAddress = this.inputDexAddress != undefined ? this.inputDexAddress : 'KT1SaouedthKUtAujiBD232mZYGtKwpZ6mFD';
-      // const outTkAddress = this.outputDexAddress != undefined ? this.outputDexAddress : 'KT1SaouedthKUtAujiBD232mZYGtKwpZ6mFD';
+
+
+      let firemessage = {};
+
+      const inTkAddress = this.inputToken.id != undefined ? this.inputToken.id : '';
+      const outTkAddress = this.selectedToken.id != undefined ? this.selectedToken.id : '';
     
-      // let pairId = await getTokenPairsID(inTkAddress,outTkAddress);
+      let pairId = await getTokenPairsID(inTkAddress,outTkAddress);
+      
 
-      // if(pairId == undefined){
-      //   firemessage = {
-      //     title: 'Unavailable Pair',
-      //     html:
-      //       'We only support FA12 and FA1218 Pair Transaction now.',
-      //     showCancelButton: false,
-      //     confirmButtonColor: '#3085d6',
-      //     cancelButtonColor: '#d33',
-      //     confirmButtonText: 'Done!'
-      //   }
+      if(pairId == undefined){
+        firemessage = {
+          title: 'Unavailable Pair',
+          html:
+            'We only support FA12 and FA1218 Pair Transaction now.',
+          showCancelButton: false,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Done!'
+        }
 
-      //   this.$fire(firemessage);
-
-      //   this.swapping = false;
-      //   this.swapStatus = this.defaultSwapStatus;
+        this.$fire(firemessage);
+        this.processing = false;
         
-      //   return
-      // }
+        return
+      }
+
+
+      const dex_tokenA = await findTezDex(this.inputToken);
+      var dexAddress_tokenA:any = null;
+
+      if (dex_tokenA) {
+        dexAddress_tokenA = dex_tokenA.address;
+      }
+      const dexAddress_tokenB = this.dexAddress!;
+
+      const selTk_A: any = this.inputToken;
+      const selTk_B: any = this.selectedToken!;
+
+
+
+      var shares_payload: any = sharesTokenAinTokenBin(
+        pairId,
+        null,
+        selTk_A,
+        this.sharesToRemove
+      );
+
 
       const payload_divest = {
           params: {
             pairId: 14,
-            shares: "10",
-            minTokenAOut: "124061",
-            minTokenBOut: "5",
+            shares: this.sharesToRemove,
+            minTokenAOut: shares_payload.token_a_in.toString(),
+            minTokenBOut: shares_payload.token_b_in.toString(),
             deadline: add(new Date(), { minutes: 10 }).toISOString(),
           },
           sendParams: {
@@ -477,7 +541,7 @@ export default class RemoveLiquidity extends Vue {
       console.log(response_batchcalls);
       console.log(response_batch);
       
-      let firemessage = {};
+
       if(response_batch != undefined){
         firemessage = {
           title: 'Successful',
