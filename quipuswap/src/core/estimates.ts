@@ -231,9 +231,10 @@ export async function sharesTokenAinTokenBin(
   
   if(sharesToRemove == undefined){
     const amountTknA = parseFloat(tokenAmount);
-    const lpShares_not_rounded = ((total_supply * amountTknA) / token_a_pool) * Math.pow(10, selTk_A.decimals);
+    lpShares_not_rounded = ((total_supply * amountTknA) / token_a_pool) * Math.pow(10, selTk_A.decimals);
     lpShares = Math.round(lpShares_not_rounded);
   }else{
+    console.log("remove token");
     lpShares = sharesToRemove;
     lpShares_not_rounded = sharesToRemove;
   }
