@@ -8,6 +8,7 @@
       <FormField
         placeholder="0.0"
         label="Shares to remove"
+        :showSelect="false"
         :withTezos="false"
         :subLabelName="myShares ? 'Your shares: ' : undefined"
         :subLabelValue="myShares || undefined"
