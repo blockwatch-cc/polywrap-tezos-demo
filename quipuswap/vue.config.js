@@ -1,3 +1,3 @@
 module.exports = {
-    publicPath: process.env.NODE_ENV === 'production' ? '././polywrap-tezos-demo/quipuswap' : './',
+    publicPath: process.env.NODE_ENV === 'production' ? '././' : './',
   };
