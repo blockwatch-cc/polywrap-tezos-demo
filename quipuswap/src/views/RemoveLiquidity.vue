@@ -476,6 +476,8 @@ export default class RemoveLiquidity extends Vue {
 
   async getPairID(){
     const inTkAddress = this.inputToken.id != undefined ? this.inputToken.id : '';
+
+    // @ts-ignore: Object is possibly 'null'.
     const outTkAddress = this.selectedToken.id != undefined ? this.selectedToken.id : '';
 
     let pairId = await getTokenPairsID(inTkAddress,outTkAddress);
@@ -484,6 +486,7 @@ export default class RemoveLiquidity extends Vue {
   }
 
   async calcTokenAmount() {
+    // @ts-ignore: Object is possibly 'null'.
     if (!this.inputToken.id || !this.selectedToken.id) return;
 
     const pairId = await this.getPairID();
@@ -494,6 +497,7 @@ export default class RemoveLiquidity extends Vue {
   }
 
   async calcTezAmount() {
+    // @ts-ignore: Object is possibly 'null'.
     if (!this.inputToken.id || !this.selectedToken.id) return;
 
     const pairId = await this.getPairID();
@@ -564,6 +568,8 @@ export default class RemoveLiquidity extends Vue {
       let firemessage = {};
 
       const inTkAddress = this.inputToken.id != undefined ? this.inputToken.id : '';
+
+      // @ts-ignore: Object is possibly 'null'.
       const outTkAddress = this.selectedToken.id != undefined ? this.selectedToken.id : '';
     
       let pairId = await getTokenPairsID(inTkAddress,outTkAddress);
