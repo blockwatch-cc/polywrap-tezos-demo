@@ -237,7 +237,7 @@ export async function connectTempleWalletWrapper(){
   }
   if (response?.data?.connectTempleWallet) {
     
-      const resp = response?.data?.connectTempleWallet;
+      const resp: any = response?.data?.connectTempleWallet;
 
       setLastUsedConnect("temple");
       if (getAccount().pkh !== resp?.pkh) {
