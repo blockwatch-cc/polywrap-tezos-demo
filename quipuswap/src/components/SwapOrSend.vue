@@ -653,7 +653,10 @@ export default class SwapOrSend extends Vue {
     const inpAmn = this.inputAmount!;
     const minOut = this.minimumReceived!;
     const corminOut = new BigNumber(this.minimumReceived!);
+
+    // @ts-ignore: Object is possibly 'null'.
     const minOutNat = tzToMutez(corminOut).c[0];
+
     // console.log(inpAmn);
     // console.log(minOut);
     // console.log(corminOut.c[0]);
@@ -661,7 +664,7 @@ export default class SwapOrSend extends Vue {
     // console.log(toNat(corminOut, outTk));
     // console.log(tzToMutez(corminOut));
 
-    let firemessage = null;
+    let firemessage: any = {};
 
     let pairId = await getTokenPairsID(inTkAddress,outTkAddress);
     console.log("pair Address");
@@ -687,7 +690,7 @@ export default class SwapOrSend extends Vue {
     }
 
     const net = getNetwork();
-    let response = null;
+    let response: any;
 
     if(this.send){
 
@@ -713,6 +716,8 @@ export default class SwapOrSend extends Vue {
       response = await swapDirect(net.id, payload_swap);
       console.log("## Send Transfer ##");
       console.log(response);
+
+      // @ts-ignore: Object is possibly 'null'.
       payload_batch = response.data?.swapDirect;
 
     }else{
