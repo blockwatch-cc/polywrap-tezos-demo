@@ -419,6 +419,8 @@ export default class AddLiquidity extends Vue {
       let firemessage = {};
 
       const inTkAddress = this.inputToken.id != undefined ? this.inputToken.id : '';
+
+      // @ts-ignore: Object is possibly 'null'.
       const outTkAddress = this.selectedToken.id != undefined ? this.selectedToken.id : '';
     
       let pairId = await getTokenPairsID(inTkAddress,outTkAddress);
