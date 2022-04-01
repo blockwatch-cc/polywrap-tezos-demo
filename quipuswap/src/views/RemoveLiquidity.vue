@@ -487,20 +487,20 @@ export default class RemoveLiquidity extends Vue {
 
     const pairId = await this.getPairID();
     const lpdetails = await lpDetails(pairId);
-console.log("was called TK");
-    const amount = (parseFloat(this.tezAmount)/lpdetails.token_a_pool) * lpdetails.token_b_pool;
-    this.tokenAmount = amount.toString();
+
+    const amount = ((parseFloat(this.tezAmount)* Math.pow(10, (-6+8)))/lpdetails.token_a_pool) * lpdetails.token_b_pool;
+    this.tokenAmount = (amount.toFixed(7)).toString();
   }
 
   async calcTezAmount() {
     if (!this.inputToken.id || !this.selectedToken.id) return;
-console.log("was called Tez");
+
     const pairId = await this.getPairID();
     const lpdetails = await lpDetails(pairId);
 
-    const amount = (parseFloat(this.tokenAmount)/lpdetails.token_b_pool) * lpdetails.token_a_pool;
+    const amount = ((parseFloat(this.tokenAmount)* Math.pow(10, (-8+6)))/lpdetails.token_b_pool) * lpdetails.token_a_pool;
 
-    this.tezAmount = amount.toString();
+    this.tezAmount = (amount.toFixed(7)).toString();
   }
   
 
@@ -613,18 +613,20 @@ console.log("was called Tez");
         slippage
       );
 
-      console.log(minAmount_A);
-      console.log(minAmount_B);
+      const sharesToRemove = parseFloat(this.sharesToRemove) * (10 * Math.pow(10, 6));
+      console.log(sharesToRemove);
+      console.log(Math.ceil(minAmount_A));
+      console.log(Math.ceil(minAmount_B));
       console.log(slippage);
 
-      return;
+      // return;
 
       const payload_divest = {
           params: {
             pairId: parseInt(pairId, 10),
             shares: this.sharesToRemove,
-            minTokenAOut: minAmount_A,
-            minTokenBOut: minAmount_B,
+            minTokenAOut: Math.ceil(minAmount_A).toString(),
+            minTokenBOut: Math.ceil(minAmount_B).toString(),
             deadline: add(new Date(), { minutes: 10 }).toISOString(),
           },
           sendParams: {
