@@ -44,7 +44,7 @@
         </div>
       </div>
 
-      <div class="flex items-center">
+      <div class="flex items-center" v-if="showSelect">
         <div v-if="withSelect" class="append flex relative">
           <button
             @click="toggleSearch"
@@ -163,6 +163,7 @@ export default class FormField extends Vue {
   @Prop({ default: true }) showSearch?: boolean;
   @Prop({ default: false }) extrabutton?: boolean;
   @Prop({ default: true }) withTezos?: boolean;
+  @Prop({ default: true }) showSelect?: boolean;
   @Prop({ default: false }) onlyTezos?: boolean;
   @Prop({ default: null }) selectedToken?: QSAsset | null;
   @Ref("searchInput") readonly searchInput!: HTMLInputElement;
