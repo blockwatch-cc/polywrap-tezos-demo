@@ -115,12 +115,12 @@ export const MAINNET_NETWORK: QSNetwork = {
 };
 
 export const ALL_NETWORKS = [
-  MAINNET_NETWORK,
+  // MAINNET_NETWORK,
   // FLORENCENET_NETWORK,
   // GRANADANET_NETWORK,
   HANGZHOUNET_NETWORK,
 ];
-export const DEFAULT_NETWORK = FLORENCENET_NETWORK;
+export const DEFAULT_NETWORK = HANGZHOUNET_NETWORK;
 
 export const XTZ_TOKEN: QSAsset = {
   type: "xtz",
