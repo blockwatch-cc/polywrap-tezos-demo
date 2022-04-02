@@ -9,6 +9,7 @@
     }"
   >
     <img
+      alt=""
       :src="require('@/assets/tooltip-icon.svg')"
       style="width: 20px; height: 20px;"
     />
