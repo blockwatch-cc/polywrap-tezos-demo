@@ -76,9 +76,8 @@
               <span
                 class="flex items-center justify-center w-48 h-12 text-primary border rounded-lg connect-button button-network border-accent">{{ selectedNetwork.name }}</span>
 
-              <img :class="
-                  networkSelectOpened ? 'mr-3 z-10 transform rotate-180' : 'mr-3 z-10'
-                " src="@/assets/arrow-down.svg" />
+              <img :class="networkSelectOpened ? 'mr-3 z-10 transform rotate-180' : 'mr-3 z-10'" src="@/assets/arrow-down.png"  style="height: 1em; margin-top: 1em;"/>
+              
             </div>
 
             <div class="absolute flex flex-col justify-end w-48" style="top: 4rem;"
