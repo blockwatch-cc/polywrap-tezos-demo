@@ -40,7 +40,7 @@
 
       <template v-if="send">
         <FormIcon>
-          <img class="inline" src="@/assets/arrow-down.svg" />
+          <img class="inline" src="@/assets/arrow-down.png" />
         </FormIcon>
 
         <FormField
