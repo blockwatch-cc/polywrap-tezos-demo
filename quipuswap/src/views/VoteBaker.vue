@@ -22,7 +22,7 @@
         />
 
         <FormIcon>
-          <img src="@/assets/arrow-down.svg" class="transform rotate-180" />
+          <img src="@/assets/arrow-down.png" class="transform rotate-180" />
         </FormIcon>
 
         <FormField
@@ -86,7 +86,7 @@
         />
 
         <FormIcon>
-          <img class="inline" src="@/assets/arrow-down.svg" />
+          <img class="inline" src="@/assets/arrow-down.png" />
         </FormIcon>
 
         <BakerFormField
@@ -102,7 +102,7 @@
         />
 
         <FormIcon>
-          <img :src="require('@/assets/plus.svg')" />
+          <img :src="require('@/assets/plus.png')" />
         </FormIcon>
 
         <FormField

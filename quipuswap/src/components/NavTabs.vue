@@ -28,7 +28,7 @@
 
     <!-- <div v-if="infoBannerDisplayed" class="relative flex items-center py-4 pl-4 pr-8 mt-6 mb-4 text-gray-800 rounded bg-accent">
       <img
-        src="@/assets/danger.svg"
+        src="@/assets/danger.png"
         style="width: 24px; height: 24px;"
       />
 

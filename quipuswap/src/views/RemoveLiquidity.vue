@@ -20,7 +20,7 @@
       />
 
       <FormIcon>
-        <img :src="require('@/assets/arrow-down.svg')" />
+        <img :src="require('@/assets/arrow-down.png')" />
       </FormIcon>
 
       <FormField
@@ -38,7 +38,7 @@
       />
 
       <FormIcon>
-        <img :src="require('@/assets/plus.svg')" />
+        <img :src="require('@/assets/plus.png')" />
       </FormIcon>
 
       <FormField
@@ -55,7 +55,7 @@
       />
 
       <FormIcon>
-        <img :src="require('@/assets/arrow-down.svg')" />
+        <img :src="require('@/assets/arrow-down.png')" />
       </FormIcon>
 
       <div class="-mx-3 shadow-lg xs:-mx-4">

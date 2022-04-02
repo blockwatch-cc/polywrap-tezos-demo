@@ -21,7 +21,7 @@
           @click="changeDirections"
         >
           <img
-            src="@/assets/arrow-down.svg"
+            src="@/assets/arrow-down.png"
             style="width: 17px; height: 17px;"
           />
         </button>

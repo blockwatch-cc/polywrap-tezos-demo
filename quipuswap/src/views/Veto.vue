@@ -66,7 +66,7 @@
         />
 
         <FormIcon>
-          <img :src="require('@/assets/plus.svg')" />
+          <img :src="require('@/assets/plus.png')" />
         </FormIcon> -->
 
         <FormField

@@ -73,7 +73,7 @@ export const TOKEN_WHITELIST: WhitelistedToken[] = [
       symbol: "tzBTC",
       name: "tzBTC",
       thumbnailUri:
-        "https://tzbtc.io/wp-content/uploads/2020/03/tzbtc_logo_single.svg",
+        "https://tzbtc.io/wp-content/uploads/2020/03/tzbtc_logo_single.png",
     },
   },
   {

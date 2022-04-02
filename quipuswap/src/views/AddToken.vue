@@ -48,7 +48,7 @@
 
       <template v-if="tokenType === 'FA2'">
         <FormIcon>
-          <img :src="require('@/assets/plus.svg')" />
+          <img :src="require('@/assets/plus.png')" />
         </FormIcon>
 
         <FormField
@@ -66,7 +66,7 @@
       </template>
 
       <FormIcon>
-        <img :src="require('@/assets/arrow-down.svg')" />
+        <img :src="require('@/assets/arrow-down.png')" />
       </FormIcon>
 
       <FormField
@@ -83,7 +83,7 @@
       />
 
       <FormIcon>
-        <img :src="require('@/assets/plus.svg')" />
+        <img :src="require('@/assets/plus.png')" />
       </FormIcon>
 
       <FormField

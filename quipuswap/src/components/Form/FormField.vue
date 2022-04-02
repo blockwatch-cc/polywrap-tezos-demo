@@ -63,7 +63,7 @@
             <img
               class="w-3 ml-2"
               style="margin-top: -2px"
-              src="@/assets/chevron-white.svg"
+              src="@/assets/chevron-white.png"
               v-if="!onlyTezos"
             />
           </button>
