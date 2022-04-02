@@ -11,7 +11,6 @@
     <img
       src="@/assets/tooltip-icon.png"
       alt=""
-      style="width: 20px; height: 20px;"
     />
   </button>
 </template>
