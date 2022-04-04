@@ -506,9 +506,6 @@ export default class SwapOrSend extends Vue {
     const inType = this.inputToken.type;
     const outType = this.outputToken.type;
 
-    console.log("outputDexAddress");
-    console.log(this.outputDexAddress);
-    // var asn = await getDexStorage(this.outputDexAddress);
     // console.log(asn);
 
     let amount: BigNumber | undefined;
@@ -534,6 +531,7 @@ export default class SwapOrSend extends Vue {
         break;
 
       case inType === "token" && outType === "token":
+
         if (this.inputDexAddress && this.outputDexAddress) {
           amount = estimateTezToToken(
             estimateTokenToTez(
@@ -657,18 +655,9 @@ export default class SwapOrSend extends Vue {
     // @ts-ignore: Object is possibly 'null'.
     const minOutNat = tzToMutez(corminOut).c[0];
 
-    // console.log(inpAmn);
-    // console.log(minOut);
-    // console.log(corminOut.c[0]);
-    // console.log(minOutNat);
-    // console.log(toNat(corminOut, outTk));
-    // console.log(tzToMutez(corminOut));
-
     let firemessage: any = {};
 
     let pairId = await getTokenPairsID(inTkAddress,outTkAddress);
-    console.log("pair Address");
-    console.log(pairId);
 
     if(pairId == undefined){
       firemessage = {
