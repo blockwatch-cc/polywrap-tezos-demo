@@ -22,6 +22,8 @@
           "
           v-bind="$attrs"
           v-on="$listeners"
+          :readonly="isReadonly"          
+
         />
         <div
           v-if="!withSelect && isLoading"
@@ -97,6 +99,7 @@
             ref="searchInput"
             placeholder="Enter token name or contract address..."
             class="w-full"
+            readonly
           />
         </div>
 
@@ -164,6 +167,7 @@ export default class FormField extends Vue {
   @Prop({ default: false }) extrabutton?: boolean;
   @Prop({ default: true }) withTezos?: boolean;
   @Prop({ default: true }) showSelect?: boolean;
+  @Prop({ default: false }) isReadonly?: boolean;
   @Prop({ default: false }) onlyTezos?: boolean;
   @Prop({ default: null }) selectedToken?: QSAsset | null;
   @Ref("searchInput") readonly searchInput!: HTMLInputElement;
