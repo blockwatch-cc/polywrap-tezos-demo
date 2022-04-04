@@ -234,7 +234,6 @@ export async function sharesTokenAinTokenBin(
     lpShares_not_rounded = ((total_supply * amountTknA) / token_a_pool) * Math.pow(10, selTk_A.decimals);
     lpShares = Math.round(lpShares_not_rounded);
   }else{
-    console.log("remove token");
     lpShares = sharesToRemove;
     lpShares_not_rounded = sharesToRemove;
   }
@@ -264,13 +263,6 @@ export async function minTokenOut(
   const amountTkn = parseFloat(tokenAmount);
   const minAmount =  amountTkn - (amountTkn * slippage.toNumber());
   
-  // console.log("amountTkn //////  ");
-  // console.log(amountTkn);
-  // console.log(slippage.toNumber());
-  // console.log(amountTkn * slippage.toNumber());
-  // console.log(minAmount);
-
-
   return minAmount * Math.pow(10, selTk.decimals);
 
 }
