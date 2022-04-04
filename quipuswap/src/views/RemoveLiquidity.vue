@@ -26,6 +26,7 @@
       <FormField
         placeholder="0.0"
         label="Token Deposit"
+        :isReadonly="true"
         :withTezos="false"
         :onlyTezos="false"
         :subLabelName="tezBalance ? 'Balance: ' : undefined"
@@ -44,6 +45,7 @@
       <FormField
         placeholder="0.0"
         label="Token Deposit"
+        :isReadonly="true"
         :withTezos="false"
         :subLabelName="tokenBalance ? 'Balance: ' : undefined"
         :subLabelValue="tokenBalance || undefined"
@@ -58,7 +60,7 @@
         <img :src="require('@/assets/arrow-down.png')" />
       </FormIcon>
 
-      <div class="-mx-3 shadow-lg xs:-mx-4">
+      <!-- <div class="-mx-3 shadow-lg xs:-mx-4">
         <div class="relative field rounded-3px">
           <div class="flex flex-col justify-start flex-1 py-6">
             <div class="w-full mb-1 font-light label xs:mb-2 sm:text-lg">
@@ -89,7 +91,7 @@
             <div v-else>-</div>
           </div>
         </div>
-      </div>
+      </div> -->
 
       <FormInfo class="overflow-x-auto whitespace-no-wrap">
         <div class="flex justify-between mb-1">
@@ -432,6 +434,7 @@ export default class RemoveLiquidity extends Vue {
     if (!this.sharesToRemove) {
       this.sharesToRemove = "1";
     }
+    this.calcTokenNTokenAmountByLP();
   }
 
 
@@ -442,13 +445,15 @@ export default class RemoveLiquidity extends Vue {
       this.tezToken = null;
       this.tezAmount = "";
     }
+    this.calcTokenNTokenAmountByLP();
   }
 
   handleSharesToRemoveChange(amount: string) {
     this.sharesToRemove = amount;
     const isNum = /^[0-9.]*$/g.test(amount);
     if (isNum) {
-      this.calcInTokens();
+      // this.calcInTokens();
+      this.calcTokenNTokenAmountByLP();
     } else {
       this.inTokens = null;
     }
@@ -458,7 +463,8 @@ export default class RemoveLiquidity extends Vue {
     this.tezAmount = amount;
     const isNum = /^[0-9.]*$/g.test(amount);
     if (isNum) {
-      this.calcTokenAmount();
+      // this.calcTokenAmount();
+      this.calcTokenNTokenAmountByLP();
     } else {
       this.tokenAmount = "";
     }
@@ -468,7 +474,8 @@ export default class RemoveLiquidity extends Vue {
     this.tokenAmount = amount;
     const isNum = /^[0-9.]*$/g.test(amount);
     if (isNum) {
-      setTimeout(() => this.calcTezAmount(), 0);
+      // setTimeout(() => this.calcTezAmount(), 0);
+      this.calcTokenNTokenAmountByLP();
     } else {
       this.tezAmount = "";
     }
@@ -483,6 +490,24 @@ export default class RemoveLiquidity extends Vue {
     let pairId = await getTokenPairsID(inTkAddress,outTkAddress);
 
     return pairId;
+  }
+
+  async calcTokenNTokenAmountByLP() {
+
+    // @ts-ignore: Object is possibly 'null'.
+    if (!this.inputToken.id || !this.selectedToken.id) return;
+
+    const pairId = await this.getPairID();
+    const lpdetails = await lpDetails(pairId);
+    
+    const sharesRatio = parseFloat(this.sharesToRemove)/lpdetails.total_supply;
+
+    const tezAmount = lpdetails.token_a_pool * sharesRatio;
+    const tokenAmount = lpdetails.token_b_pool * sharesRatio;
+
+    this.tezAmount = (tezAmount.toFixed(7)).toString();
+    this.tokenAmount = (tokenAmount.toFixed(7)).toString();
+
   }
 
   async calcTokenAmount() {
