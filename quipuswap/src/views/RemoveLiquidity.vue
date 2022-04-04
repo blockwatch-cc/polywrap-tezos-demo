@@ -502,7 +502,7 @@ export default class RemoveLiquidity extends Vue {
     
     const sharesRatio = parseFloat(this.sharesToRemove)/lpdetails.total_supply;
 
-    const tezAmount = lpdetails.token_a_pool * sharesRatio;
+    const tezAmount = (lpdetails.token_a_pool * Math.pow(10, (-8+6))) * sharesRatio;
     const tokenAmount = lpdetails.token_b_pool * sharesRatio;
 
     this.tezAmount = (tezAmount.toFixed(7)).toString();
