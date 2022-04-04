@@ -142,7 +142,8 @@ import {
   confirmOperation,
   getNetwork,
   getStorage,
-  sharesTokenAinTokenBin
+  sharesTokenAinTokenBin,
+  lpDetails
 } from "@/core";
 import { XTZ_TOKEN } from "@/core/defaults";
 import { OpKind } from "@taquito/taquito";
@@ -381,28 +382,62 @@ export default class AddLiquidity extends Vue {
   }
 
   async calcTokenAmount() {
-    if (!this.selectedToken || !this.dexAddress) return;
+    // @ts-ignore: Object is possibly 'null'.
+    if (!this.inputToken.id || !this.selectedToken.id) return;
 
-    const dexStorage = await getDexStorage(this.dexAddress);
-    const shares = estimateShares(this.tezAmount, dexStorage);
-    const amount = estimateInTokens(shares, dexStorage, this.selectedToken);
+    const pairId = await this.getPairID();
+    const lpdetails = await lpDetails(pairId);
 
-    this.tokenAmount = toValidAmount(amount);
+    const amount = ((parseFloat(this.tezAmount)* Math.pow(10, (-6+8)))/lpdetails.token_a_pool) * lpdetails.token_b_pool;
+    this.tokenAmount = (amount.toFixed(7)).toString();
   }
 
   async calcTezAmount() {
-    if (!this.selectedToken || !this.dexAddress) return;
+    // @ts-ignore: Object is possibly 'null'.
+    if (!this.inputToken.id || !this.selectedToken.id) return;
 
-    const dexStorage = await getDexStorage(this.dexAddress);
-    const shares = estimateSharesInverse(
-      this.tokenAmount,
-      dexStorage,
-      this.selectedToken
-    );
-    const amount = estimateInTezos(shares, dexStorage);
+    const pairId = await this.getPairID();
+    const lpdetails = await lpDetails(pairId);
 
-    this.tezAmount = toValidAmount(amount);
+    const amount = ((parseFloat(this.tokenAmount)* Math.pow(10, (-8+6)))/lpdetails.token_b_pool) * lpdetails.token_a_pool;
+
+    this.tezAmount = (amount.toFixed(7)).toString();
   }
+  
+  async getPairID(){
+    const inTkAddress = this.inputToken.id != undefined ? this.inputToken.id : '';
+
+    // @ts-ignore: Object is possibly 'null'.
+    const outTkAddress = this.selectedToken.id != undefined ? this.selectedToken.id : '';
+
+    let pairId = await getTokenPairsID(inTkAddress,outTkAddress);
+
+    return pairId;
+  }
+
+  // async calcTokenAmount() {
+  //   if (!this.selectedToken || !this.dexAddress) return;
+
+  //   const dexStorage = await getDexStorage(this.dexAddress);
+  //   const shares = estimateShares(this.tezAmount, dexStorage);
+  //   const amount = estimateInTokens(shares, dexStorage, this.selectedToken);
+
+  //   this.tokenAmount = toValidAmount(amount);
+  // }
+
+  // async calcTezAmount() {
+  //   if (!this.selectedToken || !this.dexAddress) return;
+
+  //   const dexStorage = await getDexStorage(this.dexAddress);
+  //   const shares = estimateSharesInverse(
+  //     this.tokenAmount,
+  //     dexStorage,
+  //     this.selectedToken
+  //   );
+  //   const amount = estimateInTezos(shares, dexStorage);
+
+  //   this.tezAmount = toValidAmount(amount);
+  // }
 
   async addLiquidity() {
 
