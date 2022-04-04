@@ -104,7 +104,7 @@
 
                 <div class="mb-4">
                   <div class="p-4 bg-accent rounded text-white whitespace-normal font-medium center">
-                    Hello! This is a demo version of Quipus Swap using Polywrap.
+                    Hello! This is a demo version of QuipuSwap using Polywrap.
                     <br />
                     You use this app on the mainnet at your own risk.
                   </div>
