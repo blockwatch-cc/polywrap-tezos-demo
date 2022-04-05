@@ -224,11 +224,11 @@ export async function sharesTokenAinTokenBin(
   const pairStorageLQ = await lpDetails(pairId);
 
   /* Raw Number Calculation */
-  // const lpShares_not_rounded = ((pairStorageLQ.total_supply * parseFloat(tokenAmount)) / pairStorageLQ.token_a_pool) * Math.pow(10, selTk_A.decimals);
-  // const lpShares:any = Math.round(lpShares_not_rounded);
-  // const lpRatio = lpShares_not_rounded/pairStorageLQ.total_supply;
-  // const token_a_in = Math.ceil(pairStorageLQ.token_a_pool * lpRatio);
-  // const token_b_in = Math.ceil(pairStorageLQ.token_b_pool * lpRatio);
+  /* const lpShares_not_rounded = ((pairStorageLQ.total_supply * parseFloat(tokenAmount)) / pairStorageLQ.token_a_pool) * Math.pow(10, selTk_A.decimals);
+     const lpShares:any = Math.round(lpShares_not_rounded);
+     const lpRatio = lpShares_not_rounded/pairStorageLQ.total_supply;
+     const token_a_in = Math.ceil(pairStorageLQ.token_a_pool * lpRatio);
+     const token_b_in = Math.ceil(pairStorageLQ.token_b_pool * lpRatio); */
 
 
   const lpShares = toNat(tokenAmount, selTk_A)
@@ -263,11 +263,26 @@ export async function minTokenOut(
   slippage
 ) {
 
-  const amountTkn = parseFloat(tokenAmount);
-  const minAmount =  amountTkn - (amountTkn * slippage.toNumber());
-  
-  return minAmount * Math.pow(10, selTk.decimals);
+  /* const amountTkn = parseFloat(tokenAmount);
+     const minAmount =  amountTkn - (amountTkn * slippage.toNumber());
+     return minAmount * Math.pow(10, selTk.decimals); */
 
+  return new BigNumber(toNat(tokenAmount, selTk))
+    .times(new BigNumber(1).minus(slippage))
+    .integerValue(BigNumber.ROUND_DOWN).toFixed();
+
+}
+
+export async function maxTokenIn(
+  tokenAmount: any,
+  selTk: any,
+  slippage
+) {
+  
+  return new BigNumber(toNat(tokenAmount, selTk))
+    .plus(new BigNumber(toNat(tokenAmount, selTk))
+    .times(new BigNumber(slippage).div(new BigNumber(100))))
+    .integerValue(BigNumber.ROUND_DOWN).toFixed();
 }
 
 
