@@ -2,8 +2,11 @@ import BigNumber from "bignumber.js";
 import { tzToMutez, mutezToTz } from "./helpers";
 import { QSAsset } from "./types";
 import {
-  getStorage
+  getStorage,
+  getNetwork
 } from "@/core";
+
+import { getTokenSupply } from "../services/web3/query";
 
 const PENNY = 0.000001;
 
@@ -215,8 +218,7 @@ function toTokens(tezAmount: any, dexStorage: any, token: QSAsset) {
 export async function sharesTokenAinTokenBin(
   pairId: any,
   tokenAmount: any,
-  selTk_A: any,
-  sharesToRemove: any
+  selTk_A: any
 ) {
 
   var pairStorage = await getStorage('KT1Ni6JpXqGyZKXhJCPQJZ9x5x5bd7tXPNPC');
@@ -228,15 +230,10 @@ export async function sharesTokenAinTokenBin(
   
   var lpShares: any = null;
   var lpShares_not_rounded: any = null;
-  
-  if(sharesToRemove == undefined){
-    const amountTknA = parseFloat(tokenAmount);
-    lpShares_not_rounded = ((total_supply * amountTknA) / token_a_pool) * Math.pow(10, selTk_A.decimals);
-    lpShares = Math.round(lpShares_not_rounded);
-  }else{
-    lpShares = sharesToRemove;
-    lpShares_not_rounded = sharesToRemove;
-  }
+
+  const amountTknA = parseFloat(tokenAmount);
+  lpShares_not_rounded = ((total_supply * amountTknA) / token_a_pool) * Math.pow(10, selTk_A.decimals);
+  lpShares = Math.round(lpShares_not_rounded);
   
 
   var lpRatio = lpShares_not_rounded/total_supply;
@@ -272,16 +269,9 @@ export async function lpDetails(
   pairId: any
 ) {
 
-  var pairStorage = await getStorage('KT1Ni6JpXqGyZKXhJCPQJZ9x5x5bd7tXPNPC');
-  var pairStorageLQ = await pairStorage.storage.pairs.get(pairId);
-  
-  const token_a_pool = pairStorageLQ.token_a_pool.toNumber();
-  const token_b_pool = pairStorageLQ.token_b_pool.toNumber();
-  const total_supply = pairStorageLQ.total_supply.toNumber();
+  const net = getNetwork();
+  const pairStorage: any = await getTokenSupply(net.id, pairId);
+  const pairStorageLQ = pairStorage.data.getTokenSupply;
 
-  return {
-    token_a_pool: token_a_pool,
-    token_b_pool: token_b_pool,
-    total_supply: total_supply
-  }
+  return pairStorageLQ;
 }
