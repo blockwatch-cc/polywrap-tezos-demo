@@ -94,7 +94,7 @@
       </div> -->
 
       <FormInfo class="overflow-x-auto whitespace-no-wrap">
-        <div class="flex justify-between mb-1">
+        <!-- <div class="flex justify-between mb-1">
           <span class="mr-2">Dex contract</span>
           <span class="font-mono text-gray-400">{{ dexAddress || "-" }}</span>
         </div>
@@ -122,7 +122,7 @@
         <div class="flex justify-between mb-1">
           <span class="mr-2">Your pool share</span>
           <span>{{ poolMeta ? poolMeta.myShare : "-" }}</span>
-        </div>
+        </div> -->
 
         <div class="flex mb-1">
           <span class="mr-2">Slippage tolerance</span>
@@ -291,10 +291,10 @@ export default class RemoveLiquidity extends Vue {
   get valid() {
     return (
       this.selectedToken &&
-      this.dexAddress &&
+      this.tezAmount &&
+      this.tokenAmount &&
       this.sharesToRemove &&
-      +this.sharesToRemove > 0 &&
-      this.inTokens
+      +this.sharesToRemove > 0 
     );
   }
 
@@ -494,19 +494,27 @@ export default class RemoveLiquidity extends Vue {
   async calcTokenNTokenAmountByLP() {
 
     // @ts-ignore: Object is possibly 'null'.
-    if (!this.inputToken.id || !this.selectedToken.id) return;
+    if (!this.inputToken.id || !this.selectedToken.id || !this.sharesToRemove){
+      this.tezAmount = "";
+      this.tokenAmount = "";
+      return;
+    } else{
 
     const pairId = await this.getPairID();
     const lpdetails = await lpDetails(pairId);
     
     const sharesRatio = parseFloat(this.sharesToRemove)/lpdetails.total_supply;
 
-    const tezAmount = (lpdetails.token_a_pool * Math.pow(10, (-8+6))) * sharesRatio;
-    const tokenAmount = lpdetails.token_b_pool * sharesRatio;
+    const tezAmount: any = (lpdetails.token_a_pool * Math.pow(10, (-8+6))) * sharesRatio;
+    const tokenAmount: any = lpdetails.token_b_pool * sharesRatio;
 
-    this.tezAmount = (tezAmount.toFixed(7)).toString();
-    this.tokenAmount = (tokenAmount.toFixed(7)).toString();
+    console.log(tezAmount.toFixed(7));
+    console.log(tokenAmount.toFixed(7));
 
+    this.tezAmount = !Number.isNaN(tezAmount.toFixed(7)) ? (tezAmount.toFixed(7)).toString() : "";
+    this.tokenAmount = !Number.isNaN(tokenAmount.toFixed(7)) ? (tokenAmount.toFixed(7)).toString() : "";
+    
+    }
   }
 
   async calcTokenAmount() {
@@ -590,14 +598,6 @@ export default class RemoveLiquidity extends Vue {
         return
       }
 
-
-      const dex_tokenA = await findTezDex(this.inputToken);
-      var dexAddress_tokenA:any = null;
-
-      if (dex_tokenA) {
-        dexAddress_tokenA = dex_tokenA.address;
-      }
-      const dexAddress_tokenB = this.dexAddress!;
 
       const selTk_A: any = this.inputToken;
       const selTk_B: any = this.selectedToken!;
