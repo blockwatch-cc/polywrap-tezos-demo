@@ -19,3 +19,22 @@ export const listTokenPairs = async (network) => {
     })
     
 }
+
+export const getTokenSupply = async (network, pairId) => {
+    
+  return client.query({
+      uri: TEZOS_QUIPUSWAP_WRAPPER_URI,
+      query: `
+          query {
+            getTokenSupply(
+              pairId: $pairId,
+              network: hangzhounet
+            )
+          }
+      `,
+      variables: {
+        pairId: pairId
+      }
+  })
+  
+}
