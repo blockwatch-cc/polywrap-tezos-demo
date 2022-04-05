@@ -587,8 +587,6 @@ export default class RemoveLiquidity extends Vue {
       await connectTempleWalletWrapper();
       const me = getAccount().pkh;
 
-
-
       let firemessage = {};
 
       const inTkAddress = this.inputToken.id != undefined ? this.inputToken.id : '';
@@ -644,18 +642,14 @@ export default class RemoveLiquidity extends Vue {
         slippage
       );
 
-      const sharesToRemove = parseFloat(this.sharesToRemove) * (10 * Math.pow(10, 6));
-      console.log(sharesToRemove);
-      console.log(Math.ceil(minAmount_A));
-      console.log(Math.ceil(minAmount_B));
-      console.log(slippage);
-
-      // return;
+      const shares = sharesToNat(this.sharesToRemove!);
+      // this.sharesToRemove
+      
 
       const payload_divest = {
           params: {
             pairId: parseInt(pairId, 10),
-            shares: this.sharesToRemove,
+            shares: shares.toFixed(),
             minTokenAOut: Math.ceil(minAmount_A).toString(),
             minTokenBOut: Math.ceil(minAmount_B).toString(),
             deadline: add(new Date(), { minutes: 10 }).toISOString(),
