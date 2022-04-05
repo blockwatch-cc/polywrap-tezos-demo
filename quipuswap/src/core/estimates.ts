@@ -221,27 +221,33 @@ export async function sharesTokenAinTokenBin(
   selTk_A: any
 ) {
 
-  var pairStorage = await getStorage('KT1Ni6JpXqGyZKXhJCPQJZ9x5x5bd7tXPNPC');
-  var pairStorageLQ = await pairStorage.storage.pairs.get(pairId);
-  
-  const token_a_pool = pairStorageLQ.token_a_pool.toNumber();
-  const token_b_pool = pairStorageLQ.token_b_pool.toNumber();
-  const total_supply = pairStorageLQ.total_supply.toNumber();
-  
-  var lpShares: any = null;
-  var lpShares_not_rounded: any = null;
+  const pairStorageLQ = await lpDetails(pairId);
 
-  const amountTknA = parseFloat(tokenAmount);
-  lpShares_not_rounded = ((total_supply * amountTknA) / token_a_pool) * Math.pow(10, selTk_A.decimals);
-  lpShares = Math.round(lpShares_not_rounded);
-  
+  /* Raw Number Calculation */
+  // const lpShares_not_rounded = ((pairStorageLQ.total_supply * parseFloat(tokenAmount)) / pairStorageLQ.token_a_pool) * Math.pow(10, selTk_A.decimals);
+  // const lpShares:any = Math.round(lpShares_not_rounded);
+  // const lpRatio = lpShares_not_rounded/pairStorageLQ.total_supply;
+  // const token_a_in = Math.ceil(pairStorageLQ.token_a_pool * lpRatio);
+  // const token_b_in = Math.ceil(pairStorageLQ.token_b_pool * lpRatio);
 
-  var lpRatio = lpShares_not_rounded/total_supply;
-  
 
-  const token_a_in = Math.ceil(token_a_pool * lpRatio);
-  const token_b_in = Math.ceil(token_b_pool * lpRatio);
+  const lpShares = toNat(tokenAmount, selTk_A)
+    .integerValue(BigNumber.ROUND_DOWN)
+    .times(pairStorageLQ.total_supply)
+    .div(pairStorageLQ.token_a_pool)
+    .integerValue(BigNumber.ROUND_DOWN).toNumber();
 
+  const token_a_in = new BigNumber(lpShares)
+    .times(pairStorageLQ.token_a_pool)
+    .div(pairStorageLQ.total_supply)
+    .integerValue(BigNumber.ROUND_DOWN).toNumber();
+
+  const token_b_in = new BigNumber(lpShares)
+    .times(pairStorageLQ.token_b_pool)
+    .div(pairStorageLQ.total_supply)
+    .integerValue(BigNumber.ROUND_DOWN).toNumber();
+
+    
   return {
     lpShares: lpShares,
     token_a_in: token_a_in,
