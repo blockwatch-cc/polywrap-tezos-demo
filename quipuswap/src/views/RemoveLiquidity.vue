@@ -533,30 +533,6 @@ export default class RemoveLiquidity extends Vue {
   }
   
 
-  // async calcTokenAmount() {
-  //   if (!this.selectedToken || !this.dexAddress) return;
-
-  //   const dexStorage = await getDexStorage(this.dexAddress);
-  //   const shares = estimateShares(this.tezAmount, dexStorage);
-  //   const amount = estimateInTokens(shares, dexStorage, this.selectedToken);
-
-  //   this.tokenAmount = toValidAmount(amount);
-  // }
-
-  // async calcTezAmount() {
-  //   if (!this.selectedToken || !this.dexAddress) return;
-
-  //   const dexStorage = await getDexStorage(this.dexAddress);
-  //   const shares = estimateSharesInverse(
-  //     this.tokenAmount,
-  //     dexStorage,
-  //     this.selectedToken
-  //   );
-  //   const amount = estimateInTezos(shares, dexStorage);
-
-  //   this.tezAmount = toValidAmount(amount);
-  // }
-
   async calcInTokens() {
     this.inTokens = null;
     if (!this.selectedToken || !this.dexAddress || !this.sharesToRemove) return;
@@ -643,7 +619,6 @@ export default class RemoveLiquidity extends Vue {
       );
 
       const shares = sharesToNat(this.sharesToRemove!);
-      // this.sharesToRemove
       
 
       const payload_divest = {
