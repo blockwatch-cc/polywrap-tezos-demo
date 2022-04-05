@@ -269,7 +269,7 @@ export default class RemoveLiquidity extends Vue {
   remLiqStatus = this.defaultRemLiqStatus;
 
   slippagePercentages = [0.5, 1, 3];
-  activeSlippagePercentage: number | undefined = 1;
+  activeSlippagePercentage: number | undefined = 0.5;
   lastValidCustomSlippagePercentage: string = "";
   customSlippagePercentage: string = "";
 
