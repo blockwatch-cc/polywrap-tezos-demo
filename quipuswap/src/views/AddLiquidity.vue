@@ -47,8 +47,8 @@
           </div>
         </template>
 
-        <div class="flex justify-between mb-1">
-          <span class="mr-2">Dex contract</span>
+        <!--<div class="flex justify-between mb-1">
+           <span class="mr-2">Dex contract</span>
           <span class="font-mono text-gray-400">{{ dexAddress || "-" }}</span>
         </div>
 
@@ -75,7 +75,7 @@
         <div class="flex justify-between mb-1">
           <span class="mr-2">Your pool share</span>
           <span>{{ poolMeta ? poolMeta.myShare : "-" }}</span>
-        </div>
+        </div> -->
       </FormInfo>
     </Form>
 
