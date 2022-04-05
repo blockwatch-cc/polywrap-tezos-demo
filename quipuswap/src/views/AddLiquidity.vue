@@ -143,7 +143,8 @@ import {
   getNetwork,
   getStorage,
   sharesTokenAinTokenBin,
-  lpDetails
+  lpDetails,
+  maxTokenIn
 } from "@/core";
 import { XTZ_TOKEN } from "@/core/defaults";
 import { OpKind } from "@taquito/taquito";
@@ -478,15 +479,6 @@ export default class AddLiquidity extends Vue {
         return
       }
 
-
-      const dex_tokenA = await findTezDex(this.inputToken);
-      var dexAddress_tokenA:any = null;
-
-      if (dex_tokenA) {
-        dexAddress_tokenA = dex_tokenA.address;
-      }
-      const dexAddress_tokenB = this.dexAddress!;
-
       const selTk_A: any = this.inputToken;
       const selTk_B: any = this.selectedToken!;
 
@@ -498,17 +490,24 @@ export default class AddLiquidity extends Vue {
         selTk_A
       );
 
+      var maxAmount_A: any = await maxTokenIn(
+        this.tezAmount,
+        selTk_A,
+        0.5
+      );
 
-      console.log("shares_payload");
-      console.log(shares_payload);
-
+      var maxAmount_B: any = await maxTokenIn(
+        this.tokenAmount,
+        selTk_B,
+        0.5
+      );
 
       const payload_invest = {
           params: {
             pairId: parseInt(pairId, 10),
             shares: shares_payload.lpShares.toString(),
-            tokenAIn: shares_payload.token_a_in.toString(),
-            tokenBIn: shares_payload.token_b_in.toString(),
+            tokenAIn: maxAmount_A.toString(),
+            tokenBIn: maxAmount_B.toString(),
             deadline: add(new Date(), { minutes: 10 }).toISOString(),
           },
           sendParams: {
