@@ -495,8 +495,7 @@ export default class AddLiquidity extends Vue {
       var shares_payload: any = await sharesTokenAinTokenBin(
         pairId,
         this.tezAmount,
-        selTk_A,
-        null
+        selTk_A
       );
 
 
