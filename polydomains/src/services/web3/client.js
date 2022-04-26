@@ -1,6 +1,6 @@
 import { Web3ApiClient } from "@web3api/client-js"
-import { tezosDomainsPlugin } from "@web3api/tezos-domains-plugin-js"
-import { tezosPlugin } from "@web3api/tezos-plugin-js"
+import { tezosDomainsPlugin } from "@blockwatch-cc/tezos-domains-plugin-js"
+import { tezosPlugin } from "@blockwatch-cc/tezos-plugin-js"
 
 export const TEZOS_PLUGIN_JS = 'w3://ens/tezos.web3api.eth'
 export const TEZOS_DOMAINS_WRAPPER_URI = 'w3://ipfs/QmTeyTLBZqY5VZtMgfAbHS6ePF8PYsvaLThCM8Ke64qc6h'

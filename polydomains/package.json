@@ -4,6 +4,8 @@
   "private": true,
   "homepage": "https://blockwatch-cc.github.io/polywrap-tezos-demo/",
   "dependencies": {
+    "@blockwatch-cc/tezos-domains-plugin-js": "^0.0.1-prealpha.58",
+    "@blockwatch-cc/tezos-plugin-js": "^0.0.1-prealpha.62",
     "@chakra-ui/icons": "^1.1.1",
     "@chakra-ui/react": "^1.7.3",
     "@emotion/react": "^11",
