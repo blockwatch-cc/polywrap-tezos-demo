@@ -37,6 +37,7 @@ export async function confirmOperation(
           ? currentBlock
           : await tezos.rpc.getBlock({ block: i as any });
 
+          
       const opEntry = await findOperation(block, opHash);
       if (opEntry) {
         let status;
