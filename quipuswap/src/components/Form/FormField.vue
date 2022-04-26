@@ -99,7 +99,6 @@
             ref="searchInput"
             placeholder="Enter token name or contract address..."
             class="w-full"
-            readonly
           />
         </div>
 
