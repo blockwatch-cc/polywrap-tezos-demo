@@ -1,5 +1,5 @@
 import { Web3ApiClient } from "@web3api/client-js"
-import { tezosPlugin } from "@web3api/tezos-plugin-js"
+import { tezosPlugin } from "@blockwatch-cc/tezos-plugin-js"
 
 export const client = new Web3ApiClient({
     plugins: [

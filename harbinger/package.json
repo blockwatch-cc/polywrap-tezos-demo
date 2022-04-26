@@ -4,10 +4,11 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@blockwatch-cc/tezos-plugin-js": "^0.0.1-prealpha.62",
+    "@web3api/client-js": "0.0.1-prealpha.61",
     "react": "^16.10.2",
     "react-dom": "^16.10.2",
-    "react-scripts": "3.2.0",
-    "@web3api/client-js": "0.0.1-prealpha.61"
+    "react-scripts": "3.2.0"
   },
   "scripts": {
     "start": "react-scripts start",
