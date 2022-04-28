@@ -55,7 +55,6 @@ export async function getTokens() {
       return obj.contractAddress !== 'tez';
     });
 
-
   }
   
   console.log("whitelist");
