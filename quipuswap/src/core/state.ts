@@ -45,8 +45,17 @@ export async function getTokens() {
   const chainId = CHAIN_ID_MAPPING.get(id);
   let whitelist = TOKEN_WHITELIST.filter(t => t.network === chainId);
 
-  
-  let axs = await axios('https://cloudflare-ipfs.com/ipfs/QmdDevhmdEyJaArFthfKKUA2FVcte9ijNog1ekSsoMKYPt');
+  let axs = null;
+  if ("ithacanet"){
+    // "ithacanet"
+    // axs = await axios('https://cloudflare-ipfs.com/ipfs/Qmbi8DDaMxp62jVzygbnRKfv9ESszQ1mpKB9g7Hcqe2ZXj');
+    axs = await axios('https://raw.githubusercontent.com/von-dee/swaptzstats/main/tezos.ithaca.qv1.tokenlist.json');
+  }else{
+    // "hangzhounet"
+    // axs = await axios('https://cloudflare-ipfs.com/ipfs/QmdDevhmdEyJaArFthfKKUA2FVcte9ijNog1ekSsoMKYPt');
+    axs = await axios('https://raw.githubusercontent.com/von-dee/swaptzstats/main/tezos.hangzhou.qv1.tokenlist.json');
+  }
+
   
   if(whitelist.length == 0 ){
     whitelist = axs.data.tokens;
