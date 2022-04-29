@@ -45,7 +45,7 @@ export async function getTokens() {
   const chainId = CHAIN_ID_MAPPING.get(id);
   let whitelist = TOKEN_WHITELIST.filter(t => t.network === chainId);
 
-  let axs = null;
+  let axs: any = null;
   if ("ithacanet"){
     // "ithacanet"
     // axs = await axios('https://cloudflare-ipfs.com/ipfs/Qmbi8DDaMxp62jVzygbnRKfv9ESszQ1mpKB9g7Hcqe2ZXj');
