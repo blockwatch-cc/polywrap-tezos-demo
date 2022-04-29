@@ -8,6 +8,10 @@ export const TEZOS_DOMAINS_PLUGIN_JS = 'w3://ens/tezosDomainsPlugin.web3api.eth'
 
 
 export const TezosConnections = {
+  ithacanet: {
+    provider: "https://rpc.ithaca.tzstats.com",
+    supportedTLDs: ['ith']
+  },
   hangzhounet: {
     provider: "https://rpc.hangzhou.tzstats.com",
     supportedTLDs: ['han']
@@ -29,6 +33,9 @@ export const client = new Web3ApiClient({
           },  
           hangzhounet: {
               provider: "https://rpc.hangzhou.tzstats.com",
+          },
+          ithacanet: {
+              provider: "https://rpc.ithaca.tzstats.com",
           }
         },
         defaultNetwork: "hangzhounet"
