@@ -95,6 +95,7 @@ function Buy() {
   }
 
   const requestBuy = async () => {
+    
     if (!assertWalletConnected(app.account)) {
       return
     }
@@ -136,12 +137,13 @@ function Buy() {
         query {
           getOperationStatus (
             hash: $hash
-            network: hangzhounet
+            network: $network
           )
         }
       `,
       variables: {
         hash: commitResponse.data?.commit,
+        network: app.network
       },
       frequency: { ms: 6000 },
     });
