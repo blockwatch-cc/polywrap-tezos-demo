@@ -22,4 +22,14 @@
 **/npm-debug.log*
 **/yarn-debug.log*
 **/yarn-error.log*
+<<<<<<< HEAD
 harbinger/yarn.lock
+=======
+
+**/.vscode
+polydomains/package-lock.json
+polydomains/yarn.lock
+polydomains/yarn.lock
+polydomains/yarn.lock
+**/dist
+>>>>>>> wip@wallet-integration-demo
