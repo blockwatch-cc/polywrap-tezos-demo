@@ -54,7 +54,7 @@ function App() {
                         <p><i className="fas fa-network-wired"></i> Network</p>
                         <select className="selects" name="network" id="network" onChange={handleOnNetworkChange}>
                           <option value="mainnet">Mainnet</option>
-                          <option value="granadanet">Granadanet</option>
+                          {/* <option value="granadanet">Granadanet</option> */}
                         </select>
                       </div>
                   </div>
