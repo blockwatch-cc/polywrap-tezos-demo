@@ -2,7 +2,7 @@ import { QSAsset, QSTokenType, QSNetwork } from "@/core/types";
 
 export { TOKEN_WHITELIST } from "../whitelist";
 
-// Hangzhounet
+// Ithacanet
 export const FA1_2_FACTORY_CONTRACT_ITHACANET =
   process.env.VUE_APP_FA1_2_FACTORY_CONTRACT_ITHACANET || null;
 export const FA2_FACTORY_CONTRACT_ITHACANET =
@@ -144,9 +144,9 @@ export const ALL_NETWORKS = [
   // FLORENCENET_NETWORK,
   // GRANADANET_NETWORK,
   ITHACANET_NETWORK,
-  HANGZHOUNET_NETWORK,
+  // HANGZHOUNET_NETWORK,
 ];
-export const DEFAULT_NETWORK = HANGZHOUNET_NETWORK;
+export const DEFAULT_NETWORK = ITHACANET_NETWORK;
 
 export const XTZ_TOKEN: QSAsset = {
   type: "xtz",
