@@ -660,7 +660,7 @@ export default class RemoveLiquidity extends Vue {
           title: 'Successful',
           html:
             'Transaction ' +
-            '<a href="https://hangzhou.tzstats.com/'+response_batch+'" target="_blank"><b style="color: green;">...'+response_batch?.substring(response_batch?.length - 10)+'</b></a> ' +
+            '<a href="https://ithaca.tzstats.com/'+response_batch+'" target="_blank"><b style="color: green;">...'+response_batch?.substring(response_batch?.length - 10)+'</b></a> ' +
             ' was completed.',
           showCancelButton: false,
           confirmButtonColor: '#3085d6',
