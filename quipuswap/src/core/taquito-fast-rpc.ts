@@ -6,7 +6,10 @@ interface RPCOptions {
   block: string;
 }
 
-export class FastRpcClient extends RpcClient {
+
+export class FastRpcClient {}
+
+export class FastRpcClient_ extends RpcClient {
   refreshInterval = 20_000; // 20 src
   memoizeMaxAge = 180_000; // 3 min
 
