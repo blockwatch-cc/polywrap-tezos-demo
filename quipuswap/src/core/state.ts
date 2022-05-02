@@ -31,9 +31,10 @@ const axios = require('axios');
 export const michelEncoder = new MichelCodecPacker();
 export const michelParser = new Parser();
 
-export const Tezos = new TezosToolkit(
-  new FastRpcClient(getNetwork().rpcBaseURL)
-);
+const fastRPCclient: any = new FastRpcClient(getNetwork().rpcBaseURL);
+
+export const Tezos = new TezosToolkit(fastRPCclient);
+
 Tezos.addExtension(new Tzip16Module());
 Tezos.addExtension(new Tzip12Module());
 Tezos.setSignerProvider(new LambdaViewSigner());
