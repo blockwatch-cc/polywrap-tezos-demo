@@ -29,7 +29,7 @@ export const addOperator = (network, payload) => {
     query: `
         mutation {
           addOperator (
-              network: hangzhounet,
+              network: ithacanet,
               params: $params
           )
         },
@@ -49,7 +49,7 @@ export const swapDirect = (network, payload) => {
     query: `
         mutation {
           swapDirect(
-            network: hangzhounet,
+            network: ithacanet,
             params: $params,
             sendParams: $sendParams
           )
@@ -71,7 +71,7 @@ export const removeOperator = (network, payload) => {
     query: `
         mutation {
           removeOperator (
-              network: hangzhounet,
+              network: ithacanet,
               params: $params
           )
         },
@@ -92,7 +92,7 @@ export const transfer = (network, payload) => {
     query: `
       mutation {
         transfer(
-          network: hangzhounet,
+          network: ithacanet,
           params: $params,
           sendParams: $sendParams
         )
@@ -114,7 +114,7 @@ export const transferFrom = (network, payload) => {
     query: `
       mutation {
         transferFrom(
-          network: hangzhounet,
+          network: ithacanet,
           from: $from,
           params: $params,
           sendParams: $sendParams
@@ -137,7 +137,7 @@ export const invest = (network, payload) => {
     query: `
       mutation {
         invest(
-          network: hangzhounet,
+          network: ithacanet,
           params: $params,
           sendParams: $sendParams
         )
@@ -158,7 +158,7 @@ export const divest = (network, payload) => {
     query: `
       mutation {
         divest(
-          network: hangzhounet,
+          network: ithacanet,
           params: $params,
           sendParams: $sendParams
         )
