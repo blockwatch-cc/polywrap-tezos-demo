@@ -10,6 +10,7 @@
     "generate-public-whitelist": "ts-node-transpile-only -O '{\"module\":\"commonjs\"}' ./bin/generate-public-whitelist.ts"
   },
   "dependencies": {
+    "@blockwatch-cc/tezos-plugin-js": "^0.0.1-prealpha.62",
     "@taquito/beacon-wallet": "10.1.3",
     "@taquito/local-forging": "10.1.3",
     "@taquito/michelson-encoder": "10.1.3",
