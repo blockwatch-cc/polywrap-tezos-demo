@@ -32,7 +32,7 @@ export async function confirmOperation(
       i <= currentBlockLevel;
       i++
     ) {
-      const block =
+      const block: any =
         i === currentBlockLevel
           ? currentBlock
           : await tezos.rpc.getBlock({ block: i as any });
