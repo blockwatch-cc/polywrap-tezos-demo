@@ -1,5 +1,5 @@
 import { Web3ApiClient } from "@web3api/client-js"
-import { tezosPlugin } from "@web3api/tezos-plugin-js"
+// import { tezosPlugin } from "@blockwatch-cc/tezos-plugin-js"
 
 
 // export const TEZOS_QUIPUSWAP_WRAPPER_URI = 'w3://ipfs/QmSySUvrC6At5GcZN8yJwPAKAcfzhLq5T33Qu6rWLKw3eG'
@@ -11,6 +11,9 @@ export const TezosConnections = {
     provider: "https://rpc.hangzhou.tzstats.com",
     supportedTLDs: ['han']
   },
+  ithacanet: {
+    provider: "https://rpc.ithaca.tzstats.com",
+  },
   mainnet: {
     provider: "https://rpc.tzstats.com",
     supportedTLDs: ['tez']
@@ -21,17 +24,20 @@ export const client = new Web3ApiClient({
   plugins: [
     {
       uri: TEZOS_PLUGIN_JS,
-      plugin: tezosPlugin({
-        networks: {
-          mainnet: {
-              provider: "https://rpc.tzstats.com"
-          },  
-          hangzhounet: {
-              provider: "https://rpc.hangzhou.tzstats.com",
-          }
-        },
-        defaultNetwork: "hangzhounet"
-      })
+      // plugin: tezosPlugin({
+      //   networks: {
+      //     mainnet: {
+      //         provider: "https://rpc.tzstats.com"
+      //     },  
+      //     hangzhounet: {
+      //         provider: "https://rpc.hangzhou.tzstats.com",
+      //     },
+            // ithacanet: {
+            //     provider: "https://rpc.ithaca.tzstats.com",
+            // }
+      //   },
+      //   defaultNetwork: "ithacanet"
+      // })
     }
   ]
 })
