@@ -9,7 +9,7 @@ export const listTokenPairs = async (network) => {
         query: `
             query {
               listTokenPairs(
-                network: hangzhounet
+                network: ithacanet
               )
             }
         `,
@@ -28,7 +28,7 @@ export const getTokenSupply = async (network, pairId) => {
           query {
             getTokenSupply(
               pairId: $pairId,
-              network: hangzhounet
+              network: ithacanet
             )
           }
       `,
