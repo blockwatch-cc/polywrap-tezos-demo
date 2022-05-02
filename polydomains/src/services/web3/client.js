@@ -38,7 +38,7 @@ export const client = new Web3ApiClient({
               provider: "https://rpc.ithaca.tzstats.com",
           }
         },
-        defaultNetwork: "hangzhounet"
+        defaultNetwork: "ithacanet"
       })
     },
     {
