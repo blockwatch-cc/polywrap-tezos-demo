@@ -47,6 +47,7 @@ function Search() {
         }
         dispatch({ state: 'LOADING' })
         let network =  app.network
+
         const tld = getTLD(domain.name)
         if (!TezosConnections[app.network].supportedTLDs.includes(tld)) {
             for (const net of Object.keys(TezosConnections)) {
@@ -59,7 +60,7 @@ function Search() {
         }
         const response = await getAcquisitionInfo(network, domain.name);
         if (response.errors) {
-            const message = extractErrorMessage(response.errors, 'failed to get domain avaialable')
+            const message = extractErrorMessage(response.errors, 'failed to get domain available')
             toast.error(message)
             dispatch({ state: 'QUERY_FAILED', errors: response.errors });
             return
