@@ -1,6 +1,6 @@
 import { client } from './client'
 
-const HARBINGER_URI = 'w3://ipfs/QmYEz2Zxr5Zd3UuWs2ijocsGkvaoLurkzXJb1Wc9NK1nWt'
+const HARBINGER_URI = 'w3://ipfs/QmPWL3GnEDCA32Ui6ufiZyXbyNeUbveewAsJ9z2BgEUFRu'
 
 export const getAssetData = async (assetCode, network) => {
     return await client.query({
