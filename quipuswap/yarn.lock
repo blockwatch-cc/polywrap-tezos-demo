@@ -1626,7 +1626,7 @@
     bignumber.js "^9.0.2"
     fast-json-stable-stringify "^2.1.0"
 
-"@taquito/rpc@^10.1.3":
+"@taquito/rpc@10.1.3", "@taquito/rpc@^10.1.3":
   version "10.1.3"
   resolved "https://registry.npmjs.org/@taquito/rpc/-/rpc-10.1.3.tgz"
   integrity sha512-45sOyyqKf41kCsYxnDOuhZHcJquS52xYTd2lqVdS+N+mgbhuiYHmRl9li7xAtg2XTrcfn/ilEPCudX5Cw4jScw==
