@@ -34,8 +34,9 @@ export const michelParser = new Parser();
 const fastRPCclient: any = new FastRpcClient(getNetwork().rpcBaseURL);
 
 export const Tezos = new TezosToolkit(fastRPCclient);
-
+// @ts-ignore
 Tezos.addExtension(new Tzip16Module());
+// @ts-ignore
 Tezos.addExtension(new Tzip12Module());
 Tezos.setSignerProvider(new LambdaViewSigner());
 Tezos.setPackerProvider(michelEncoder);
@@ -329,6 +330,7 @@ export async function getStoragePure(contractAddress: string) {
 export const getContract = mem(getContractPure);
 
 export const getContractForMetadata = mem((address: string) =>
+// @ts-ignore
   Tezos.contract.at(address, compose(tzip12, tzip16))
 );
 
