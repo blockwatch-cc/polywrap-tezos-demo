@@ -99,8 +99,9 @@ export async function getTokenMetadata(
    * Try fetch token data with TZIP12
    */
   try {
+    // @ts-ignore
     tokenData = await contract.tzip12().getTokenMetadata(tokenId);
-  } catch (err) {
+  } catch (err: any) {
     latestErrMessage = err.message;
   }
 
@@ -110,9 +111,10 @@ export async function getTokenMetadata(
    */
   if (!tokenData || Object.keys(tokenData).length === 0) {
     try {
+      // @ts-ignore
       const { metadata } = await contract.tzip16().getMetadata();
       tokenData = metadata;
-    } catch (err) {
+    } catch (err: any) {
       latestErrMessage = err.message;
     }
   }
