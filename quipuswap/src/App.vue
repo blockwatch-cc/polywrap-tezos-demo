@@ -290,9 +290,9 @@
       ].join("");
     }
 
-    created() {
+    async created() {
       this.loadAccBalance();
-      getTokenPairs();
+      await getTokenPairs();
     }
 
     @Watch("account")
