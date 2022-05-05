@@ -179,7 +179,7 @@ export default class NavTabs extends Vue {
         confirmOperation(tezos, operation.opHash)
           .finally(() => loadPoolsToMigrate())
       );
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
       const msg = err.message;
       alert(
