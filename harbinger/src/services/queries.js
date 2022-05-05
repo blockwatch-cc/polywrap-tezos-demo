@@ -10,6 +10,7 @@ export const getAssetData = async (assetCode, network) => {
                     getAssetData(
                         network: $network,
                         assetCode: $assetCode,
+                        providerAddress: "KT1Jr5t9UvGiqkvvsuUbPJHaYx24NzdUwNW9"
                     )
                 }`,
             variables: {
