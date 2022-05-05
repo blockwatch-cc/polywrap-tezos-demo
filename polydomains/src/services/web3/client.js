@@ -44,7 +44,7 @@ export const client = new Web3ApiClient({
     {
       uri: TEZOS_DOMAINS_PLUGIN_JS,
       plugin: tezosDomainsPlugin({
-          defaultNetwork: "hangzhounet"
+          defaultNetwork: "ithacanet"
       })
     }
   ]
