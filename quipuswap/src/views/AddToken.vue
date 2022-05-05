@@ -494,7 +494,7 @@ export default class AddToken extends Vue {
         confirmOperation(tezos, operation.opHash)
           .finally(() => this.refresh())
       );
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
       notifyError(err);
       const msg = err.message;
