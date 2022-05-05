@@ -21,7 +21,7 @@ export async function notifyConfirm<T>(promise: Promise<T>) {
         hideProgressBar: true,
       },
     });
-  } catch (err) {
+  } catch (err: any) {
     Vue.$toast.update(toastId, {
       content: err.message,
       options: {
