@@ -259,7 +259,7 @@ export default class Veto extends Vue {
           // this.alreadyBanned = Boolean(myVV);
         }
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
     } finally {
       this.dataLoading = false;
@@ -318,7 +318,7 @@ export default class Veto extends Vue {
         confirmOperation(tezos, operation.opHash)
           .finally(() => this.refresh())
       );
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
       notifyError(err);
       const msg = err.message;
@@ -357,7 +357,7 @@ export default class Veto extends Vue {
         confirmOperation(tezos, operation.opHash)
           .finally(() => this.refresh())
       );
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
       notifyError(err);
       const msg = err.message;
