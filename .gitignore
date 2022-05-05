@@ -1,8 +1,10 @@
 
 .DS_Store
-polydomains/node_modules/
-polydomains/build/
+**/node_modules/
+**/build/
 **/quipuswap/dist
 **/quipuswap/node_modules
 **/harbinger/node_modules
 quipuswap/yarn-error.log
+harbinger/build/asset-manifest.json
+harbinger/yarn.lock
