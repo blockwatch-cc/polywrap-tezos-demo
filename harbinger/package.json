@@ -2,6 +2,7 @@
   "name": "@web3api/harbinger-wrapper-example",
   "description": "Example of harbinger wrapper",
   "version": "0.1.0",
+  "homepage": "/polywrap-tezos-demo/harbinger",
   "private": true,
   "dependencies": {
     "@blockwatch-cc/tezos-plugin-js": "0.0.1-prealpha.63",
