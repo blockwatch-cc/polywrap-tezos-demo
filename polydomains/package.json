@@ -2,7 +2,7 @@
   "name": "polydomains",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://blockwatch-cc.github.io/polywrap-tezos-demo/",
+  "homepage": "https://blockwatch-cc.github.io/polywrap-tezos-demo/polydomains/",
   "dependencies": {
     "@blockwatch-cc/tezos-domains-plugin-js": "0.0.1-prealpha.59",
     "@blockwatch-cc/tezos-plugin-js": "0.0.1-prealpha.63",
