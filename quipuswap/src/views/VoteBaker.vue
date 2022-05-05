@@ -307,7 +307,7 @@ export default class VoteBaker extends Vue {
 
         this.voter = me;
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
     } finally {
       this.isLoading = false;
@@ -356,7 +356,7 @@ export default class VoteBaker extends Vue {
         confirmOperation(tezos, operation.opHash)
           .finally(() => this.refresh())
       );
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
       notifyError(err);
       const msg = err.message;
@@ -402,7 +402,7 @@ export default class VoteBaker extends Vue {
         confirmOperation(tezos, operation.opHash)
           .finally(() => this.refresh())
       );
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
       notifyError(err);
       const msg = err.message;
