@@ -152,7 +152,7 @@ export default class DelegateVote extends Vue {
       if (myVoters) {
         this.alreadyDeputies = myVoters.allowances;
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
     } finally {
       this.dataLoading = false;
@@ -184,7 +184,7 @@ export default class DelegateVote extends Vue {
 
       this.addStatus = "Success";
       this.refresh();
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
       const msg = err.message;
       this.addStatus =
