@@ -1,28 +1,21 @@
-# quipuswap-webapp
+# Quipuswap
 
-Decentralized application UI for Quipuswap protocol.
+[Quipuswap](https://quipuswap.com/) is a decentralised exchange on the Tezos blockchain. 
 
-![Quipuswap](https://user-images.githubusercontent.com/11996139/89178010-57e9b980-d595-11ea-8b32-ddea1f1bfa21.png)
+## Project Setup
 
-## Project setup
-```
+#### Install dependencies
+
+```bash
 yarn install
 ```
 
-### Compiles and hot-reloads for development
+#### Start Application
 ```
-yarn serve
+yarn start
 ```
+NB: For node v17+ due to upgrade of [openssl to v3.0.0](https://github.com/nodejs/node/releases/tag/v17.7.2). To start application run
 
-### Compiles and minifies for production
+```bash
+NODE_OPTIONS=--openssl-legacy-provider yarn start
 ```
-yarn build
-```
-
-### Lints and fixes files
-```
-yarn lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
