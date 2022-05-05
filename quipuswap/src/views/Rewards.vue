@@ -180,7 +180,7 @@ export default class Rewards extends Vue {
         const val = reward.idiv(ACCURANCY_MULTIPLIER);
         this.rewards = mutezToTz(val).toFormat(6);
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
     } finally {
       this.dataLoading = false;
@@ -207,7 +207,7 @@ export default class Rewards extends Vue {
         confirmOperation(tezos, operation.opHash)
           .finally(() => this.refresh())
       );
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
       notifyError(err);
       const msg = err.message;
