@@ -3,12 +3,14 @@
     <NavTabs class="mb-6" />
 
     <Form :style="swapping && 'pointer-events:none'">
+      <!-- :subLabelName="inputBalance ? 'Balance: ' : undefined" -->
+      <!-- :subLabelValue="inputBalance || undefined" -->
       <FormField
         placeholder="0.0"
         label="Input"
         v-model="inputAmount"
-        :subLabelName="inputBalance ? 'Balance: ' : undefined"
-        :subLabelValue="inputBalance || undefined"
+        :subLabelName="''"
+        :subLabelValue="''"
         :isLoading="inputLoading"
         @input="(e) => handleInputAmountChange(e.target.value)"
         @selectToken="handleInputSelect"
@@ -27,11 +29,12 @@
         </button>
       </FormIcon>
 
+      <!-- :subLabelName="outputBalance ? `Balance: ${outputBalance}` : undefined" -->
       <FormField
         placeholder="0.0"
         label="Output"
         v-model="outputAmount"
-        :subLabelName="outputBalance ? `Balance: ${outputBalance}` : undefined"
+        :subLabelName="''"
         :isLoading="outputLoading"
         @input="(e) => handleOutputAmountChange(e.target.value)"
         @selectToken="handleOutputSelect"
