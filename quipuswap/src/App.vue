@@ -107,6 +107,8 @@
                     Hello! This is a demo version of QuipuSwap using Polywrap.
                     <br />
                     You use this app on the mainnet at your own risk.
+                    <br />
+                    This is a Token-to-Token exchange. To swap make sure your input token balance is not empty. Visit <a href="https://ithacanet.quipuswap.com/"> <b> Quipu Swap V2 </b> </a> top up wallet.
                   </div>
                 </div>
 
