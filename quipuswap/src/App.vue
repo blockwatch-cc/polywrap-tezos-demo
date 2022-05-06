@@ -106,9 +106,12 @@
                   <div class="p-4 bg-accent rounded text-white whitespace-normal font-medium center">
                     Hello! This is a demo version of QuipuSwap using Polywrap.
                     <br />
-                    You use this app on the mainnet at your own risk.
+                    <!-- You use this app on the mainnet at your own risk. -->
+                    This is a Token-to-Token exchange. 
                     <br />
-                    This is a Token-to-Token exchange. To swap make sure your input token balance is not empty. Visit <a href="https://ithacanet.quipuswap.com/"> <b> Quipu Swap V2 </b> </a> top up wallet.
+                    To swap make sure your input token balance is not empty. 
+                    <br />
+                    Visit <a href="https://ithacanet.quipuswap.com/"> <b style="color: #5b61f6;"> Quipu Swap V2 </b> </a> top up wallet.
                   </div>
                 </div>
 
