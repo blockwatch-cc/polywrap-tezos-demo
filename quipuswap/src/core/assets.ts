@@ -31,7 +31,7 @@ export async function getBalance(
   asset: Pick<QSAsset, "tokenType" | "id" | "decimals" | "fa2TokenId">
 ) {
   let nat: BigNumber | undefined;
-
+  
   switch (asset.tokenType) {
     case QSTokenType.XTZ:
       const amount = await Tezos.tz.getBalance(accountPkh);
@@ -41,14 +41,19 @@ export async function getBalance(
     case QSTokenType.TzBTC:
     case QSTokenType.FA1_2:
       const contract = await getContract(asset.id);
-
+      
       try {
         nat = await contract.views.getBalance(accountPkh).read(lambdaView);
       } catch {}
-
+      
       if (!nat || nat.isNaN()) {
         nat = new BigNumber(0);
       }
+
+      console.log("#######");
+      console.log(asset.id);
+      console.log(accountPkh);
+      console.log("#######");
 
       return nat.div(10 ** asset.decimals);
 

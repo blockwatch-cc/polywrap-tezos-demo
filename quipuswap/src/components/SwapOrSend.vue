@@ -397,7 +397,10 @@ export default class SwapOrSend extends Vue {
     this.inputBalance = null;
     try {
       if (this.inputToken && this.account.pkh) {
+        console.log("balance To call");
         const balance = await getBalance(this.account.pkh, this.inputToken);
+        console.log("This balance");
+        console.log(balance);
         this.inputBalance = balance.toFixed();
       }
     } catch (err) {
