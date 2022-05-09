@@ -12,10 +12,10 @@ export const TezosConnections = {
     provider: "https://rpc.ithaca.tzstats.com",
     supportedTLDs: ['ith']
   },
-  hangzhounet: {
-    provider: "https://rpc.hangzhou.tzstats.com",
-    supportedTLDs: ['han']
-  },
+  // hangzhounet: {
+  //   provider: "https://rpc.hangzhou.tzstats.com",
+  //   supportedTLDs: ['han']
+  // },
   mainnet: {
     provider: "https://rpc.tzstats.com",
     supportedTLDs: ['tez']
@@ -31,9 +31,9 @@ export const client = new Web3ApiClient({
           mainnet: {
               provider: "https://rpc.tzstats.com"
           },  
-          hangzhounet: {
-              provider: "https://rpc.hangzhou.tzstats.com",
-          },
+          // hangzhounet: {
+          //     provider: "https://rpc.hangzhou.tzstats.com",
+          // },
           ithacanet: {
               provider: "https://rpc.ithaca.tzstats.com",
           }
