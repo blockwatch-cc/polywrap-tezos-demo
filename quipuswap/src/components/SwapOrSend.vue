@@ -282,11 +282,6 @@ export default class SwapOrSend extends Vue {
   }
 
   get exchangeRate() {
-    console.log("exchangeRate");
-    console.log(this.inputToken);
-    console.log(this.outputToken);
-    console.log(this.inputAmount);
-    console.log(this.outputAmount);
 
     if (
       !this.inputToken ||
@@ -294,7 +289,6 @@ export default class SwapOrSend extends Vue {
       !this.inputAmount ||
       !this.outputAmount
     ) {
-      console.log("returened");
       return null;
     }
 
@@ -397,10 +391,7 @@ export default class SwapOrSend extends Vue {
     this.inputBalance = null;
     try {
       if (this.inputToken && this.account.pkh) {
-        console.log("balance To call");
         const balance = await getBalance(this.account.pkh, this.inputToken);
-        console.log("This balance");
-        console.log(balance);
         this.inputBalance = balance.toFixed();
       }
     } catch (err) {
@@ -511,8 +502,6 @@ export default class SwapOrSend extends Vue {
 
     const inType = this.inputToken.type;
     const outType = this.outputToken.type;
-
-    // console.log(asn);
 
     let amount: BigNumber | undefined;
     switch (true) {
