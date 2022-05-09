@@ -643,9 +643,16 @@ export default class SwapOrSend extends Vue {
     const outTk = this.outputToken!;
     const inTkAddress = this.inputTokenAddress != undefined ? this.inputTokenAddress : 'KT1SaouedthKUtAujiBD232mZYGtKwpZ6mFD';
     const outTkAddress = this.outputTokenAddress != undefined ? this.outputTokenAddress : 'KT1SaouedthKUtAujiBD232mZYGtKwpZ6mFD';
-    const inpAmn = BigInt(this.inputAmount!);
+    const inpAmn = this.inputAmount!;
     const minOut = this.minimumReceived!;
     const corminOut = new BigNumber(this.minimumReceived!);
+
+    const inpAmnNat = toNat(inpAmn, inTk).toFixed();
+  
+
+    console.log("amount");
+    console.log(inpAmn);
+    console.log(inpAmnNat);
 
     // @ts-ignore: Object is possibly 'null'.
     const minOutNat = tzToMutez(corminOut).c[0];
@@ -683,7 +690,7 @@ export default class SwapOrSend extends Vue {
           pairId: parseInt(pairId, 10),
           direction: `b_to_a`,
           swapParams: {
-            amountIn: inpAmn,
+            amountIn: inpAmnNat.toString(),
             minAmountOut: minOutNat.toString(),
             deadline: add(new Date(), { minutes: 10 }).toISOString(),
             receiver: recipient
@@ -712,7 +719,7 @@ export default class SwapOrSend extends Vue {
           pairId: parseInt(pairId, 10),
           direction: `b_to_a`,
           swapParams: {
-            amountIn: inpAmn,
+            amountIn: inpAmnNat.toString(),
             minAmountOut: minOutNat.toString(),
             deadline: add(new Date(), { minutes: 10 }).toISOString(),
             receiver:  me
@@ -724,7 +731,6 @@ export default class SwapOrSend extends Vue {
           mutez: true
         }
       };
-
 
 
       response = await swapDirect(net.id, payload_swap);
