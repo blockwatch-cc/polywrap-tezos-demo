@@ -14,6 +14,11 @@ import {
   CHAIN_ID_MAPPING,
 } from "./defaults";
 
+import {
+  Tezos12,
+  getBalanceExample
+} from "./taquito12";
+
 const network = getNetwork();
 const lambdaView = (() => {
   if (network.id === "florencenet")
@@ -30,7 +35,7 @@ export async function getBalance(
   accountPkh: string,
   asset: Pick<QSAsset, "tokenType" | "id" | "decimals" | "fa2TokenId">
 ) {
-  let nat: BigNumber | undefined;
+  let nat: any | BigNumber | undefined;
   
   switch (asset.tokenType) {
     case QSTokenType.XTZ:
@@ -40,20 +45,17 @@ export async function getBalance(
     case QSTokenType.Staker:
     case QSTokenType.TzBTC:
     case QSTokenType.FA1_2:
-      const contract = await getContract(asset.id);
+      // const contract = await getContract(asset.id);
       
-      try {
-        nat = await contract.views.getBalance(accountPkh).read(lambdaView);
-      } catch {}
+      // try {
+      //   nat = await contract.views.getBalance(accountPkh).read(lambdaView);
+      // } catch {}
       
-      if (!nat || nat.isNaN()) {
-        nat = new BigNumber(0);
-      }
+      // if (!nat || nat.isNaN()) {
+      //   nat = new BigNumber(0);
+      // }
 
-      console.log("#######");
-      console.log(asset.id);
-      console.log(accountPkh);
-      console.log("#######");
+      nat = await getBalanceExample(asset.id,accountPkh);
 
       return nat.div(10 ** asset.decimals);
 
