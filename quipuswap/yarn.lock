@@ -1880,7 +1880,7 @@
     rx-sandbox "^1.0.4"
     rxjs "^6.6.3"
 
-"@taquito/taquito@12.1.0", "@taquito/taquito@^12.1.0":
+"@taquito/taquito@12.1.0", "@taquito/taquito@^12.1.0", "taquito-taquito-newest@npm:@taquito/taquito":
   version "12.1.0"
   resolved "https://registry.yarnpkg.com/@taquito/taquito/-/taquito-12.1.0.tgz#4df497d2b7a2a88037c5c2a91aef5ac4233d2200"
   integrity sha512-mCWZIFR6a6M/vggj8eGtU10e1CSlyF7boYxPd2eBYQpH8k2Sz1FsRKBEZhNGS6CKCb3gBYmNYH/USqv5d3pRWw==
