@@ -9,8 +9,8 @@
         placeholder="0.0"
         label="Input"
         v-model="inputAmount"
-        :subLabelName="''"
-        :subLabelValue="''"
+        :subLabelName="inputBalance ? 'Balance: ' : undefined"
+        :subLabelValue="inputBalance || undefined"
         :isLoading="inputLoading"
         @input="(e) => handleInputAmountChange(e.target.value)"
         @selectToken="handleInputSelect"
@@ -34,7 +34,7 @@
         placeholder="0.0"
         label="Output"
         v-model="outputAmount"
-        :subLabelName="''"
+        :subLabelName="outputBalance ? `Balance: ${outputBalance}` : undefined"
         :isLoading="outputLoading"
         @input="(e) => handleOutputAmountChange(e.target.value)"
         @selectToken="handleOutputSelect"
@@ -651,7 +651,7 @@ export default class SwapOrSend extends Vue {
     const outTk = this.outputToken!;
     const inTkAddress = this.inputTokenAddress != undefined ? this.inputTokenAddress : 'KT1SaouedthKUtAujiBD232mZYGtKwpZ6mFD';
     const outTkAddress = this.outputTokenAddress != undefined ? this.outputTokenAddress : 'KT1SaouedthKUtAujiBD232mZYGtKwpZ6mFD';
-    const inpAmn = this.inputAmount!;
+    const inpAmn = BigInt(this.inputAmount!);
     const minOut = this.minimumReceived!;
     const corminOut = new BigNumber(this.minimumReceived!);
 
