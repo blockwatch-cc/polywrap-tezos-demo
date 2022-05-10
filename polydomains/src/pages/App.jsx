@@ -12,7 +12,7 @@ import { WalletContext } from '../context/wallet'
 
 function App() {
   const [app, setApp] = useState({
-    network: 'mainnet',
+    network: 'ithacanet',
     account: null
   })
 
