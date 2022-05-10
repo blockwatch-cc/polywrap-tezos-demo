@@ -16,7 +16,8 @@ import {
 
 import {
   Tezos12,
-  getBalanceExample
+  getBalanceTQ12,
+  getBalanceTQ12withTKID
 } from "./taquito12";
 
 const network = getNetwork();
@@ -36,6 +37,10 @@ export async function getBalance(
   asset: Pick<QSAsset, "tokenType" | "id" | "decimals" | "fa2TokenId">
 ) {
   let nat: any | BigNumber | undefined;
+
+  console.log("Token");
+  console.log(asset);
+  console.log(asset.tokenType);
   
   switch (asset.tokenType) {
     case QSTokenType.XTZ:
@@ -55,7 +60,17 @@ export async function getBalance(
       //   nat = new BigNumber(0);
       // }
 
-      nat = await getBalanceExample(asset.id,accountPkh);
+      console.log(asset.id);
+      console.log(accountPkh);
+      console.log("####");
+
+      if(asset.fa2TokenId == 0){
+        nat = await getBalanceTQ12withTKID(asset.id,accountPkh);
+      }else{
+        nat = await getBalanceTQ12(asset.id,accountPkh);
+      }
+
+      
 
       return nat.div(10 ** asset.decimals);
 
