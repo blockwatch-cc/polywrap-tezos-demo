@@ -653,9 +653,11 @@ export default class SwapOrSend extends Vue {
     console.log("amount");
     console.log(inpAmn);
     console.log(inpAmnNat);
+  
 
     // @ts-ignore: Object is possibly 'null'.
     const minOutNat = tzToMutez(corminOut).c[0];
+    console.log(minOutNat);
 
     let firemessage: any = {};
 
