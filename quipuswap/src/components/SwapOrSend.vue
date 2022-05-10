@@ -650,33 +650,24 @@ export default class SwapOrSend extends Vue {
     const inpAmnNat = toNat(inpAmn, inTk).toFixed();
   
 
-    console.log("amount");
-    console.log(inpAmn);
-    console.log(inpAmnNat);
-  
-
     // @ts-ignore: Object is possibly 'null'.
     const minOutNat = tzToMutez(corminOut).c[0];
-    console.log(minOutNat);
 
     let firemessage: any = {};
 
     let pairDetails = await getTokenPairsID(inTkAddress,outTkAddress);
 
-    let pairId = pairDetails.pairID;
-    
-    console.log(pairDetails.pairDirection);
 
-
-    if(pairId == undefined){
+    if(pairDetails == undefined){
       firemessage = {
-        title: 'Unavailable Pair',
+        title: 'Unavailable Pool',
         html:
-          'Theres no liquidity pool for the selected token pair.',
+          'Theres no direct liquidity pool for the selected token pair.',
         showCancelButton: false,
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
-        confirmButtonText: 'Done!'
+        confirmButtonText: 'Done!',
+        onClose: this.reloadpage
       }
 
       this.$fire(firemessage);
@@ -686,6 +677,10 @@ export default class SwapOrSend extends Vue {
       
       return
     }
+
+
+    let pairId = pairDetails.pairID;
+    
 
     const net = getNetwork();
     let response: any;
