@@ -661,13 +661,18 @@ export default class SwapOrSend extends Vue {
 
     let firemessage: any = {};
 
-    let pairId = await getTokenPairsID(inTkAddress,outTkAddress);
+    let pairDetails = await getTokenPairsID(inTkAddress,outTkAddress);
+
+    let pairId = pairDetails.pairID;
+    
+    console.log(pairDetails.pairDirection);
+
 
     if(pairId == undefined){
       firemessage = {
         title: 'Unavailable Pair',
         html:
-          'We only support FA12 and FA1218 Pair Transaction now.',
+          'Theres no liquidity pool for the selected token pair.',
         showCancelButton: false,
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
@@ -690,7 +695,7 @@ export default class SwapOrSend extends Vue {
       let payload_swap = {
         params: {
           pairId: parseInt(pairId, 10),
-          direction: `b_to_a`,
+          direction: pairDetails.pairDirection,
           swapParams: {
             amountIn: inpAmnNat.toString(),
             minAmountOut: minOutNat.toString(),
@@ -719,10 +724,10 @@ export default class SwapOrSend extends Vue {
       let payload_swap = {
         params: {
           pairId: parseInt(pairId, 10),
-          direction: `b_to_a`,
+          direction: pairDetails.pairDirection,
           swapParams: {
             amountIn: inpAmnNat.toString(),
-            minAmountOut: minOutNat.toString(),
+            minAmountOut:  minOutNat.toString(),
             deadline: add(new Date(), { minutes: 10 }).toISOString(),
             receiver:  me
           }
