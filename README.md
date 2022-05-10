@@ -6,5 +6,6 @@ Demo: [https://blockwatch-cc.github.io/polywrap-tezos-demo/harbinger](https://bl
 ### [Polydomains](./polydomains/)
 Demo: [https://blockwatch-cc.github.io/polywrap-tezos-demo/polydomains](https://blockwatch-cc.github.io/polywrap-tezos-demo/polydomains)
 
-### [Quipuswap](./quipuswap/)
+### [QuipuSwap](./quipuswap/)
 Demo: [https://blockwatch-cc.github.io/polywrap-tezos-demo/quipuswap](https://blockwatch-cc.github.io/polywrap-tezos-demo/quipuswap)
+Get Ithacanet test tokens: https://ithacanet.quipuswap.com
