@@ -65,7 +65,7 @@ function Buy() {
     })
     const response = await getAcquisitionInfo(app.network, domainName, days);
     if (response.errors) {
-        const message = extractErrorMessage(response.errors, 'failed to get domain avaialable')
+        const message = extractErrorMessage(response.errors, 'failed to get domain avaialable. Please try again.')
         toast.error(message)
         setAlertstate({
           show: true,
@@ -115,7 +115,7 @@ function Buy() {
       }
     })
     if (commitResponse.errors) {
-      const message = extractErrorMessage(commitResponse.errors, 'Failed to commit domain')
+      const message = extractErrorMessage(commitResponse.errors, 'Failed to commit domain. Please try again.')
       toast.error(message)
       setAlertstate({
         show: true,
@@ -206,7 +206,7 @@ function Buy() {
       }
     })
     if (response.errors) {
-      const message = extractErrorMessage(response.errors, 'Failed to buy domain')
+      const message = extractErrorMessage(response.errors, 'Failed to buy domain. Please try again.')
       toast.error(message)
       setAlertstate({
         show: true,
