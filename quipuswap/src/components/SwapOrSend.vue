@@ -662,7 +662,7 @@ export default class SwapOrSend extends Vue {
       firemessage = {
         title: 'Unavailable Pool',
         html:
-          'Theres no direct liquidity pool for the selected token pair.',
+          'There\'s no direct liquidity pool for the selected token pair.',
         showCancelButton: false,
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
