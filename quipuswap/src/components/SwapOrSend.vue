@@ -754,7 +754,7 @@ export default class SwapOrSend extends Vue {
         html:
           'Transaction ' +
           '<a href="https://ithaca.tzstats.com/'+response_batch+'" target="_blank"><b style="color: green;">...'+response_batch?.substring(response_batch?.length - 10)+'</b></a> ' +
-          ' was completed.',
+          ' was sent.',
         showCancelButton: false,
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
