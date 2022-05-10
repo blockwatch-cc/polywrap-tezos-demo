@@ -432,7 +432,8 @@ export async function getTokenPairs(){
 export async function getTokenPairsID(token_a_address, token_b_address){
 
   let listTokenPairs:any = localStorage.getItem("listTokenPairs");  
-  let respose_pairid = null;
+  let respose:any = null;
+  let pairDirection:any = null;
 
   if(listTokenPairs != undefined){
 
@@ -449,12 +450,24 @@ export async function getTokenPairsID(token_a_address, token_b_address){
       const tokens = [token_a_fa2, token_a_fa12, token_b_fa2, token_b_fa12];
     
       if(tokens.includes(token_a_address) && tokens.includes(token_b_address) ){
-        respose_pairid = item.pair_id;
+        const respose_pairid = item.pair_id;
+
+        if(tokens.indexOf(token_a_address) < tokens.indexOf(token_b_address)){
+          pairDirection = `a_to_b`;
+        }else{
+          pairDirection = `b_to_a`
+        }
+
+        respose = {
+            pairID: respose_pairid,
+            pairDirection: pairDirection
+        }
+
       }
 
     }
   }
 
-  return respose_pairid
+  return respose
 
 }
