@@ -1,22 +1,9 @@
-import { Web3ApiClient } from "@web3api/client-js"
-import { tezosPlugin } from "@blockwatch-cc/tezos-plugin-js"
+import { Web3ApiClient } from "@web3api/client-js";
+import { tezosPlugin } from "@blockwatch-cc/tezos-plugin-js";
 
-export const TEZOS_QUIPUSWAP_WRAPPER_URI = 'w3://ipfs/QmQsnEa1dB92uWDYB4grpC9YC4x9BsHscmWXPKUU4Uor8z'
-export const TEZOS_PLUGIN_JS = 'w3://ens/tezos.web3api.eth'
-
-export const TezosConnections = {
-  hangzhounet: {
-    provider: "https://rpc.hangzhou.tzstats.com",
-    supportedTLDs: ['han']
-  },
-  ithacanet: {
-    provider: "https://rpc.ithaca.tzstats.com",
-  },
-  mainnet: {
-    provider: "https://rpc.tzstats.com",
-    supportedTLDs: ['tez']
-  },
-}
+export const TEZOS_QUIPUSWAP_WRAPPER_URI =
+  "w3://ipfs/QmfXgYfxG7Uw7RCGLsAYFCuPcr7xqRePhTgMJVCdGiRMcZ";
+export const TEZOS_PLUGIN_JS = "w3://ens/tezos.web3api.eth";
 
 export const client = new Web3ApiClient({
   plugins: [
@@ -25,17 +12,17 @@ export const client = new Web3ApiClient({
       plugin: tezosPlugin({
         networks: {
           mainnet: {
-              provider: "https://rpc.tzstats.com"
-          },  
-          hangzhounet: {
-              provider: "https://rpc.hangzhou.tzstats.com",
+            provider: "https://rpc.tzstats.com",
           },
-            ithacanet: {
-                provider: "https://rpc.ithaca.tzstats.com",
-            }
+          hangzhounet: {
+            provider: "https://rpc.hangzhou.tzstats.com",
+          },
+          ithacanet: {
+            provider: "https://rpc.ithaca.tzstats.com",
+          },
         },
-        defaultNetwork: "ithacanet"
-      })
-    }
-  ]
-})
+        defaultNetwork: "ithacanet",
+      }),
+    },
+  ],
+});
