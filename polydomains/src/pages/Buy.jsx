@@ -65,7 +65,7 @@ function Buy() {
     })
     const response = await getAcquisitionInfo(app.network, domainName, days);
     if (response.errors) {
-        const message = extractErrorMessage(response.errors, 'failed to get domain avaialable. Please try again.')
+        const message = extractErrorMessage(response.errors, 'failed to get domain available. Please try again.')
         toast.error(message)
         setAlertstate({
           show: true,
