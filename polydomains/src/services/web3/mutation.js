@@ -15,7 +15,7 @@ export const connectTempleWallet = (network) => {
     variables: {
         network,
         connection: {
-          network
+          networkNameOrChainId: network
         }
     }
   })
