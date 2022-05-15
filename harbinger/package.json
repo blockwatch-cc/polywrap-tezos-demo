@@ -5,8 +5,8 @@
   "homepage": "/polywrap-tezos-demo/harbinger",
   "private": true,
   "dependencies": {
-    "@blockwatch-cc/tezos-plugin-js": "0.0.1-prealpha.63",
-    "@web3api/client-js": "0.0.1-prealpha.61",
+    "@blockwatch-cc/tezos-plugin-js": "0.0.1-prealpha.79",
+    "@web3api/client-js": "0.0.1-prealpha.76",
     "react": "^16.10.2",
     "react-dom": "^16.10.2",
     "react-scripts": "3.2.0"
