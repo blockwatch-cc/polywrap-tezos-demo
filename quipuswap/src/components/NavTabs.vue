@@ -7,13 +7,13 @@
       <router-link class="nav-item" active-class="active" to="/send"
         ><span>Send</span></router-link
       >
-      <router-link class="nav-item" active-class="active" to="/invest">
+      <!-- <router-link class="nav-item" active-class="active" to="/invest">
         <span>Invest</span>
         <Tooltip
           position="corner"
           content="Become a Liquidity provider and earn trading fees (0.3% from each swap) + baking rewards from staking your XTZ.  Learn more about the Investment tab from <a href='https://madfish.crunch.help/quipu-swap/i-have-added-liquidity-to-quipu-swap-how-much-will-i-earn-what-is-the-apy-of-your-dex' target='_blank' rel='nofollow noopener'>this article</a>."
         />
-      </router-link>
+      </router-link> -->
       <!-- <router-link class="nav-item" active-class="active" to="/governance">
         <span>Govern</span>
         <Tooltip
@@ -44,7 +44,7 @@ All the old pools are going to stay on the old contracts, while all the newly cr
 
     </div> -->
 
-    <button
+    <!-- <button
       v-for="pool in poolsToMigrate"
       :key="pool.dexAddress"
       class="flex items-center w-full px-4 py-2 my-2 text-sm text-white rounded bg-darkblue hover:bg-gray-800"
@@ -62,7 +62,7 @@ All the old pools are going to stay on the old contracts, while all the newly cr
         Remove Liqudity
         <img class="w-3 h-3 ml-1" src="@/assets/arrow-right-top.svg" />
       </div>
-    </button>
+    </button> -->
   </div>
 </template>
 
