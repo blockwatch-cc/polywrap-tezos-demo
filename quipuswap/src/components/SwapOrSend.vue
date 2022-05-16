@@ -626,6 +626,12 @@ export default class SwapOrSend extends Vue {
     }
   }
 
+  sleep(ms) {
+    return new Promise((resolve) => {
+      setTimeout(resolve, ms);
+    });
+  }
+
   async swap() {
 
     if (this.swapping) return;
@@ -655,14 +661,26 @@ export default class SwapOrSend extends Vue {
 
     let firemessage: any = {};
 
-    let pairDetails = await getTokenPairsID(inTkAddress,outTkAddress);
 
+    let listTokenPairs:any = localStorage.getItem("listTokenPairs"); 
+    let pairDetails:any = await getTokenPairsID(inTkAddress,outTkAddress);
 
     if(pairDetails == undefined){
+
+      let msg:any = null;
+      let msgtitle:any = null;
+
+      if(listTokenPairs == undefined){
+        msgtitle = 'Hey,';
+        msg = 'Setting up environment. Please try again in 10 seconds.';
+      }else{
+        msgtitle = 'Unavailable Pool';
+        msg = 'There\'s no direct liquidity pool for the selected token pair.';
+      }
+      
       firemessage = {
-        title: 'Unavailable Pool',
-        html:
-          'There\'s no direct liquidity pool for the selected token pair.',
+        title: msgtitle,
+        html: msg,
         showCancelButton: false,
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
